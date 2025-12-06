@@ -238,7 +238,7 @@
             },
             // Day 8
             {
-                day: 8, date: "12/27 (Sat)", location: "Tokyo Shopping", weather: "cloudy", theme: "shopping",
+                day: 8, date: "12/27 (Fri)", location: "Tokyo Shopping", weather: "cloudy", theme: "shopping",
                 temperature: [4, 6, 8, 10, 9, 7, 5, 4],
                 temp_hour_range: "10:00 - 18:00",
                 daily_pass: "東京地鐵一日券 (Tokyo Subway 24-hour Ticket, 800 JPY) 或 Suica/Pasmo",
@@ -264,7 +264,6 @@
         ];
 
         // --- ICONS & UTILITIES ---
-        // 修正: 補齊箭頭圖標定義
         const IconArrowLeft = ({ className }) => (<svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>);
         const IconArrowRight = ({ className }) => (<svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>);
         
@@ -366,8 +365,8 @@
         }
 
         const BookingTool = ({ data }) => (
-            // 修正: 增加寬度限制
-            <div className="space-y-8 p-4 pt-8 max-w-4xl mx-auto">
+            // 修正: 移除 max-w-4xl mx-auto，讓內容撐滿父容器 (max-w-4xl)
+            <div className="space-y-8 p-4 pt-8">
                 <div className="glass-light p-6 rounded-2xl shadow-lg space-y-6">
                     <h3 className="text-2xl font-bold text-indigo-700 border-b pb-2">機票資訊 ✈️</h3>
                     <div className="space-y-4">
@@ -488,8 +487,8 @@
 
 
             return (
-                // 修正: 增加寬度限制
-                <div className="p-4 pt-8 max-w-4xl mx-auto space-y-6">
+                // 修正: 移除 max-w-4xl mx-auto，讓內容撐滿父容器 (max-w-4xl)
+                <div className="p-4 pt-8 space-y-6">
                     <h3 className="text-2xl font-bold text-indigo-700 flex items-center mb-4">
                         分帳工具 (JPY) 🧮
                     </h3>
@@ -607,8 +606,8 @@
             };
 
             return (
-                // 修正: 增加寬度限制
-                <div className="p-4 pt-8 max-w-4xl mx-auto space-y-6">
+                // 修正: 移除 max-w-4xl mx-auto，讓內容撐滿父容器 (max-w-4xl)
+                <div className="p-4 pt-8 space-y-6">
                     <h3 className="text-2xl font-bold text-indigo-700 flex items-center">
                         即時翻譯工具 <IconTranslate className="w-6 h-6 ml-2" />
                     </h3>
@@ -672,8 +671,8 @@
 
 
             return (
-                // 修正: 增加左右邊距 mx-6，並增加底部間距 mb-12
-                <div className={`${cardClass} card-shadow rounded-2xl overflow-hidden mb-12 mx-6`}> 
+                {/* 修正: 將左右邊距從 mx-6 改為 mx-4 (更適合手機)，並維持 mb-12 間距 */}
+                <div className={`${cardClass} card-shadow rounded-2xl overflow-hidden mb-12 mx-4`}> 
                     
                     <div className="p-4">
                         <div className="flex justify-between items-start">
@@ -843,13 +842,13 @@
                         </div>
                     </header>
                     
-                    {/* Content Area */}
-                    {/* 修正: 增加主內容最大寬度 */}
+                    {/* Content Area - max-w-4xl 確保在 PC 上的寬度，在手機上則會自動填滿 */}
                     <main className="max-w-4xl mx-auto">
                         
                         {/* Daily Navigation (Only visible on 'daily' tab) */}
                         {tab === 'daily' && (
-                            <div className="flex items-center justify-between p-4 bg-white/70 backdrop-blur-sm mt-4 mx-6 rounded-xl shadow-md sticky top-24 z-10 border border-gray-100">
+                            {/* 修正: 將左右邊距從 mx-6 改為 mx-4 */}
+                            <div className="flex items-center justify-between p-4 bg-white/70 backdrop-blur-sm mt-4 mx-4 rounded-xl shadow-md sticky top-24 z-10 border border-gray-100">
                                 <button onClick={goToPreviousDay} disabled={currentDay === 1} className="p-2 disabled:opacity-30 hover:bg-gray-200 rounded-full transition-colors">
                                     <IconArrowLeft className="w-6 h-6" />
                                 </button>
