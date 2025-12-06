@@ -85,7 +85,6 @@
         const TRAVELERS = ['Sophie', 'Li'];
         
         // --- Custom Hook: useLocalStorageState (離線儲存核心) ---
-        // 這個 Hook 確保資料儲存在瀏覽器，即使離線或重開機，資料仍存在。
         const useLocalStorageState = (key, defaultValue) => {
             const [state, setState] = useState(() => {
                 try {
@@ -184,6 +183,17 @@
         // Google Maps 搜尋連結基礎 URL
         const MAP_BASE_URL = 'https://www.google.com/maps/search/?api=1&query=';
         const createMapLink = (query) => MAP_BASE_URL + encodeURIComponent(query);
+        
+        // 天氣圖標映射
+        const getWeatherIcon = (weather) => {
+            switch (weather.toLowerCase()) {
+                case 'sunny': return '☀️ 晴天';
+                case 'cloudy': return '☁️ 多雲';
+                case 'rain': return '🌧️ 雨天';
+                case 'snow': return '❄️ 雪天';
+                default: return '🌤️';
+            }
+        };
 
 
         const initialTripData = [
@@ -342,13 +352,196 @@
             }
         ];
 
+        // --- Split Tool Component (獨立出來以修正 Hooks 錯誤) ---
+        const SplitTool = ({ expenses, setExpenses, notes, setNotes, exchangeRate, setExchangeRate }) => {
+            // 費用計算邏輯 (使用 useMemo 確保性能，並在獨立組件的頂層呼叫)
+            const calculations = useMemo(() => {
+                const totalJPY = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+                const totalTWD = (totalJPY * exchangeRate).toFixed(0);
+                const halfJPY = totalJPY / TRAVELERS.length;
+
+                const paidTotals = TRAVELERS.reduce((acc, traveler) => ({ ...acc, [traveler]: 0 }), {});
+                expenses.forEach(exp => {
+                    paidTotals[exp.paidBy] += exp.amount;
+                });
+
+                const settlement = TRAVELERS.map(traveler => {
+                    const paid = paidTotals[traveler];
+                    const diff = paid - halfJPY;
+                    return {
+                        traveler,
+                        paid: paid,
+                        shouldPay: halfJPY,
+                        diff: diff,
+                        diffTWD: (diff * exchangeRate).toFixed(0)
+                    };
+                });
+
+                // 計算結算訊息
+                const giver = settlement.find(s => s.diff < 0); // 應付錢給對方的人 (支出較少)
+                const receiver = settlement.find(s => s.diff > 0); // 應收錢的人 (支出較多)
+
+                let settlementMessage = "支出已平衡。";
+
+                if (giver && receiver) {
+                    const amountToTransferJPY = Math.abs(giver.diff).toLocaleString(undefined, { maximumFractionDigits: 0 });
+                    const amountToTransferTWD = Math.abs(giver.diffTWD).toLocaleString();
+
+                    settlementMessage = (
+                        <>
+                            **{giver.traveler}** 應轉帳給 **{receiver.traveler}**：
+                            <span className="font-extrabold text-red-600 ml-2">{amountToTransferJPY} JPY</span> 
+                            (約 **{amountToTransferTWD} TWD**)
+                        </>
+                    );
+                }
+
+                return {
+                    totalJPY, totalTWD, halfJPY, settlementMessage
+                };
+            }, [expenses, exchangeRate]);
+
+            const { totalJPY, totalTWD, settlementMessage } = calculations;
+
+            // 費用操作函數
+            const handleExpenseChange = (id, field, value) => {
+                setExpenses(prev => 
+                    prev.map(exp => exp.id === id ? { ...exp, [field]: value } : exp)
+                );
+            };
+
+            const addExpense = () => {
+                const newId = Math.max(...expenses.map(exp => exp.id), 0) + 1;
+                setExpenses(prev => [...prev, { id: newId, name: '', amount: 0, paidBy: TRAVELERS[0] }]);
+            };
+
+            const removeExpense = (id) => {
+                setExpenses(prev => prev.filter(exp => exp.id !== id));
+            };
+
+            // 分帳項目元件
+            const ExpenseItem = ({ exp }) => (
+                <div className="glass-light p-4 rounded-lg shadow-md border border-gray-100">
+                    <div className="flex justify-between items-center mb-2">
+                        <input 
+                            type="text" 
+                            placeholder="項目名稱"
+                            value={exp.name} 
+                            onChange={(e) => handleExpenseChange(exp.id, 'name', e.target.value)}
+                            className="text-base font-semibold w-2/3 p-1 rounded border border-gray-200 focus:border-indigo-500"
+                        />
+                        <button onClick={() => removeExpense(exp.id)} className="text-red-500 hover:text-red-700 p-1">
+                            🗑️
+                        </button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                        <label className="text-gray-600 flex items-center">
+                            支付人:
+                            <select 
+                                value={exp.paidBy} 
+                                onChange={(e) => handleExpenseChange(exp.id, 'paidBy', e.target.value)}
+                                className="ml-2 p-1 border rounded bg-white text-gray-700"
+                            >
+                                {TRAVELERS.map(t => <option key={t} value={t}>{t}</option>)}
+                            </select>
+                        </label>
+                        <label className="text-gray-600 flex items-center justify-end">
+                            金額 (JPY):
+                            <input 
+                                type="number" 
+                                value={exp.amount === 0 ? '' : exp.amount} 
+                                onChange={(e) => handleExpenseChange(exp.id, 'amount', parseInt(e.target.value) || 0)}
+                                className="expense-input ml-2 w-20"
+                                min="0"
+                            />
+                        </label>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="p-4 pt-6 pb-20 bg-white min-h-screen">
+                    <h1 className="text-3xl font-extrabold text-gray-900 mb-6">💰 分帳工具</h1>
+
+                    {/* 匯率設定區 */}
+                    <div className="bg-indigo-50 p-4 rounded-lg shadow-md mb-6">
+                        <h3 className="text-lg font-bold text-indigo-800 mb-2 flex items-center">
+                            匯率設定 (JPY → TWD)
+                        </h3>
+                        <div className="flex items-center space-x-3 text-sm">
+                            <span className="font-medium text-gray-700">1 JPY 約等於：</span>
+                            <input
+                                type="number"
+                                value={exchangeRate}
+                                onChange={(e) => setExchangeRate(parseFloat(e.target.value) || 0)}
+                                className="expense-input w-24 bg-white border-indigo-400"
+                                step="0.001"
+                                min="0"
+                            />
+                            <span className="font-medium text-gray-700"> TWD</span>
+                        </div>
+                        <p className="text-xs text-indigo-600 mt-2">請在此輸入您使用的即時匯率，結算金額會自動更新。</p>
+                    </div>
+
+                    {/* 總結算區 */}
+                    <div className="bg-green-100 p-4 rounded-lg shadow-lg mb-8">
+                        <h3 className="text-xl font-bold text-green-800 mb-3">總結算</h3>
+                        <div className="space-y-2 text-sm font-medium">
+                            <div className="flex justify-between">
+                                <span>總支出 (JPY):</span>
+                                <span className="font-extrabold text-gray-900">{totalJPY.toLocaleString()} JPY</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span>總支出 (TWD):</span>
+                                <span className="font-extrabold text-green-700">{totalTWD.toLocaleString()} TWD</span>
+                            </div>
+                            <div className="flex justify-between border-t border-green-300 pt-2 mt-2">
+                                <span>**平均每人應付 (JPY):**</span>
+                                <span className="font-extrabold text-green-700">{(totalJPY / TRAVELERS.length).toLocaleString(undefined, { maximumFractionDigits: 0 })} JPY</span>
+                            </div>
+                        </div>
+                        
+                        <div className="mt-4 p-3 bg-white rounded-lg border border-green-300">
+                            <h4 className="text-md font-bold text-green-800">最終結算</h4>
+                            <p className="text-sm mt-1 text-gray-800 font-semibold">{settlementMessage}</p>
+                        </div>
+                    </div>
+
+                    {/* 詳細明細 */}
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">📝 費用明細 ({expenses.length} 筆)</h2>
+                    <div className="space-y-3">
+                        {expenses.map(exp => <ExpenseItem key={exp.id} exp={exp} />)}
+                    </div>
+
+                    <button 
+                        onClick={addExpense}
+                        className="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg mt-6 shadow-md hover:bg-indigo-700 transition-colors"
+                    >
+                        + 新增費用項目
+                    </button>
+                    
+                    {/* 備註區 */}
+                    <div className="mt-10 pt-4 border-t border-gray-200">
+                        <h2 className="text-2xl font-bold text-gray-900 mb-3">備註 (離線儲存)</h2>
+                        <textarea
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            className="w-full p-3 text-sm text-gray-700 bg-gray-50 border border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500 h-32"
+                            placeholder="輸入額外備註..."
+                        />
+                    </div>
+                </div>
+            );
+        };
+
+
         // --- App Component ---
         const App = () => {
             const [activeTab, setActiveTab] = useLocalStorageState('activeTab', 'itinerary');
             const [currentDayIndex, setCurrentDayIndex] = useLocalStorageState('currentDayIndex', 0);
             const [tripDatas, setTripDatas] = useLocalStorageState('tripDatas', initialTripData);
 
-            // --- 分帳系統狀態 (移至 App Top Level 修正 Hooks 錯誤) ---
+            // --- 分帳系統狀態 (位於 App Top Level 確保 Hooks 呼叫無誤) ---
             const initialExpenses = [
                 { id: 1, name: '機票 (TPE-NGO/NRT-TPE)', amount: 120000, paidBy: 'Sophie' },
                 { id: 2, name: '名古屋 VIA INN (2晚)', amount: 15000, paidBy: 'Li' },
@@ -359,7 +552,7 @@
 
             const [expenses, setExpenses] = useLocalStorageState('splitExpenses', initialExpenses);
             const [notes, setNotes] = useLocalStorageState('splitNotes', '可在此處記錄匯率變動、特殊分帳比例等資訊。');
-            const [exchangeRate, setExchangeRate] = useLocalStorageState('exchangeRate', 0.22); // 新增匯率狀態
+            const [exchangeRate, setExchangeRate] = useLocalStorageState('exchangeRate', 0.22); 
 
             const currentDayData = tripDatas[currentDayIndex];
             const maxDay = tripDatas.length;
@@ -393,27 +586,22 @@
 
             // 每日行程總覽
             const DailyItinerary = ({ dayData, dayIndex, updateDailyMemo }) => {
-                // 每日備註 Hook 獨立於此元件，確保每次切換日期時能正確載入/儲存
                 const [dailyMemo, setDailyMemo] = useLocalStorageState(`dailyMemo_${dayIndex}`, dayData.memo);
 
                 useEffect(() => {
-                    // 當外部 tripDatas (即初始數據) 改變時，更新 dailyMemo 狀態
-                    // 這裡讓狀態與 useLocalStorageState 同步，但實際儲存仍透過 useLocalStorageState
                     setDailyMemo(dayData.memo);
                 }, [dayData.memo]);
 
                 const handleMemoChange = (e) => {
                     const newMemo = e.target.value;
                     setDailyMemo(newMemo);
-                    updateDailyMemo(newMemo); // 將變更傳遞給 App state
+                    updateDailyMemo(newMemo); 
                 };
 
                 const background = getBackgroundStyle(dayData.location);
 
                 // 單一行程卡片
                 const TripCard = ({ event }) => {
-                    const cardInnerClass = 'rounded-2xl overflow-hidden mb-8 mx-4';
-                    
                     const TypeIcon = ({ type }) => {
                         switch (type) {
                             case 'transport': return <span className="text-xl">✈️</span>;
@@ -474,9 +662,10 @@
                             <h2 className="text-2xl font-bold text-indigo-700 date-style">{dayData.date}</h2>
                             <p className="text-sm text-gray-600 mt-1">地點：{dayData.location}</p>
                             <p className="text-xs text-gray-500 mt-1">
-                                {dayData.temperature.length > 0 && 
-                                    `天氣：${dayData.weather} | 氣溫變化 (${dayData.temp_hour_range})：${dayData.temperature.join('° / ')}°`
-                                }
+                                🌡️ 氣溫變化 ({dayData.temp_hour_range})：{dayData.temperature.join('° / ')}°
+                            </p>
+                            <p className="text-sm font-semibold text-gray-800 mt-1">
+                                {getWeatherIcon(dayData.weather)}
                             </p>
                             {dayData.daily_pass && (
                                 <div className="mt-2 p-2 bg-indigo-50 border-l-4 border-indigo-400 text-sm text-indigo-800">
@@ -574,189 +763,6 @@
                 );
             };
 
-            // 分帳工具頁面 (已修正所有 Hooks 錯誤)
-            const renderSplit = () => {
-                // 費用計算邏輯
-                const calculations = useMemo(() => {
-                    const totalJPY = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-                    const totalTWD = (totalJPY * exchangeRate).toFixed(0);
-                    const halfJPY = totalJPY / TRAVELERS.length;
-                    const halfTWD = (halfJPY * exchangeRate).toFixed(0);
-
-                    const paidTotals = TRAVELERS.reduce((acc, traveler) => ({ ...acc, [traveler]: 0 }), {});
-                    expenses.forEach(exp => {
-                        paidTotals[exp.paidBy] += exp.amount;
-                    });
-
-                    const settlement = TRAVELERS.map(traveler => {
-                        const paid = paidTotals[traveler];
-                        const diff = paid - halfJPY;
-                        return {
-                            traveler,
-                            paid: paid,
-                            shouldPay: halfJPY,
-                            diff: diff,
-                            diffTWD: (diff * exchangeRate).toFixed(0)
-                        };
-                    });
-
-                    // 計算結算訊息
-                    const giver = settlement.find(s => s.diff < 0); // 應付錢給對方的人 (支出較少)
-                    const receiver = settlement.find(s => s.diff > 0); // 應收錢的人 (支出較多)
-
-                    let settlementMessage = "支出已平衡。";
-
-                    if (giver && receiver) {
-                        const amountToTransferJPY = Math.abs(giver.diff).toFixed(0);
-                        const amountToTransferTWD = Math.abs(giver.diffTWD);
-
-                        settlementMessage = (
-                            <>
-                                **{giver.traveler}** 應轉帳給 **{receiver.traveler}**：
-                                <span className="font-extrabold text-red-600 ml-2">{amountToTransferJPY} JPY</span> 
-                                (約 **{amountToTransferTWD} TWD**)
-                            </>
-                        );
-                    }
-
-                    return {
-                        totalJPY, totalTWD, halfJPY, halfTWD, settlement, settlementMessage
-                    };
-                }, [expenses, exchangeRate]);
-
-                const { totalJPY, totalTWD, halfJPY, halfTWD, settlement, settlementMessage } = calculations;
-
-                // 費用操作函數
-                const handleExpenseChange = (id, field, value) => {
-                    setExpenses(prev => 
-                        prev.map(exp => exp.id === id ? { ...exp, [field]: value } : exp)
-                    );
-                };
-
-                const addExpense = () => {
-                    const newId = Math.max(...expenses.map(exp => exp.id), 0) + 1;
-                    setExpenses(prev => [...prev, { id: newId, name: '', amount: 0, paidBy: TRAVELERS[0] }]);
-                };
-
-                const removeExpense = (id) => {
-                    setExpenses(prev => prev.filter(exp => exp.id !== id));
-                };
-
-                // 分帳項目元件
-                const ExpenseItem = ({ exp }) => (
-                    <div className="glass-light p-4 rounded-lg shadow-md border border-gray-100">
-                        <div className="flex justify-between items-center mb-2">
-                            <input 
-                                type="text" 
-                                placeholder="項目名稱"
-                                value={exp.name} 
-                                onChange={(e) => handleExpenseChange(exp.id, 'name', e.target.value)}
-                                className="text-base font-semibold w-2/3 p-1 rounded border border-gray-200 focus:border-indigo-500"
-                            />
-                            <button onClick={() => removeExpense(exp.id)} className="text-red-500 hover:text-red-700 p-1">
-                                🗑️
-                            </button>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 text-sm">
-                            <label className="text-gray-600 flex items-center">
-                                支付人:
-                                <select 
-                                    value={exp.paidBy} 
-                                    onChange={(e) => handleExpenseChange(exp.id, 'paidBy', e.target.value)}
-                                    className="ml-2 p-1 border rounded bg-white text-gray-700"
-                                >
-                                    {TRAVELERS.map(t => <option key={t} value={t}>{t}</option>)}
-                                </select>
-                            </label>
-                            <label className="text-gray-600 flex items-center justify-end">
-                                金額 (JPY):
-                                <input 
-                                    type="number" 
-                                    value={exp.amount === 0 ? '' : exp.amount} 
-                                    onChange={(e) => handleExpenseChange(exp.id, 'amount', parseInt(e.target.value) || 0)}
-                                    className="expense-input ml-2 w-20"
-                                    min="0"
-                                />
-                            </label>
-                        </div>
-                    </div>
-                );
-
-                return (
-                    <div className="p-4 pt-6 pb-20 bg-white min-h-screen">
-                        <h1 className="text-3xl font-extrabold text-gray-900 mb-6">💰 分帳工具</h1>
-
-                        {/* 匯率設定區 */}
-                        <div className="bg-indigo-50 p-4 rounded-lg shadow-md mb-6">
-                            <h3 className="text-lg font-bold text-indigo-800 mb-2 flex items-center">
-                                匯率設定 (JPY → TWD)
-                            </h3>
-                            <div className="flex items-center space-x-3 text-sm">
-                                <span className="font-medium text-gray-700">1 JPY 約等於：</span>
-                                <input
-                                    type="number"
-                                    value={exchangeRate}
-                                    onChange={(e) => setExchangeRate(parseFloat(e.target.value) || 0)}
-                                    className="expense-input w-24 bg-white border-indigo-400"
-                                    step="0.001"
-                                    min="0"
-                                />
-                                <span className="font-medium text-gray-700"> TWD</span>
-                            </div>
-                            <p className="text-xs text-indigo-600 mt-2">請在此輸入您使用的即時匯率，結算金額會自動更新。</p>
-                        </div>
-
-                        {/* 總結算區 */}
-                        <div className="bg-green-100 p-4 rounded-lg shadow-lg mb-8">
-                            <h3 className="text-xl font-bold text-green-800 mb-3">總結算</h3>
-                            <div className="space-y-2 text-sm font-medium">
-                                <div className="flex justify-between">
-                                    <span>總支出 (JPY):</span>
-                                    <span className="font-extrabold text-gray-900">{totalJPY.toLocaleString()} JPY</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>總支出 (TWD):</span>
-                                    <span className="font-extrabold text-green-700">{totalTWD.toLocaleString()} TWD</span>
-                                </div>
-                                <div className="flex justify-between border-t border-green-300 pt-2 mt-2">
-                                    <span>**平均每人應付 (JPY):**</span>
-                                    <span className="font-extrabold text-green-700">{halfJPY.toLocaleString(undefined, { maximumFractionDigits: 0 })} JPY</span>
-                                </div>
-                            </div>
-                            
-                            <div className="mt-4 p-3 bg-white rounded-lg border border-green-300">
-                                <h4 className="text-md font-bold text-green-800">最終結算</h4>
-                                <p className="text-sm mt-1 text-gray-800 font-semibold">{settlementMessage}</p>
-                            </div>
-                        </div>
-
-                        {/* 詳細明細 */}
-                        <h2 className="text-2xl font-bold text-gray-900 mb-4">📝 費用明細 ({expenses.length} 筆)</h2>
-                        <div className="space-y-3">
-                            {expenses.map(exp => <ExpenseItem key={exp.id} exp={exp} />)}
-                        </div>
-
-                        <button 
-                            onClick={addExpense}
-                            className="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg mt-6 shadow-md hover:bg-indigo-700 transition-colors"
-                        >
-                            + 新增費用項目
-                        </button>
-                        
-                        {/* 備註區 */}
-                        <div className="mt-10 pt-4 border-t border-gray-200">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-3">備註 (離線儲存)</h2>
-                            <textarea
-                                value={notes}
-                                onChange={(e) => setNotes(e.target.value)}
-                                className="w-full p-3 text-sm text-gray-700 bg-gray-50 border border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500 h-32"
-                                placeholder="輸入額外備註..."
-                            />
-                        </div>
-                    </div>
-                );
-            };
-
             // 總覽
             const renderContent = () => {
                 switch (activeTab) {
@@ -769,7 +775,15 @@
                     case 'tools':
                         return renderTools();
                     case 'split':
-                        return renderSplit();
+                        // 呼叫獨立的 SplitTool 組件
+                        return <SplitTool 
+                                    expenses={expenses}
+                                    setExpenses={setExpenses}
+                                    notes={notes}
+                                    setNotes={setNotes}
+                                    exchangeRate={exchangeRate}
+                                    setExchangeRate={setExchangeRate}
+                                />;
                     default:
                         return <DailyItinerary 
                                     dayData={currentDayData} 
@@ -782,7 +796,7 @@
             return (
                 <div className="min-h-screen bg-[#FBF9F2]">
                     {/* Header: 標題與導航 */}
-                    <div className="sticky top-0 bg-white/95 backdrop-blur-sm z-20 shadow-md">
+                    <div className="sticky top-0 left-0 right-0 bg-white/95 backdrop-blur-sm z-20 shadow-md">
                         <div className="max-w-4xl mx-auto p-4 flex justify-between items-center border-b border-gray-100">
                             <h1 className="text-xl font-extrabold text-indigo-700 tracking-wider">SL Japan Travel 2025</h1>
                             <div className="text-sm text-gray-500">
