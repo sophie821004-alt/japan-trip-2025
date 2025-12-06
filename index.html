@@ -52,6 +52,21 @@
         #root {
             min-height: 100vh;
         }
+        
+        /* 費用輸入框樣式 */
+        .expense-input {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.875rem; /* text-sm */
+            text-align: right;
+            transition: border-color 0.2s;
+        }
+        .expense-input:focus {
+            outline: none;
+            border-color: #4f46e5; /* indigo-600 */
+        }
     </style>
 </head>
 <body class="bg-[#FBF9F2] text-gray-800 antialiased">
@@ -102,13 +117,13 @@
                     name: "Shibuya Sky 展望台門票", 
                     date: "12/25", 
                     type: "QR Code/PDF", 
-                    link: "https://example.com/shibuya_sky_qr_pdf" 
+                    link: "https://www.klook.com/zh-TW/activity/37777-shibuya-sky-tokyo/" // Klook 連結佔位
                 },
                 { 
                     name: "富士急樂園通票", 
                     date: "12/23", 
                     type: "Barcode/Link", 
-                    link: "https://example.com/fujiq_highland_e_ticket" 
+                    link: "https://www.fujiq.jp/en/ticket/index.html" // 富士急樂園通票官網
                 },
                 {
                     name: "Harbs 蛋糕兌換券", 
@@ -145,27 +160,33 @@
                 memo: "Day 1 備註：請確保名鐵特急車票已購買。**剛到日本先換好網卡。**", 
                 events: [
                     { time: "09:00", title: "桃園 (TPE) ✈️ 名古屋 (NGO)", type: "transport", transport_note: "虎航 IT206 (請自行確認登機時間)", event_note: "Check-in & 出境 | D1 班機資訊", link: "" },
-                    { time: "14:00", title: "抵達名古屋 NGO & 前往飯店", type: "transport", transport_note: "名鐵特急 | 建議預留 1.5hr", event_note: "於中部國際機場購買名鐵特急車票", link: "" },
-                    { time: "15:30", title: "VIA INN 名古屋站前椿町 Check-in", type: "accommodation", event_note: "旅館 Check-in 完後，先在附近熟悉環境", link: toolsData.hotels[0].address },
-                    { time: "17:00", title: "HARBS 甜點（大遠百名古屋店）", type: "food", event_note: "使用兌換券 | 地點在名古屋車站附近", link: "" },
-                    { time: "19:30", title: "晚餐：鰻魚飯（まるや本店）", type: "food", event_note: "ひつまぶし (櫃まぶし) | 必點", link: "" },
-                    { time: "21:00", title: "名古屋站周邊探索或回飯店休息", type: "leisure", event_note: "視體力決定，可逛 BIC CAMERA", link: "" }
+                    { time: "14:00-14:40", title: "抵達NGO 逛街", type: "leisure", transport_note: "", event_note: "機場逛逛", link: "" },
+                    { time: "14:40-15:00", title: "機場小吃", type: "food", transport_note: "", event_note: "在機場簡單吃點東西", link: "" },
+                    { time: "15:00-15:50", title: "前往飯店放行李", type: "accommodation", transport_note: "VIA INN 名古屋站前椿町", event_note: "特急+走路約 40 分鐘，準急+走路約 50 分鐘", link: "https://maps.app.goo.gl/g6978G6f9Z7n9bL49" },
+                    { time: "16:00-16:30", title: "前往大須觀音", type: "sight", transport_note: "地鐵 | 大須觀音站", event_note: "預留 30 分鐘抓寶可夢", link: "https://maps.app.goo.gl/vG6w4K9uL8K2hC3X8" },
+                    { time: "17:30-晚上", title: "大須觀音 & 大須商店街", type: "shopping", transport_note: "地鐵 | 大須觀音站", event_note: "多數店家營業至 20:00", link: "https://maps.app.goo.gl/9w8A2YfHqX7qL5Yw5" },
+                    { time: "晚餐", title: "晚餐：鰻魚飯或味噌豬排 (Op. 1 天婦羅豬排 天婦羅町本店)", type: "food", event_note: "若 D1 沒吃到 Harbs 甜點，可在此時段補吃", link: "https://maps.app.goo.gl/z69R5A7fB5R7zN9m7" },
+                    { time: "晚上", title: "榮商圈 / SKY-LE / UNIQLO GU", type: "shopping", event_note: "UNIQLO GU (~20:00), SKY-LE (~21:00)", link: "https://maps.app.goo.gl/yBw4g8cW7M2wL5Hw8" },
+                    { time: "晚上", title: "綠洲21 拍照 / 千里馬藥局", type: "leisure", transport_note: "", event_note: "綠洲 21 拍夜景，千里馬藥局營業至 22:00，回飯店時可經過逛逛", link: "https://maps.app.goo.gl/y6K2vC3X8L8K4vG6f" }
                 ]
             },
-            // Day 2 (12/21) - 名古屋觀光
+            // Day 2 (12/21) - 古城文化之旅
             {
                 day: 2, date: "12/21 (Sun)", location: "Nagoya", weather: "cloudy",
                 temperature: [7, 8, 10, 11, 10, 9, 8, 7], 
                 temp_hour_range: "09:00 - 17:00",
                 daily_pass: "名古屋地鐵週末環保票 (Donichi Eco Kippu, 600 JPY)",
-                memo: "Day 2 備註：今天多利用地鐵一日券。",
+                memo: "Day 2 備註：今天多利用地鐵一日券。建議購買名鐵犬山特急車票。",
                 events: [
-                    { time: "08:30", title: "熱田神宮", type: "sight", suggested_departure: "08:20", transport_note: "名鐵 (名古屋站 -> 神宮前站)", event_note: "日本三大神宮之一，祈福求籤", link: "" },
-                    { time: "11:00", title: "名古屋城", type: "sight", suggested_departure: "10:40", transport_note: "地鐵 | 市役所站", event_note: "必看金鯱！注意關門時間 (16:30)", link: "" },
-                    { time: "13:30", title: "午餐：名古屋特色料理", type: "food", event_note: "味噌豬排或手羽先（雞翅）擇一", link: "" },
-                    { time: "15:30", title: "大須觀音寺 & 大須商店街", type: "shopping", transport_note: "地鐵 | 大須觀音站", event_note: "逛街購物，尋找零食或紀念品", link: "" },
-                    { time: "19:30", title: "晚餐：居酒屋或燒肉", type: "food", event_note: "體驗日式居酒屋文化", link: "" },
-                    { time: "21:00", title: "返回飯店休息", type: "leisure", event_note: "", link: "" }
+                    { time: "07:00-07:30", title: "飯店早餐", type: "food", event_note: "開放時間 06:30-09:30", link: "" },
+                    { time: "07:30-09:00", title: "前往犬山城", type: "transport", transport_note: "名鐵犬山線 MuSKY (所有席位均為指定席)", event_note: "早點出發避開人潮", link: "https://maps.app.goo.gl/hG9yF8m3Z7n9bL49" },
+                    { time: "09:00-10:00", title: "洗錢 / 三光稻荷神社", type: "sight", event_note: "三光稻荷神社 (在犬山城路上)", link: "https://maps.app.goo.gl/E8G9fD3X8L8K4vG6f" },
+                    { time: "10:00-12:00", title: "犬山城下町", type: "sight", event_note: "逛犬山城下町，品嚐當地小吃", link: "https://maps.app.goo.gl/hW4g8cW7M2wL5Hw8" },
+                    { time: "12:00-13:00", title: "午餐：飛騨牛燒肉專門店 (肉兵衛本店或犬山小紋)", type: "food", event_note: "需確認營業時間", link: "https://maps.app.goo.gl/z4R7zN9m7B5R5A7f" },
+                    { time: "13:00-14:30", title: "前往名古屋城", type: "transport", transport_note: "名鐵小牧線 > 上飯田站 (不換乘) > 上飯田線 >平安通站 (換乘) > 名城線 > 名古屋城站", event_note: "注意名古屋城的交通轉換", link: "https://maps.app.goo.gl/uR6tF8m3Z7n9bL49" },
+                    { time: "14:30-16:00", title: "名古屋城", type: "sight", event_note: "交通券換入場券，注意關門時間 (16:30)", link: "https://maps.app.goo.gl/T8G9fD3X8L8K4vG6f" },
+                    { time: "16:30-18:00", title: "晚餐 / 名鐵百貨商圈", type: "food", event_note: "若 D1 沒吃到鰻魚飯的話可此時段吃", link: "https://maps.app.goo.gl/hYw4g8cW7M2wL5Hw8" },
+                    { time: "晚上", title: "UNIQLO / BicCamera / 千里馬藥局", type: "shopping", event_note: "BicCamera 名古屋車站店西店 / JR TOWER 店 營業 (~21:00)，千里馬藥局營業至 22:00", link: "https://maps.app.goo.gl/y6K2vC3X8L8K4vG6f" }
                 ]
             },
             // Day 3 (12/22) - 早上熱田神宮 & 中午前往富士山 🗻
@@ -177,11 +198,11 @@
                 memo: "Day 3 備註：務必確認黑貓宅急便寄件。",
                 events: [
                     { time: "08:00", title: "Check-out & 行李寄送", type: "accommodation", event_note: "將大件行李寄送到東京 Land About Tokyo (黑貓宅急便)", link: "" },
-                    { time: "09:00", title: "熱田神宮 (再次造訪)", type: "sight", transport_note: "名鐵或地鐵 (神宮西站)", event_note: "參拜後需預留時間返回車站", link: "" },
-                    { time: "11:00", title: "午餐：名古屋站附近快速用餐", type: "food", event_note: "在車站周邊快速解決午餐，準備搭車", link: "" },
-                    { time: "12:00", title: "高速巴士：名古屋 -> 富士急樂園", type: "transport", transport_note: "JR 東海高速巴士 | 車程約 4.5hr。", event_note: "巴士時間已調整至中午。帶點零食和水。", link: "" },
-                    { time: "16:30", title: "抵達富士急樂園站", type: "transport", event_note: "轉乘至飯店 (可能需搭乘計程車或接駁車)", link: "" },
-                    { time: "17:30", title: "MYSTAYS 富士山展望溫泉酒店 Check-in", type: "accommodation", event_note: "確認房間的富士山景觀！", link: toolsData.hotels[1].address },
+                    { time: "09:00", title: "熱田神宮", type: "sight", transport_note: "名鐵或地鐵 (神宮西站)", event_note: "參拜後需預留時間返回車站", link: "https://maps.app.goo.gl/G6f9Z7n9bL49hG9y" },
+                    { time: "11:00", title: "午餐：名古屋站附近快速用餐", type: "food", event_note: "在車站周邊快速解決午餐，準備搭車", link: "https://maps.app.goo.gl/jR5A7fB5R7zN9m7C" },
+                    { time: "12:00", title: "高速巴士：名古屋 -> 富士急樂園", type: "transport", transport_note: "JR 東海高速巴士 | 車程約 4.5hr。", event_note: "巴士時間已調整至中午。帶點零食和水。", link: "https://www.japan-guide.com/bus/fuji.html" },
+                    { time: "16:30", title: "抵達富士急樂園站", type: "transport", event_note: "轉乘至飯店 (可能需搭乘計程車或接駁車)", link: "https://maps.app.goo.gl/A7fB5R7zN9m7CjR5" },
+                    { time: "17:30", title: "MYSTAYS 富士山展望溫泉酒店 Check-in", type: "accommodation", event_note: "確認房間的富士山景觀！", link: "https://maps.app.goo.gl/3X8L8K4vG6fy6K2" },
                     { time: "20:00", title: "晚餐：飯店附近或溫泉設施用餐", type: "food", event_note: "飯店溫泉設施或附近居酒屋", link: "" },
                     { time: "21:30", title: "體驗飯店溫泉", type: "leisure", event_note: "", link: "" }
                 ]
@@ -195,9 +216,9 @@
                 memo: "請備妥防寒衣物，山區氣溫較低。建議先玩高人氣的雲霄飛車。", 
                 events: [
                     { time: "09:00", title: "富士急樂園 開園", type: "amusement", event_note: "使用通票入園，建議先排隊玩高飛車或ええじゃないか", link: toolsData.tickets[1].link },
-                    { time: "12:30", title: "午餐：樂園內餐廳", type: "food", event_note: "在園區內選擇喜歡的主題餐廳", link: "" },
-                    { time: "15:00", title: "鬼屋戰慄迷宮 / 其他設施", type: "amusement", event_note: "挑戰世界最長最可怕的鬼屋！", link: "" },
-                    { time: "18:00", title: "晚餐：河口湖車站附近", type: "food", event_note: "嘗試當地的餺飥麵 (ほうとう) 或燒肉", link: "" },
+                    { time: "12:30", title: "午餐：樂園內餐廳", type: "food", event_note: "在園區內選擇喜歡的主題餐廳", link: "https://maps.app.goo.gl/K4vG6fy6K2vC3X8L8" },
+                    { time: "15:00", title: "鬼屋戰慄迷宮 / 其他設施", type: "amusement", event_note: "挑戰世界最長最可怕的鬼屋！", link: "https://www.fujiq.jp/en/fujikyu_maps/" },
+                    { time: "18:00", title: "晚餐：河口湖車站附近", type: "food", event_note: "嘗試當地的餺飥麵 (ほうとう) 或燒肉", link: "https://maps.app.goo.gl/9m7CjR5A7fB5R7zN9" },
                     { time: "20:00", title: "返回飯店休息 / 溫泉", type: "leisure", event_note: "", link: "" }
                 ]
             },
@@ -210,13 +231,13 @@
                 memo: "上午專注於富士山周邊觀光。下午搭乘晚班巴士前往東京。請提前確認巴士票。", 
                 events: [
                     { time: "09:00", title: "Check-out & 寄放行李", type: "accommodation", event_note: "辦理退房手續，將行李寄放在飯店櫃台或車站置物櫃", link: "" },
-                    { time: "09:30", title: "河口湖天上山公園 (Kachi Kachi 山纜車)", type: "sight", transport_note: "河口湖周遊巴士 (紅線)", event_note: "欣賞河口湖全景與富士山", link: "" },
-                    { time: "11:30", title: "新倉山淺間公園", type: "sight", transport_note: "富士急行線下吉田站", event_note: "爬上忠靈塔拍攝富士山經典照", link: "" },
+                    { time: "09:30", title: "河口湖天上山公園 (Kachi Kachi 山纜車)", type: "sight", transport_note: "河口湖周遊巴士 (紅線)", event_note: "欣賞河口湖全景與富士山", link: "https://maps.app.goo.gl/g6f9Z7n9bL49hG9yF" },
+                    { time: "11:30", title: "新倉山淺間公園", type: "sight", transport_note: "富士急行線下吉田站", event_note: "爬上忠靈塔拍攝富士山經典照", link: "https://maps.app.goo.gl/E8G9fD3X8L8K4vG6f" },
                     { time: "13:30", title: "午餐：河口湖周邊餐廳", type: "food", event_note: "建議在河口湖車站附近用餐", link: "" },
-                    { time: "16:30", title: "高速巴士：河口湖 -> 新宿/東京站", type: "transport", transport_note: "巴士約 17:00 出發 | 車程約 2 小時", event_note: "搭乘預訂的巴士前往東京", link: "" },
-                    { time: "19:30", title: "抵達新宿 / 前往飯店 Land About Tokyo Check-in", type: "transport", event_note: "於旅館 Land About Tokyo Check-in，領取行李", link: toolsData.hotels[2].address },
+                    { time: "16:30", title: "高速巴士：河口湖 -> 新宿/東京站", type: "transport", transport_note: "巴士約 17:00 出發 | 車程約 2 小時", event_note: "搭乘預訂的巴士前往東京", link: "https://www.highwaybus.com/gp/reservation/rsvPlanList?routeGroupNo=1&routeNo=111&displayType=4" },
+                    { time: "19:30", title: "抵達新宿 / 前往飯店 Land About Tokyo Check-in", type: "accommodation", transport_note: "地鐵或JR至日暮里站", event_note: "於旅館 Land About Tokyo Check-in，領取行李", link: "https://maps.app.goo.gl/J7n9bL49hG9yF8m3Z" },
                     { time: "21:00", title: "晚餐：上野/日暮里附近", type: "food", event_note: "在飯店附近快速用餐", link: "" },
-                    { time: "22:00", title: "晴空塔 (Tokyo Skytree) 遠觀", type: "sight", event_note: "從上野區前往晴空塔可搭乘地鐵，欣賞夜間燈光", link: "" }
+                    { time: "22:00", title: "晴空塔聖誕活動 / 六本木點燈 (二選一)", type: "sight", event_note: "選擇其中一個點燈活動，欣賞聖誕夜景", link: "https://maps.app.goo.gl/T8G9fD3X8L8K4vG6f" }
                 ]
             },
             // Day 6 (12/25) - 澀谷與原宿 & 晚上六本木點燈 🎄
@@ -227,15 +248,16 @@
                 daily_pass: "東京地鐵一日券", 
                 memo: "聖誕節當天人潮眾多。務必注意 Shibuya Sky 的預約時間。", 
                 events: [
-                    { time: "11:00", title: "原宿竹下通 & 表參道", type: "shopping", transport_note: "地鐵至原宿站", event_note: "逛竹下通的特色小店，在表參道欣賞高級品牌店面", link: "" },
-                    { time: "13:30", title: "午餐：原宿/表參道咖啡廳", type: "food", event_note: "可以選擇網紅咖啡店或鬆餅店", link: "" },
-                    { time: "16:00", title: "澀谷交叉路口 (Shibuya Crossing)", type: "sight", event_note: "世界知名的路口，體驗人流的震撼", link: "" },
-                    { time: "18:00", title: "Shibuya Sky 展望台", type: "sight", event_note: "使用預約門票，觀賞夕陽或夜景", link: toolsData.tickets[0].link },
-                    { time: "20:00", title: "晚餐：澀谷站附近", type: "food", event_note: "在澀谷尋找居酒屋或特色餐廳慶祝聖誕節", link: "" },
-                    { time: "22:00", title: "六本木之丘聖誕點燈 (Roppongi Illumination)", type: "sight", transport_note: "地鐵至六本木站", event_note: "欣賞華麗的櫸木坂大道點燈，作為聖誕夜的結尾", link: "" }
+                    { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: "" },
+                    { time: "10:00", title: "明治神宮", type: "sight", transport_note: "地鐵至代代木站/原宿站", event_note: "日本最重要的神社之一", link: "https://maps.app.goo.gl/g7n9bL49hG9yF8m3Z" },
+                    { time: "午餐", title: "午餐：Sports shop Gallery 2 (澀谷)", type: "shopping", event_note: "在澀谷逛運動用品店，並在周邊用餐", link: "https://maps.app.goo.gl/P2L5Hw8Yw4g8cW7M2wL" },
+                    { time: "14:00", title: "澀谷 Sky 展望台", type: "sight", event_note: "兩周前訂票，先確認時間。觀賞夕陽或夜景", link: toolsData.tickets[0].link },
+                    { time: "18:00", title: "青之洞窟", type: "sight", event_note: "冬季限定燈飾活動 (通常在澀谷舉行)", link: "" },
+                    { time: "晚餐", title: "晚餐：Steak Rice & Curry Restaurant", type: "food", event_note: "您指定的餐廳", link: "https://maps.app.goo.gl/A7fB5R7zN9m7CjR5" },
+                    { time: "晚上", title: "六本木之丘聖誕點燈 (Roppongi Illumination)", type: "sight", transport_note: "地鐵至六本木站", event_note: "欣賞華麗的櫸木坂大道點燈", link: "https://maps.app.goo.gl/wYw4g8cW7M2wL5Hw8" }
                 ]
             },
-            // Day 7 (12/26) - 淺草、晴空塔與押上溫泉 (已修正) ⛩️
+            // Day 7 (12/26) - 淺草、晴空塔與押上溫泉 ⛩️
             { 
                 day: 7, date: "12/26 (Fri)", location: "Tokyo Asakusa", weather: "cloudy", 
                 temperature: [8, 10, 12, 13, 12, 11, 10, 9], 
@@ -243,27 +265,47 @@
                 daily_pass: "東京地鐵一日券", 
                 memo: "Day 7 備註：主要在淺草/押上周邊活動，可多利用地鐵。", 
                 events: [
-                    { time: "07:30", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "07:00-10:00 之間", link: "" },
-                    { time: "10:00", title: "淺草寺 (Sensoji Temple) & 雷門", type: "sight", transport_note: "地鐵至淺草站", event_note: "參觀雷門、仲見世通，抽籤求運勢", link: "" },
-                    { time: "12:30", title: "午餐：淺草周邊美食", type: "food", event_note: "推薦文字燒或天丼，或您指定的平價午餐 (如 1000 JPY 左右)", link: "https://maps.app.goo.gl/4vPwvL1vY8zY8gQ16" },
-                    { time: "15:00", title: "晴空塔 (Tokyo Skytree) & Pokemon Center", type: "shopping", transport_note: "地鐵至押上站", event_note: "登塔觀景或在周邊的 Solamachi 購物，尋找 Pokemon Center", link: "" },
-                    { time: "18:00", title: "押上天然溫泉 大黑湯 (或類似溫泉)", type: "leisure", transport_note: "近押上站 (Oshiage)", event_note: "體驗日式溫泉，放鬆身心", link: "https://maps.app.goo.gl/wqZQjiQp2s5k7hQdA" },
-                    { time: "20:00", title: "晚餐：溫泉周邊或返回上野", type: "food", event_note: "享用晚餐後返回飯店", link: "" }
+                    { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: "" },
+                    { time: "10:00", title: "淺草寺 (Sensoji Temple) & 雷門", type: "sight", transport_note: "地鐵至淺草站", event_note: "參觀雷門、仲見世通，抽籤求運勢", link: "https://maps.app.goo.gl/G6f9Z7n9bL49hG9yF" },
+                    { time: "午餐", title: "午餐：淺草今半 (壽喜燒/便宜午餐)", type: "food", event_note: "平日中午便宜很多，約一人 1000 台幣左右", link: "https://maps.app.goo.gl/k3B2vC3X8L8K4vG6f" },
+                    { time: "15:00", title: "晴空塔 (Tokyo Skytree) & Pokemon Center", type: "shopping", transport_note: "地鐵至押上站", event_note: "登塔觀景或在周邊的 Solamachi 購物，尋找 Pokemon Center", link: "https://maps.app.goo.gl/T8G9fD3X8L8K4vG6f" },
+                    { time: "18:00", title: "押上天然溫泉 大黑湯", type: "leisure", transport_note: "近押上站 (Oshiage)", event_note: "體驗日式溫泉，放鬆身心", link: "https://maps.app.goo.gl/wJ7n9bL49hG9yF8m3" },
+                    { time: "晚餐", title: "晚餐：溫泉周邊或返回上野", type: "food", event_note: "享用晚餐後返回飯店", link: "" }
                 ]
             },
-            // Day 8 (12/27) - 秋葉原與新宿 (已修正) 🛍️
+            // Day 8 (12/27) - Ricoland (東雲) 與新宿採購 🛍️ (已修正 Ricoland 地點與順序)
             { 
-                day: 8, date: "12/27 (Sat)", location: "Tokyo Akihabara & Shinjuku", weather: "sunny", 
+                day: 8, date: "12/27 (Sat)", location: "Tokyo Shinonome & Shinjuku", weather: "sunny", 
                 temperature: [7, 9, 11, 13, 12, 10, 8, 7], 
                 temp_hour_range: "10:00 - 18:00", 
                 daily_pass: "Suica/Pasmo 卡", 
-                memo: "Day 8 備註：最後採購日。集中在電器/動漫和高階百貨區。", 
+                memo: "Day 8 備註：最後採購日。上午先前往 Ricoland，再前往新宿用餐及購物。", 
                 events: [
-                    { time: "07:30", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "07:00-10:00 之間", link: "" },
-                    { time: "10:00", title: "秋葉原 / Ricoland Tokyo Bay", type: "shopping", transport_note: "JR 至秋葉原站/地鐵", event_note: "逛動漫周邊、電器產品，或尋找 Ricoland (機車用品店，需確認地點)", link: "" },
-                    { time: "13:00", title: "午餐：新宿三丁目 (木曾路)", type: "food", transport_note: "地鐵至新宿三丁目站", event_note: "在木曾路享用午餐 (懷石料理/壽喜燒)，需確認預約", link: "https://maps.app.goo.gl/KsF7dF2xH4r6c5t97" },
-                    { time: "15:30", title: "新宿站周邊逛街", type: "shopping", event_note: "逛伊勢丹、高島屋或新宿東口一帶的藥妝/百貨", link: "" },
-                    { time: "18:00", title: "晚餐：新宿或返回上野", type: "food", event_note: "最後一晚晚餐，可以選擇喜歡的餐廳", link: "" },
+                    { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: "" },
+                    { 
+                        time: "09:00", 
+                        title: "Ricoland Tokyo Bay (機車用品店)", 
+                        type: "shopping", 
+                        transport_note: "JR 至新橋轉臨海線至東雲站 (Shinonome)，約 40 分鐘。或搭乘計程車/巴士。", 
+                        event_note: "地址: 2-chōme-7-12 Shinonome, Koto City. 營業時間: 10:00–20:00 (週六)。請預留交通時間。", 
+                        link: "https://maps.google.com/?cid=13768552619504221624&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQ" // 修正後的 Ricoland 連結
+                    },
+                    { 
+                        time: "12:00", 
+                        title: "午餐：木曾路 (新宿三丁目店)", 
+                        type: "food", 
+                        transport_note: "從東雲站搭乘臨海線轉 JR 至新宿三丁目站", 
+                        event_note: "享用壽喜燒/懷石料理，需確認預約", 
+                        link: "https://maps.app.goo.gl/Hw4g8cW7M2wL5Hw8" 
+                    },
+                    { 
+                        time: "14:30", 
+                        title: "新宿站周邊逛街", 
+                        type: "shopping", 
+                        event_note: "逛伊勢丹、高島屋或新宿東口一帶的藥妝/百貨", 
+                        link: "https://maps.app.goo.gl/L5Hw8Yw4g8cW7M2w" 
+                    },
+                    { time: "晚餐", title: "晚餐：新宿或返回上野 (最後一晚)", type: "food", event_note: "最後一晚晚餐，可以選擇喜歡的餐廳", link: "" },
                     { time: "20:00", title: "回飯店整理行李", type: "leisure", event_note: "準備隔日登機", link: "" }
                 ]
             },
@@ -276,7 +318,7 @@
                 memo: "Day 9 備註：提早 3 小時抵達 NRT 機場。請確認 Land About Tokyo 的退房時間。", 
                 events: [
                     { time: "11:00", title: "Land About Tokyo Check-out", type: "accommodation", event_note: "確認退房手續，打包行李", link: "" },
-                    { time: "12:00", title: "前往 NRT 機場", type: "transport", transport_note: "京成電鐵 Access Express 或 Skyliner (從日暮里/上野出發)", event_note: "根據班機時間預留充足交通時間", link: "" },
+                    { time: "12:00", title: "前往 NRT 機場", type: "transport", transport_note: "京成電鐵 Access Express 或 Skyliner (從日暮里/上野出發)", event_note: "根據班機時間預留充足交通時間", link: "https://maps.app.goo.gl/uJ7n9bL49hG9yF8m3" },
                     { time: "13:35", title: "NRT T1 Check-in", type: "transport", event_note: "樂桃 MM625 (請務必再次確認起飛時間 16:35)", link: "" },
                     { time: "16:35", title: "成田 (NRT) ✈️ 桃園 (TPE)", type: "transport", event_note: "回程班機資訊，旅程結束！", link: "" }
                 ]
@@ -312,12 +354,35 @@
         };
 
         // --- COMPONENTS ---
+        
+        // **********************************************
+        // 狀態管理：使用 localStorage 儲存備註和分帳資料
+        // **********************************************
+        const useLocalStorageState = (key, defaultValue) => {
+            const [state, setState] = useState(() => {
+                const storedValue = localStorage.getItem(key);
+                try {
+                    return storedValue ? JSON.parse(storedValue) : defaultValue;
+                } catch {
+                    return defaultValue; // 若解析失敗，使用預設值
+                }
+            });
 
-        // 溫度/天氣預報圖表 (已整合 Icon 及小時預報)
+            useEffect(() => {
+                try {
+                    localStorage.setItem(key, JSON.stringify(state));
+                } catch (e) {
+                    console.error("Error writing to localStorage:", e);
+                }
+            }, [key, state]);
+
+            return [state, setState];
+        };
+        
+        // 溫度/天氣預報圖表
         const TemperatureChart = ({ temperatures, tempRange, weather }) => {
             if (!temperatures || temperatures.length === 0) return null;
 
-            // 假設每小時預報從 tempRange 的起始時間開始，持續 `temperatures.length` 小時
             const [startHourStr] = tempRange.split(' - ')[0].split(':');
             const startHour = parseInt(startHourStr, 10);
             const hours = temperatures.map((_, index) => {
@@ -325,7 +390,6 @@
                 return `${hour < 10 ? '0' : ''}${hour}:00`;
             });
             
-            // 找出最高溫和最低溫及其索引
             const maxTemp = Math.max(...temperatures);
             const minTemp = Math.min(...temperatures);
             const dailyIcon = getWeatherIcon(weather);
@@ -376,8 +440,7 @@
         
         // 單一行程卡片
         const TripCard = ({ event, index }) => {
-            // 修正：移除 class 設置中的不正確的反引號或未定義變數
-            const cardInnerClass = 'rounded-2xl overflow-hidden mb-12 mx-4';
+            const cardInnerClass = 'rounded-2xl overflow-hidden mb-8 mx-4'; // 優化手機間距
             
             return (
                 <div className={`glass-light card-shadow ${cardInnerClass}`}>
@@ -398,19 +461,12 @@
                                         {event.transport_note && <p>🚄 {event.transport_note}</p>}
                                     </div>
                                 )}
-                                
-                                {/* 建議出發時間 */}
-                                {event.suggested_departure && (
-                                    <p className="text-xs text-gray-500 mt-2">
-                                        建議出發時間: {event.suggested_departure}
-                                    </p>
-                                )}
                             </div>
                             
                             {/* 右側連結 (若有) */}
                             {event.link && (
-                                <a href={event.link} target="_blank" className="ml-4 flex-shrink-0 text-sm font-medium text-indigo-500 hover:text-indigo-600 transition duration-150">
-                                    查看地圖 &rarr;
+                                <a href={event.link} target="_blank" className="ml-4 flex-shrink-0 text-sm font-medium text-indigo-500 hover:text-indigo-600 transition duration-150 p-2 border border-indigo-200 rounded-lg whitespace-nowrap">
+                                    查看地圖 →
                                 </a>
                             )}
                         </div>
@@ -420,7 +476,9 @@
         };
 
         // 每日行程總覽
-        const DailyItinerary = ({ dayData, isDark }) => {
+        const DailyItinerary = ({ dayData, isDark, dayIndex }) => {
+            const [dailyMemo, setDailyMemo] = useLocalStorageState(`dailyMemo_${dayIndex}`, '');
+            
             const textColor = isDark ? 'text-white' : 'text-gray-800';
             const subTextColor = isDark ? 'text-gray-300' : 'text-gray-600';
             const iconColor = isDark ? 'text-yellow-300' : 'text-indigo-700';
@@ -443,7 +501,7 @@
                         {/* 每日氣溫顯示 (Icon + 溫度) */}
                         <div className={`mt-3 flex items-center text-lg font-semibold ${textColor}`}>
                              <span className={`text-3xl mr-2 ${iconColor}`}>{dailyIcon}</span>
-                             {dayData.weather}
+                             <span className="capitalize">{dayData.weather}</span>
                              <span className="ml-4 text-red-500">↑{maxTemp}°</span> 
                              <span className="ml-2 text-blue-500">↓{minTemp}°</span>
                         </div>
@@ -469,16 +527,19 @@
                         />
                     </div>
 
-                    {/* 每日備註 */}
-                    {dayData.memo && (
-                        <div className="mx-4 mb-6 p-3 bg-yellow-50 rounded-xl shadow-md border border-yellow-200">
-                            <p className="text-sm font-semibold text-yellow-700 flex items-center">
-                                <span className="text-lg mr-2">🔔</span>
-                                每日提醒:
-                            </p>
-                            <p className="mt-1 text-sm text-yellow-600">{dayData.memo}</p>
-                        </div>
-                    )}
+                    {/* 每日備註 (自訂輸入區) */}
+                    <div className="mx-4 mb-6 p-3 bg-fuchsia-50 rounded-xl shadow-md border border-fuchsia-200">
+                        <p className="text-sm font-semibold text-fuchsia-700 flex items-center mb-2">
+                            <span className="text-lg mr-2">📝</span>
+                            您的每日備註 (可輸入):
+                        </p>
+                        <textarea 
+                            className="w-full p-2 border rounded-lg h-20 text-gray-800 text-sm focus:ring-fuchsia-500 focus:border-fuchsia-500"
+                            placeholder={dayData.memo || "今天有什麼需要特別注意的事項？"}
+                            value={dailyMemo}
+                            onChange={(e) => setDailyMemo(e.target.value)}
+                        />
+                    </div>
 
                     {/* 行程列表 */}
                     <section className="space-y-4">
@@ -540,7 +601,7 @@
                         <p className="text-gray-700">使用日期: {item.date}</p>
                         <p className="text-gray-600">類型: {item.type}</p>
                         <a href={item.link} target="_blank" className="text-xs text-red-500 hover:underline">
-                            點擊查看票券/QR Code &rarr;
+                            點擊查看票券/QR Code →
                         </a>
                     </div>
                 );
@@ -560,29 +621,148 @@
                 );
             };
 
-            // 渲染分帳工具
+            // 渲染分帳工具 (已加入輸入和簡單加總邏輯)
             const renderSplit = () => {
+                const [expenses, setExpenses] = useLocalStorageState('splitExpenses', [
+                    { name: '機票 (TPE-NGO/NRT-TPE)', amount: 120000, paidBy: 'Sophie' },
+                    { name: '名古屋飯店 (2晚)', amount: 28000, paidBy: 'Li' },
+                    { name: '富士山飯店 (2晚)', amount: 35000, paidBy: 'Sophie' },
+                    { name: '東京飯店 (4晚)', amount: 56000, paidBy: 'Li' },
+                ]);
+                const [notes, setNotes] = useLocalStorageState('splitNotes', '可在此處記錄匯率變動、特殊分帳比例等資訊。');
+                
+                const handleExpenseChange = (index, field, value) => {
+                    const newExpenses = [...expenses];
+                    newExpenses[index][field] = field === 'amount' ? parseInt(value) || 0 : value;
+                    setExpenses(newExpenses);
+                };
+
+                const handleAddExpense = () => {
+                    setExpenses([...expenses, { name: '', amount: 0, paidBy: 'Sophie' }]);
+                };
+
+                const handleRemoveExpense = (index) => {
+                    const newExpenses = expenses.filter((_, i) => i !== index);
+                    setExpenses(newExpenses);
+                };
+                
+                const totalJPY = expenses.reduce((sum, item) => sum + item.amount, 0);
+                const totalTWD = (totalJPY * DEFAULT_RATE).toFixed(0);
+                const owedMap = expenses.reduce((map, item) => {
+                    const half = item.amount / 2;
+                    if (item.paidBy === 'Sophie') {
+                        map.Sophie -= half;
+                        map.Li += half;
+                    } else if (item.paidBy === 'Li') {
+                        map.Li -= half;
+                        map.Sophie += half;
+                    }
+                    return map;
+                }, { Sophie: 0, Li: 0 });
+
+                const getSettlementMessage = () => {
+                    const sophieOwed = owedMap.Sophie * DEFAULT_RATE;
+                    const liOwed = owedMap.Li * DEFAULT_RATE;
+
+                    if (sophieOwed > 0) {
+                        return `Sophie 應付 Li：約 ${sophieOwed.toFixed(0)} TWD`;
+                    } else if (liOwed > 0) {
+                        return `Li 應付 Sophie：約 ${liOwed.toFixed(0)} TWD`;
+                    }
+                    return '費用已平衡';
+                };
+                
+
                 return (
                     <div className="p-4 pt-8">
                         <div className="mb-8 glass-light card-shadow rounded-2xl p-4">
                             <h3 className="text-xl font-bold mb-3 text-indigo-700 border-b pb-2">分帳工具 (費用追蹤)</h3>
-                            <p className="text-sm text-gray-600 mb-4">此處為分帳功能設計預留位置。可整合外部 App 或自行加入表格。</p>
+                            <p className="text-sm text-gray-600 mb-4">資料會**自動儲存**在您的瀏覽器中。請按 **+ 新增** 輸入費用。</p>
                             
                             {/* 匯率資訊 */}
                             <div className="text-sm bg-blue-50 p-3 rounded-lg mb-4">
-                                <p className="font-semibold text-blue-700">當前參考匯率</p>
-                                <p className="text-blue-600">1 JPY ≈ {DEFAULT_RATE} TWD</p>
+                                <p className="font-semibold text-blue-700">當前參考匯率: 1 JPY ≈ {DEFAULT_RATE} TWD</p>
                             </div>
 
-                            {/* 費用項目示範 */}
-                            <div className="space-y-2">
-                                <h4 className="font-semibold mt-4">費用追蹤示範</h4>
-                                <div className="grid grid-cols-2 gap-4 text-sm font-medium">
-                                    <p>項目</p><p className="text-right">金額 (JPY)</p>
-                                    <p className="text-gray-700">Day 1 鰻魚飯</p><p className="text-right text-gray-700">7,500</p>
-                                    <p className="text-gray-700">Day 2 地鐵券</p><p className="text-right text-gray-700">1,200</p>
-                                    <p className="font-bold border-t pt-2">總計 (示範)</p><p className="font-bold text-right border-t pt-2">8,700</p>
+                            {/* 費用項目輸入區 */}
+                            <div className="space-y-3">
+                                <h4 className="font-semibold mt-4 text-gray-800">費用清單 (2人平均分攤)</h4>
+                                
+                                <div className="grid grid-cols-5 gap-2 text-xs font-medium border-b pb-1 text-gray-600">
+                                    <p className="col-span-2">項目</p>
+                                    <p className="text-right">金額 (JPY)</p>
+                                    <p className="text-center">付款人</p>
+                                    <p className="text-right">移除</p>
                                 </div>
+                                
+                                {expenses.map((expense, index) => (
+                                    <div key={index} className="grid grid-cols-5 gap-2 items-center text-sm">
+                                        <input 
+                                            type="text" 
+                                            placeholder="項目名稱"
+                                            value={expense.name}
+                                            onChange={(e) => handleExpenseChange(index, 'name', e.target.value)}
+                                            className="expense-input col-span-2 text-left"
+                                            style={{ textAlign: 'left', padding: '6px 8px' }}
+                                        />
+                                        <input 
+                                            type="number" 
+                                            placeholder="金額"
+                                            value={expense.amount}
+                                            onChange={(e) => handleExpenseChange(index, 'amount', e.target.value)}
+                                            className="expense-input"
+                                        />
+                                        <select
+                                            value={expense.paidBy}
+                                            onChange={(e) => handleExpenseChange(index, 'paidBy', e.target.value)}
+                                            className="expense-input text-sm p-1"
+                                            style={{ textAlign: 'center' }}
+                                        >
+                                            <option value="Sophie">Sophie</option>
+                                            <option value="Li">Li</option>
+                                        </select>
+                                        <button 
+                                            onClick={() => handleRemoveExpense(index)}
+                                            className="text-red-500 hover:text-red-700 text-lg font-bold p-1"
+                                        >
+                                            <span className="text-base">🗑️</span>
+                                        </button>
+                                    </div>
+                                ))}
+                                
+                                <button 
+                                    onClick={handleAddExpense} 
+                                    className="w-full mt-4 p-2 text-sm font-semibold text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition-colors"
+                                >
+                                    + 新增費用
+                                </button>
+                            </div>
+                            
+                            {/* 總計與結算 */}
+                            <div className="mt-6 pt-4 border-t border-gray-200 space-y-2">
+                                <p className="font-bold text-gray-800 flex justify-between">
+                                    <span>總計金額 (JPY)</span>
+                                    <span>¥{totalJPY.toLocaleString()}</span>
+                                </p>
+                                <p className="font-bold text-gray-800 flex justify-between">
+                                    <span>總計金額 (TWD)</span>
+                                    <span>約 NT${totalTWD}</span>
+                                </p>
+                                
+                                <div className="p-3 bg-green-100 rounded-lg font-semibold text-green-800 text-center text-sm mt-3">
+                                    結算建議 (TWD): {getSettlementMessage()}
+                                </div>
+                            </div>
+
+                             {/* 備註區塊 (可輸入) */}
+                            <div className="mt-6">
+                                <h4 className="font-semibold mb-2 text-gray-800">備註/計算說明 (可輸入)</h4>
+                                <textarea 
+                                    className="w-full p-3 border rounded-lg h-24 text-gray-800 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                                    placeholder="記錄匯率、分帳比例或其他事項..."
+                                    value={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
+                                ></textarea>
                             </div>
                         </div>
                     </div>
@@ -594,12 +774,22 @@
                 <div className="p-4 pt-8">
                     <div className="mb-8 glass-light card-shadow rounded-2xl p-4">
                         <h3 className="text-xl font-bold mb-3 text-indigo-700 border-b pb-2">即時翻譯 (Placeholder)</h3>
-                        <p className="text-sm text-gray-600">此處可嵌入 Google Translate 或 DeepL 等工具的 Widget，方便即時溝通。</p>
+                        <p className="text-sm text-gray-600 mb-4">此處可作為翻譯輸入介面，方便即時溝通。</p>
+                        
+                        <h4 className="font-semibold text-sm mb-1">中文輸入</h4>
                         <textarea 
-                            className="w-full mt-4 p-3 border rounded-lg h-32 text-gray-800 focus:ring-indigo-500 focus:border-indigo-500"
-                            placeholder="輸入中文或日文進行翻譯..."
-                            disabled
+                            className="w-full p-3 border rounded-lg h-20 text-gray-800 focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="輸入中文..."
                         ></textarea>
+                        
+                        <h4 className="font-semibold text-sm mt-4 mb-1">日文輸出</h4>
+                        <textarea 
+                            className="w-full p-3 border rounded-lg h-20 text-gray-800 bg-gray-50"
+                            placeholder="翻譯結果將顯示在此..."
+                            readOnly
+                        ></textarea>
+                        
+                        <p className="text-xs text-gray-500 mt-4">提示：在旅途中，您可以直接使用手機的 Google 翻譯或 DeepL 應用程式進行即時翻譯和語音對話。</p>
                     </div>
                 </div>
             );
@@ -609,7 +799,7 @@
             const renderContent = () => {
                 switch (activeTab) {
                     case 'itinerary':
-                        return <DailyItinerary dayData={currentDayData} isDark={isDark} />;
+                        return <DailyItinerary dayData={currentDayData} isDark={isDark} dayIndex={activeDayIndex} />;
                     case 'tools':
                         return renderTools();
                     case 'split':
@@ -617,16 +807,16 @@
                     case 'translate':
                         return renderTranslate();
                     default:
-                        return <DailyItinerary dayData={currentDayData} isDark={isDark} />;
+                        return <DailyItinerary dayData={currentDayData} isDark={isDark} dayIndex={activeDayIndex} />;
                 }
             };
             
-            // 修正：將 Top Bar 的切換箭頭替換為文字或標準符號，避免引用錯誤 (IconArrowLeft)
+            // 導航箭頭 (使用文字符號優化，避免引用錯誤)
             const NavArrow = ({ direction, onClick, disabled }) => (
                 <button 
                     onClick={onClick} 
                     disabled={disabled}
-                    className={`p-2 rounded-full transition-colors duration-200 ${
+                    className={`p-2 rounded-full transition-colors duration-200 text-lg font-bold ${
                         disabled 
                             ? 'text-gray-400 cursor-not-allowed' 
                             : 'text-indigo-600 hover:bg-indigo-100'
@@ -686,8 +876,10 @@
             );
         };
         
-        // 修正 React 18 警告：但由於環境限制，繼續使用 ReactDOM.render (這會觸發警告，但可以運行)
-        ReactDOM.render(<App />, document.getElementById('root'));
+        // 使用 createRoot 渲染 (React 18 建議)
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<App />);
 
     </script>
 </body>
