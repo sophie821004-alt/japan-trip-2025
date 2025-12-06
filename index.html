@@ -67,16 +67,48 @@
             outline: none;
             border-color: #4f46e5; /* indigo-600 */
         }
+
+        /* 修正：將左右邊距 mx-6 改為 mx-4 (更適合手機)，並維持 mb-12 間距 */
+        .card-container {
+            margin-left: 1rem; /* mx-4 */
+            margin-right: 1rem; /* mx-4 */
+            margin-bottom: 3rem; /* mb-12 */
+        }
     </style>
 </head>
 <body class="bg-[#FBF9F2] text-gray-800 antialiased">
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useMemo } = React;
+        const { useState, useEffect, useMemo, useCallback } = React;
         
         const TRAVELERS = ['Sophie', 'Li'];
-        const DEFAULT_RATE = 0.22; // 匯率佔位符
+        
+        // --- Custom Hook: useLocalStorageState (離線儲存核心) ---
+        // 這個 Hook 確保資料儲存在瀏覽器，即使離線或重開機，資料仍存在。
+        const useLocalStorageState = (key, defaultValue) => {
+            const [state, setState] = useState(() => {
+                try {
+                    const value = localStorage.getItem(key);
+                    if (value) {
+                        return JSON.parse(value);
+                    }
+                } catch (error) {
+                    console.error("Error reading localStorage key “" + key + "”:", error);
+                }
+                return defaultValue;
+            });
+
+            useEffect(() => {
+                try {
+                    localStorage.setItem(key, JSON.stringify(state));
+                } catch (error) {
+                    console.error("Error writing localStorage key “" + key + "”:", error);
+                }
+            }, [key, state]);
+
+            return [state, setState];
+        };
         
         // --- DATA SOURCE & CONFIGS ---
 
@@ -111,19 +143,19 @@
                 { name: "報警", phone: "110" },
                 { name: "救護車", phone: "119" }
             ],
-            // 電子票券/QR Code 區域 (請自行替換為您的實際連結)
+            // 電子票券/QR Code 區域 
             tickets: [
                 { 
                     name: "Shibuya Sky 展望台門票", 
                     date: "12/25", 
                     type: "QR Code/PDF", 
-                    link: "https://www.klook.com/zh-TW/activity/37777-shibuya-sky-tokyo/" // Klook 連結佔位
+                    link: "https://www.klook.com/zh-TW/activity/37777-shibuya-sky-tokyo/" 
                 },
                 { 
                     name: "富士急樂園通票", 
                     date: "12/23", 
                     type: "Barcode/Link", 
-                    link: "https://www.fujiq.jp/en/ticket/index.html" // 富士急樂園通票官網
+                    link: "https://www.fujiq.jp/en/ticket/index.html" 
                 },
                 {
                     name: "Harbs 蛋糕兌換券", 
@@ -137,7 +169,6 @@
         const THEME_COLOR = 'bg-[#FBF9F2]'; 
         const themeConfig = {
             city: { isDark: false, url: null, fallbackColor: THEME_COLOR },
-            // ... 其他主題配置
             default: { isDark: false, url: null, fallbackColor: THEME_COLOR }
         };
 
@@ -155,7 +186,7 @@
         const createMapLink = (query) => MAP_BASE_URL + encodeURIComponent(query);
 
 
-        const tripData = [
+        const initialTripData = [
             // Day 1 (12/20) - 名古屋抵達
             {
                 day: 1, date: "12/20 (Sat)", location: "Nagoya", weather: "sunny",
@@ -278,545 +309,72 @@
                     { time: "晚餐", title: "晚餐：溫泉周邊或返回上野", type: "food", event_note: "享用晚餐後返回飯店", link: createMapLink('押上+晚餐推薦') }
                 ]
             },
-            // Day 8 (12/27) - Ricoland (東雲) 與新宿採購 🛍️ (已修正 Ricoland 地點與順序)
+            // Day 8 (12/27) - Ricoland (東雲) 與新宿採購 🛍️
             { 
                 day: 8, date: "12/27 (Sat)", location: "Tokyo Shinonome & Shinjuku", weather: "sunny", 
                 temperature: [7, 9, 11, 13, 12, 10, 8, 7], 
                 temp_hour_range: "10:00 - 18:00", 
-                daily_pass: "Suica/Pasmo 卡", 
-                memo: "Day 8 備註：最後採購日。上午先前往 Ricoland，再前往新宿用餐及購物。", 
+                daily_pass: "東京地鐵一日券", 
+                memo: "Day 8 備註：Ricoland 在東雲，請安排好交通時間。", 
                 events: [
                     { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo+早餐') },
-                    { 
-                        time: "09:00", 
-                        title: "Ricoland Tokyo Bay (機車用品店)", 
-                        type: "shopping", 
-                        transport_note: "JR 至新橋轉臨海線至東雲站 (Shinonome)，約 40 分鐘。或搭乘計程車/巴士。", 
-                        event_note: "地址: 2-chōme-7-12 Shinonome, Koto City. 營業時間: 10:00–20:00 (週六)。請預留交通時間。", 
-                        link: createMapLink('Ricoland Tokyo Bay Shinonome') // 修正為正確搜尋連結
-                    },
-                    { 
-                        time: "12:00", 
-                        title: "午餐：木曾路 (新宿三丁目店)", 
-                        type: "food", 
-                        transport_note: "從東雲站搭乘臨海線轉 JR 至新宿三丁目站", 
-                        event_note: "享用壽喜燒/懷石料理，需確認預約", 
-                        link: createMapLink('木曾路 新宿三丁目店') 
-                    },
-                    { 
-                        time: "14:30", 
-                        title: "新宿站周邊逛街", 
-                        type: "shopping", 
-                        event_note: "逛伊勢丹、高島屋或新宿東口一帶的藥妝/百貨", 
-                        link: createMapLink('新宿東口+百貨公司') 
-                    },
-                    { time: "晚餐", title: "晚餐：新宿或返回上野 (最後一晚)", type: "food", event_note: "最後一晚晚餐，可以選擇喜歡的餐廳", link: createMapLink('新宿+晚餐推薦') },
-                    { time: "20:00", title: "回飯店整理行李", type: "leisure", event_note: "準備隔日登機", link: createMapLink('Land About Tokyo') }
+                    { time: "10:00", title: "Ricoland Tokyo Bay", type: "shopping", transport_note: "地鐵至東雲站 (Shinonome)", event_note: "摩托車用品店", link: createMapLink('Ricoland Tokyo Bay') },
+                    { time: "午餐", title: "午餐：木曾路 (新宿三丁目店)", type: "food", event_note: "您指定的餐廳", link: createMapLink('木曾路 新宿三丁目店') },
+                    { time: "14:30", title: "新宿逛街購物", type: "shopping", event_note: "採買藥妝、服飾、紀念品等", link: createMapLink('新宿逛街購物推薦') },
+                    { time: "晚餐", title: "晚餐：新宿周邊 (自由選擇)", type: "food", event_note: "在新宿站附近用餐", link: createMapLink('新宿晚餐推薦') },
+                    { time: "晚上", title: "返回飯店整理行李", type: "accommodation", event_note: "打包購買的商品，準備隔日Check-out", link: createMapLink('Land About Tokyo') }
                 ]
             },
-            // Day 9 (12/28) - 啟程返家 ✈️
+            // Day 9 (12/28) - 飯店Check-out & 成田機場回程 ✈️
             { 
-                day: 9, date: "12/28 (Sun)", location: "Departure", weather: "cloudy", 
-                temperature: [6, 8, 10, 11, 10, 9, 8, 7], 
+                day: 9, date: "12/28 (Sun)", location: "Narita / Departure", weather: "sunny", 
+                temperature: [5, 7, 10, 12, 11, 9, 7, 5], 
                 temp_hour_range: "09:00 - 17:00", 
-                daily_pass: "京成電鐵或巴士 (飯店 -> 成田機場)", 
-                memo: "Day 9 備註：提早 3 小時抵達 NRT 機場。請確認 Land About Tokyo 的退房時間。", 
+                daily_pass: "Skyliner/N'EX 往成田機場", 
+                memo: "Day 9 備註：請提早前往成田機場，預留 Check-in 與購物時間。", 
                 events: [
-                    { time: "11:00", title: "Land About Tokyo Check-out", type: "accommodation", event_note: "確認退房手續，打包行李", link: createMapLink('Land About Tokyo') },
-                    { time: "12:00", title: "前往 NRT 機場", type: "transport", transport_note: "京成電鐵 Access Express 或 Skyliner (從日暮里/上野出發)", event_note: "根據班機時間預留充足交通時間", link: createMapLink('成田機場+第一航廈') },
-                    { time: "13:35", title: "NRT T1 Check-in", type: "transport", event_note: "樂桃 MM625 (請務必再次確認起飛時間 16:35)", link: createMapLink('成田機場+第一航廈+樂桃航空') },
-                    { time: "16:35", title: "成田 (NRT) ✈️ 桃園 (TPE)", type: "transport", event_note: "回程班機資訊，旅程結束！", link: createMapLink('桃園國際機場') }
+                    { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo+早餐') },
+                    { time: "10:00", title: "Check-out & 前往機場", type: "transport", transport_note: "JR/Skyliner/N'EX 至成田機場 (NRT)", event_note: "務必預留至少 2.5 小時交通時間", link: createMapLink('成田機場 NRT') },
+                    { time: "13:00", title: "成田機場 Check-in", type: "transport", transport_note: "樂桃航空櫃台 (MM625)", event_note: "預留時間辦理登機與託運", link: createMapLink('成田機場T1 樂桃櫃台') },
+                    { time: "14:00", title: "午餐與機場免稅購物", type: "shopping", event_note: "在機場內享用最後的日式餐點並採買伴手禮", link: createMapLink('成田機場T1 免稅店') },
+                    { time: "16:35", title: "成田 (NRT) ✈️ 桃園 (TPE)", type: "transport", transport_note: "樂桃 MM625", event_note: "登機與啟程回國", link: "" }
                 ]
             }
         ];
 
-        // --- ICON UTILITIES ---
-
-        // 1. 天氣 Icon 轉換器
-        const getWeatherIcon = (weather) => {
-            switch (weather.toLowerCase()) {
-                case 'sunny': return '☀️'; // 晴天
-                case 'cloudy': return '☁️'; // 陰天
-                case 'rain': return '🌧️';  // 雨天
-                case 'thunderstorm': return '⛈️'; // 雷雨
-                case 'snow': return '❄️';   // 雪
-                default: return '🌤️';      // 多雲/未知
-            }
-        };
-
-        // 2. 事件 Icon 轉換器
-        const getEventIcon = (type) => {
-            switch (type) {
-                case 'food': return '🍽️';
-                case 'sight': return '🏯';
-                case 'shopping': return '🛍️';
-                case 'transport': return '🚄';
-                case 'accommodation': return '🏨';
-                case 'leisure': return '☕';
-                case 'amusement': return '🎡'; // 新增樂園 Icon
-                default: return '📍';
-            }
-        };
-
-        // --- COMPONENTS ---
-        
-        // **********************************************
-        // 狀態管理：使用 localStorage 儲存備註和分帳資料
-        // **********************************************
-        const useLocalStorageState = (key, defaultValue) => {
-            const [state, setState] = useState(() => {
-                const storedValue = localStorage.getItem(key);
-                try {
-                    return storedValue ? JSON.parse(storedValue) : defaultValue;
-                } catch {
-                    return defaultValue; // 若解析失敗，使用預設值
-                }
-            });
-
-            useEffect(() => {
-                try {
-                    localStorage.setItem(key, JSON.stringify(state));
-                } catch (e) {
-                    console.error("Error writing to localStorage:", e);
-                }
-            }, [key, state]);
-
-            return [state, setState];
-        };
-        
-        // 溫度/天氣預報圖表
-        const TemperatureChart = ({ temperatures, tempRange, weather }) => {
-            if (!temperatures || temperatures.length === 0) return null;
-
-            const [startHourStr] = tempRange.split(' - ')[0].split(':');
-            const startHour = parseInt(startHourStr, 10);
-            const hours = temperatures.map((_, index) => {
-                const hour = (startHour + index) % 24;
-                return `${hour < 10 ? '0' : ''}${hour}:00`;
-            });
-            
-            const maxTemp = Math.max(...temperatures);
-            const minTemp = Math.min(...temperatures);
-            const dailyIcon = getWeatherIcon(weather);
-
-            return (
-                <div className="p-4 bg-white/70 rounded-2xl shadow-inner mb-6 glass-light">
-                    {/* 頂部溫度範圍和整體天氣 */}
-                    <div className="flex justify-between items-center mb-4 border-b pb-2 border-gray-100">
-                        <span className="text-sm font-medium text-gray-700 flex items-center">
-                            <span className="text-lg mr-2">{dailyIcon}</span> 
-                            今日溫度變化 ({tempRange})
-                        </span>
-                        <span className="text-sm font-semibold">
-                            <span className="text-red-600">↑{maxTemp}°C</span> / <span className="text-blue-600">↓{minTemp}°C</span>
-                        </span>
-                    </div>
-
-                    {/* 小時預報網格 */}
-                    <div className="flex justify-between overflow-x-auto hide-scrollbar">
-                        {hours.map((hour, index) => {
-                            const temp = temperatures[index];
-                            const isMax = temp === maxTemp;
-                            const isMin = temp === minTemp;
-
-                            return (
-                                <div key={index} className="flex flex-col items-center flex-shrink-0 mx-2 sm:mx-0" style={{ width: '12%' }}>
-                                    {/* 天氣 Icon (暫用每日主要天氣 Icon) */}
-                                    <div className="text-2xl mb-1 opacity-80">{dailyIcon}</div> 
-                                    
-                                    {/* 溫度值 */}
-                                    <div className={`text-sm font-semibold ${
-                                        isMax ? 'text-red-600' : 
-                                        isMin ? 'text-blue-600' : 
-                                        'text-gray-700'
-                                    }`}>
-                                        {temp}°
-                                    </div>
-                                    
-                                    {/* 時間標籤 */}
-                                    <div className="text-xs text-gray-500 mt-1">{hour.replace(':00', '')}</div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            );
-        };
-        
-        // 單一行程卡片
-        const TripCard = ({ event, index }) => {
-            const cardInnerClass = 'rounded-2xl overflow-hidden mb-8 mx-4'; // 優化手機間距
-            
-            return (
-                <div className={`glass-light card-shadow ${cardInnerClass}`}>
-                    <div className="p-4">
-                        <div className="flex justify-between items-start">
-                            {/* 左側時間與主要資訊 */}
-                            <div className="flex-1 min-w-0">
-                                <p className="text-2xl font-bold text-indigo-700 date-style">{event.time}</p>
-                                <h3 className="text-lg font-semibold text-gray-800 mt-1 flex items-center">
-                                    <span className="mr-2 text-2xl">{getEventIcon(event.type)}</span>
-                                    {event.title}
-                                </h3>
-                                
-                                {/* 備註/說明 */}
-                                {(event.event_note || event.transport_note) && (
-                                    <div className="mt-2 text-sm text-gray-600 space-y-1">
-                                        {event.event_note && <p>🗒️ {event.event_note}</p>}
-                                        {event.transport_note && <p>🚄 {event.transport_note}</p>}
-                                    </div>
-                                )}
-                            </div>
-                            
-                            {/* 右側連結 (若有) */}
-                            {event.link && (
-                                <a href={event.link} target="_blank" className="ml-4 flex-shrink-0 text-sm font-medium text-indigo-500 hover:text-indigo-600 transition duration-150 p-2 border border-indigo-200 rounded-lg whitespace-nowrap">
-                                    查看地圖 →
-                                </a>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        // 每日行程總覽
-        const DailyItinerary = ({ dayData, isDark, dayIndex }) => {
-            const [dailyMemo, setDailyMemo] = useLocalStorageState(`dailyMemo_${dayIndex}`, '');
-            
-            const textColor = isDark ? 'text-white' : 'text-gray-800';
-            const subTextColor = isDark ? 'text-gray-300' : 'text-gray-600';
-            const iconColor = isDark ? 'text-yellow-300' : 'text-indigo-700';
-
-            const maxTemp = Math.max(...(dayData.temperature || []));
-            const minTemp = Math.min(...(dayData.temperature || []));
-            const dailyIcon = getWeatherIcon(dayData.weather);
-
-            return (
-                <main className="min-h-screen pb-16">
-                    {/* 頂部日期與城市資訊 */}
-                    <header className="px-4 pt-8 pb-4">
-                        <h1 className={`text-4xl font-bold ${textColor} date-style mb-2`}>
-                            DAY {dayData.day}
-                        </h1>
-                        <h2 className={`text-xl font-medium ${subTextColor}`}>
-                            {dayData.date} | {dayData.location}
-                        </h2>
-                        
-                        {/* 每日氣溫顯示 (Icon + 溫度) */}
-                        <div className={`mt-3 flex items-center text-lg font-semibold ${textColor}`}>
-                             <span className={`text-3xl mr-2 ${iconColor}`}>{dailyIcon}</span>
-                             <span className="capitalize">{dayData.weather}</span>
-                             <span className="ml-4 text-red-500">↑{maxTemp}°</span> 
-                             <span className="ml-2 text-blue-500">↓{minTemp}°</span>
-                        </div>
-                    </header>
-
-                    {/* 交通票券提示 */}
-                    {dayData.daily_pass && (
-                         <div className="mx-4 mb-6 p-3 bg-indigo-50 rounded-xl shadow-md border border-indigo-200">
-                             <p className="text-sm font-semibold text-indigo-700 flex items-center">
-                                 <span className="text-lg mr-2">🎫</span>
-                                 建議交通套票:
-                             </p>
-                             <p className="mt-1 text-sm text-indigo-600">{dayData.daily_pass}</p>
-                         </div>
-                    )}
-
-                    {/* 溫度預報圖表 */}
-                    <div className="px-4">
-                        <TemperatureChart 
-                            temperatures={dayData.temperature} 
-                            tempRange={dayData.temp_hour_range}
-                            weather={dayData.weather}
-                        />
-                    </div>
-
-                    {/* 每日備註 (自訂輸入區) */}
-                    <div className="mx-4 mb-6 p-3 bg-fuchsia-50 rounded-xl shadow-md border border-fuchsia-200">
-                        <p className="text-sm font-semibold text-fuchsia-700 flex items-center mb-2">
-                            <span className="text-lg mr-2">📝</span>
-                            您的每日備註 (可輸入):
-                        </p>
-                        <textarea 
-                            className="w-full p-2 border rounded-lg h-20 text-gray-800 text-sm focus:ring-fuchsia-500 focus:border-fuchsia-500"
-                            placeholder={dayData.memo || "今天有什麼需要特別注意的事項？"}
-                            value={dailyMemo}
-                            onChange={(e) => setDailyMemo(e.target.value)}
-                        />
-                    </div>
-
-                    {/* 行程列表 */}
-                    <section className="space-y-4">
-                        {dayData.events.map((event, index) => (
-                            <TripCard key={index} event={event} index={index} />
-                        ))}
-                    </section>
-                </main>
-            );
-        };
-
-        // --- MAIN APP ---
-
+        // --- App Component ---
         const App = () => {
-            const [activeDayIndex, setActiveDayIndex] = useState(0); // 預設顯示 Day 1
-            const [activeTab, setActiveTab] = useState('itinerary');
-            
-            const totalDays = tripData.length;
-            const currentDayData = tripData[activeDayIndex];
-            
-            const backgroundConfig = getBackgroundStyle(currentDayData.theme);
-            const isDark = backgroundConfig.isDark;
+            const [activeTab, setActiveTab] = useLocalStorageState('activeTab', 'itinerary');
+            const [currentDayIndex, setCurrentDayIndex] = useLocalStorageState('currentDayIndex', 0);
+            const [tripDatas, setTripDatas] = useLocalStorageState('tripDatas', initialTripData);
 
-            // 處理日期切換
-            const nextDay = () => setActiveDayIndex((prev) => Math.min(prev + 1, totalDays - 1));
-            const prevDay = () => setActiveDayIndex((prev) => Math.min(prev - 1, 0));
+            // --- 分帳系統狀態 (移至 App Top Level 修正 Hooks 錯誤) ---
+            const initialExpenses = [
+                { id: 1, name: '機票 (TPE-NGO/NRT-TPE)', amount: 120000, paidBy: 'Sophie' },
+                { id: 2, name: '名古屋 VIA INN (2晚)', amount: 15000, paidBy: 'Li' },
+                { id: 3, name: 'MYSTAYS 富士山 (2晚)', amount: 20000, paidBy: 'Sophie' },
+                { id: 4, name: 'Land About Tokyo (4晚)', amount: 45000, paidBy: 'Li' },
+                { id: 5, name: '富士急樂園通票 (2人)', amount: 14000, paidBy: 'Sophie' },
+            ];
 
-            // 渲染工具頁面
-            const renderTools = () => {
-                const renderSection = (title, data, renderItem) => (
-                    <div className="mb-8 glass-light card-shadow rounded-2xl p-4">
-                        <h3 className="text-xl font-bold mb-3 text-indigo-700 border-b pb-2">{title}</h3>
-                        <div className="space-y-3">
-                            {data.map(renderItem)}
-                        </div>
-                    </div>
-                );
+            const [expenses, setExpenses] = useLocalStorageState('splitExpenses', initialExpenses);
+            const [notes, setNotes] = useLocalStorageState('splitNotes', '可在此處記錄匯率變動、特殊分帳比例等資訊。');
+            const [exchangeRate, setExchangeRate] = useLocalStorageState('exchangeRate', 0.22); // 新增匯率狀態
 
-                const renderFlight = (item, index) => (
-                    <div key={index} className="text-sm p-2 border-l-4 border-indigo-400 pl-3 bg-gray-50 rounded-md">
-                        <p className="font-semibold">{item.leg} ({item.code})</p>
-                        <p className="text-gray-600">{item.time}</p>
-                        <p className="text-xs text-gray-500">機場: {item.airport}</p>
-                    </div>
-                );
+            const currentDayData = tripDatas[currentDayIndex];
+            const maxDay = tripDatas.length;
 
-                const renderHotel = (item, index) => (
-                    <div key={index} className="text-sm p-2 border-l-4 border-green-400 pl-3 bg-gray-50 rounded-md">
-                        <p className="font-semibold text-green-700">{item.name}</p>
-                        <p className="text-gray-700">入住日期: {item.dates}</p>
-                        <p className="text-gray-600">地址: {item.address}</p>
-                        <p className="text-xs text-gray-500">電話: {item.phone}</p>
-                    </div>
-                );
-
-                const renderTicket = (item, index) => (
-                    <div key={index} className="text-sm p-2 border-l-4 border-red-400 pl-3 bg-gray-50 rounded-md">
-                        <p className="font-semibold text-red-700">{item.name}</p>
-                        <p className="text-gray-700">使用日期: {item.date}</p>
-                        <p className="text-gray-600">類型: {item.type}</p>
-                        <a href={item.link} target="_blank" className="text-xs text-red-500 hover:underline">
-                            點擊查看票券/QR Code →
-                        </a>
-                    </div>
-                );
-
-                return (
-                    <div className="p-4 pt-8">
-                        {renderSection("航班資訊", toolsData.flights, renderFlight)}
-                        {renderSection("住宿資訊", toolsData.hotels, renderHotel)}
-                        {renderSection("電子票券/QR Codes", toolsData.tickets, renderTicket)}
-                        {renderSection("緊急連絡資訊", toolsData.emergency, (item, index) => (
-                            <div key={index} className="text-sm p-2 border-l-4 border-orange-400 pl-3 bg-gray-50 rounded-md">
-                                <p className="font-semibold">{item.name}</p>
-                                <a href={`tel:${item.phone}`} className="text-orange-600 hover:underline">{item.phone}</a>
-                            </div>
-                        ))}
-                    </div>
-                );
-            };
-
-            // 渲染分帳工具 (已加入輸入和簡單加總邏輯)
-            const renderSplit = () => {
-                const [expenses, setExpenses] = useLocalStorageState('splitExpenses', [
-                    { name: '機票 (TPE-NGO/NRT-TPE)', amount: 120000, paidBy: 'Sophie' },
-                    { name: '名古屋飯店 (2晚)', amount: 28000, paidBy: 'Li' },
-                    { name: '富士山飯店 (2晚)', amount: 35000, paidBy: 'Sophie' },
-                    { name: '東京飯店 (4晚)', amount: 56000, paidBy: 'Li' },
-                ]);
-                const [notes, setNotes] = useLocalStorageState('splitNotes', '可在此處記錄匯率變動、特殊分帳比例等資訊。');
-                
-                const handleExpenseChange = (index, field, value) => {
-                    const newExpenses = [...expenses];
-                    newExpenses[index][field] = field === 'amount' ? parseInt(value) || 0 : value;
-                    setExpenses(newExpenses);
+            // 處理每日備註的更新
+            const updateDailyMemo = useCallback((newMemo) => {
+                const newTripDatas = [...tripDatas];
+                newTripDatas[currentDayIndex] = {
+                    ...newTripDatas[currentDayIndex],
+                    memo: newMemo,
                 };
+                setTripDatas(newTripDatas);
+            }, [tripDatas, currentDayIndex, setTripDatas]);
 
-                const handleAddExpense = () => {
-                    setExpenses([...expenses, { name: '', amount: 0, paidBy: 'Sophie' }]);
-                };
-
-                const handleRemoveExpense = (index) => {
-                    const newExpenses = expenses.filter((_, i) => i !== index);
-                    setExpenses(newExpenses);
-                };
-                
-                const totalJPY = expenses.reduce((sum, item) => sum + item.amount, 0);
-                const totalTWD = (totalJPY * DEFAULT_RATE).toFixed(0);
-                const owedMap = expenses.reduce((map, item) => {
-                    const half = item.amount / 2;
-                    if (item.paidBy === 'Sophie') {
-                        map.Sophie -= half;
-                        map.Li += half;
-                    } else if (item.paidBy === 'Li') {
-                        map.Li -= half;
-                        map.Sophie += half;
-                    }
-                    return map;
-                }, { Sophie: 0, Li: 0 });
-
-                const getSettlementMessage = () => {
-                    const sophieOwed = owedMap.Sophie * DEFAULT_RATE;
-                    const liOwed = owedMap.Li * DEFAULT_RATE;
-
-                    if (sophieOwed > 0) {
-                        return `Sophie 應付 Li：約 ${sophieOwed.toFixed(0)} TWD`;
-                    } else if (liOwed > 0) {
-                        return `Li 應付 Sophie：約 ${liOwed.toFixed(0)} TWD`;
-                    }
-                    return '費用已平衡';
-                };
-                
-
-                return (
-                    <div className="p-4 pt-8">
-                        <div className="mb-8 glass-light card-shadow rounded-2xl p-4">
-                            <h3 className="text-xl font-bold mb-3 text-indigo-700 border-b pb-2">分帳工具 (費用追蹤)</h3>
-                            <p className="text-sm text-gray-600 mb-4">資料會**自動儲存**在您的瀏覽器中。請按 **+ 新增** 輸入費用。</p>
-                            
-                            {/* 匯率資訊 */}
-                            <div className="text-sm bg-blue-50 p-3 rounded-lg mb-4">
-                                <p className="font-semibold text-blue-700">當前參考匯率: 1 JPY ≈ {DEFAULT_RATE} TWD</p>
-                            </div>
-
-                            {/* 費用項目輸入區 */}
-                            <div className="space-y-3">
-                                <h4 className="font-semibold mt-4 text-gray-800">費用清單 (2人平均分攤)</h4>
-                                
-                                <div className="grid grid-cols-5 gap-2 text-xs font-medium border-b pb-1 text-gray-600">
-                                    <p className="col-span-2">項目</p>
-                                    <p className="text-right">金額 (JPY)</p>
-                                    <p className="text-center">付款人</p>
-                                    <p className="text-right">移除</p>
-                                </div>
-                                
-                                {expenses.map((expense, index) => (
-                                    <div key={index} className="grid grid-cols-5 gap-2 items-center text-sm">
-                                        <input 
-                                            type="text" 
-                                            placeholder="項目名稱"
-                                            value={expense.name}
-                                            onChange={(e) => handleExpenseChange(index, 'name', e.target.value)}
-                                            className="expense-input col-span-2 text-left"
-                                            style={{ textAlign: 'left', padding: '6px 8px' }}
-                                        />
-                                        <input 
-                                            type="number" 
-                                            placeholder="金額"
-                                            value={expense.amount}
-                                            onChange={(e) => handleExpenseChange(index, 'amount', e.target.value)}
-                                            className="expense-input"
-                                        />
-                                        <select
-                                            value={expense.paidBy}
-                                            onChange={(e) => handleExpenseChange(index, 'paidBy', e.target.value)}
-                                            className="expense-input text-sm p-1"
-                                            style={{ textAlign: 'center' }}
-                                        >
-                                            <option value="Sophie">Sophie</option>
-                                            <option value="Li">Li</option>
-                                        </select>
-                                        <button 
-                                            onClick={() => handleRemoveExpense(index)}
-                                            className="text-red-500 hover:text-red-700 text-lg font-bold p-1"
-                                        >
-                                            <span className="text-base">🗑️</span>
-                                        </button>
-                                    </div>
-                                ))}
-                                
-                                <button 
-                                    onClick={handleAddExpense} 
-                                    className="w-full mt-4 p-2 text-sm font-semibold text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition-colors"
-                                >
-                                    + 新增費用
-                                </button>
-                            </div>
-                            
-                            {/* 總計與結算 */}
-                            <div className="mt-6 pt-4 border-t border-gray-200 space-y-2">
-                                <p className="font-bold text-gray-800 flex justify-between">
-                                    <span>總計金額 (JPY)</span>
-                                    <span>¥{totalJPY.toLocaleString()}</span>
-                                </p>
-                                <p className="font-bold text-gray-800 flex justify-between">
-                                    <span>總計金額 (TWD)</span>
-                                    <span>約 NT${totalTWD}</span>
-                                </p>
-                                
-                                <div className="p-3 bg-green-100 rounded-lg font-semibold text-green-800 text-center text-sm mt-3">
-                                    結算建議 (TWD): {getSettlementMessage()}
-                                </div>
-                            </div>
-
-                             {/* 備註區塊 (可輸入) */}
-                            <div className="mt-6">
-                                <h4 className="font-semibold mb-2 text-gray-800">備註/計算說明 (可輸入)</h4>
-                                <textarea 
-                                    className="w-full p-3 border rounded-lg h-24 text-gray-800 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                                    placeholder="記錄匯率、分帳比例或其他事項..."
-                                    value={notes}
-                                    onChange={(e) => setNotes(e.target.value)}
-                                ></textarea>
-                            </div>
-                        </div>
-                    </div>
-                );
-            };
-
-            // 渲染即時翻譯 (Placeholder)
-            const renderTranslate = () => (
-                <div className="p-4 pt-8">
-                    <div className="mb-8 glass-light card-shadow rounded-2xl p-4">
-                        <h3 className="text-xl font-bold mb-3 text-indigo-700 border-b pb-2">即時翻譯 (Placeholder)</h3>
-                        <p className="text-sm text-gray-600 mb-4">此處可作為翻譯輸入介面，方便即時溝通。</p>
-                        
-                        <h4 className="font-semibold text-sm mb-1">中文輸入</h4>
-                        <textarea 
-                            className="w-full p-3 border rounded-lg h-20 text-gray-800 focus:ring-indigo-500 focus:border-indigo-500"
-                            placeholder="輸入中文..."
-                        ></textarea>
-                        
-                        <h4 className="font-semibold text-sm mt-4 mb-1">日文輸出</h4>
-                        <textarea 
-                            className="w-full p-3 border rounded-lg h-20 text-gray-800 bg-gray-50"
-                            placeholder="翻譯結果將顯示在此..."
-                            readOnly
-                        ></textarea>
-                        
-                        <p className="text-xs text-gray-500 mt-4">提示：在旅途中，您可以直接使用手機的 Google 翻譯或 DeepL 應用程式進行即時翻譯和語音對話。</p>
-                    </div>
-                </div>
-            );
-
-
-            // 主內容渲染
-            const renderContent = () => {
-                switch (activeTab) {
-                    case 'itinerary':
-                        return <DailyItinerary dayData={currentDayData} isDark={isDark} dayIndex={activeDayIndex} />;
-                    case 'tools':
-                        return renderTools();
-                    case 'split':
-                        return renderSplit();
-                    case 'translate':
-                        return renderTranslate();
-                    default:
-                        return <DailyItinerary dayData={currentDayData} isDark={isDark} dayIndex={activeDayIndex} />;
-                }
-            };
-            
-            // 導航箭頭 (使用文字符號優化，避免引用錯誤)
+            // 導航箭頭元件
             const NavArrow = ({ direction, onClick, disabled }) => (
                 <button 
                     onClick={onClick} 
@@ -831,62 +389,468 @@
                 </button>
             );
 
+            // --- TAB COMPONENTS ---
 
-            return (
-                <div className={`min-h-screen ${backgroundConfig.className}`} style={backgroundConfig.style}>
-                    {/* Fixed Tab Navigation */}
-                    <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm shadow-md">
-                        {/* Tab Bar */}
-                        <div className="flex justify-around text-center border-b border-gray-200 text-sm font-medium">
-                            {[
-                                { id: 'itinerary', label: '每日行程' },
-                                { id: 'tools', label: '機票/住宿' },
-                                { id: 'split', label: '分帳工具' },
-                                { id: 'translate', label: '即時翻譯' }
-                            ].map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`py-3 flex-1 transition-colors duration-200 ${
-                                        activeTab === tab.id
-                                            ? 'text-indigo-600 border-b-2 border-indigo-600'
-                                            : 'text-gray-500 hover:text-indigo-500'
-                                    }`}
-                                >
-                                    {tab.label}
-                                </button>
+            // 每日行程總覽
+            const DailyItinerary = ({ dayData, dayIndex, updateDailyMemo }) => {
+                // 每日備註 Hook 獨立於此元件，確保每次切換日期時能正確載入/儲存
+                const [dailyMemo, setDailyMemo] = useLocalStorageState(`dailyMemo_${dayIndex}`, dayData.memo);
+
+                useEffect(() => {
+                    // 當外部 tripDatas (即初始數據) 改變時，更新 dailyMemo 狀態
+                    // 這裡讓狀態與 useLocalStorageState 同步，但實際儲存仍透過 useLocalStorageState
+                    setDailyMemo(dayData.memo);
+                }, [dayData.memo]);
+
+                const handleMemoChange = (e) => {
+                    const newMemo = e.target.value;
+                    setDailyMemo(newMemo);
+                    updateDailyMemo(newMemo); // 將變更傳遞給 App state
+                };
+
+                const background = getBackgroundStyle(dayData.location);
+
+                // 單一行程卡片
+                const TripCard = ({ event }) => {
+                    const cardInnerClass = 'rounded-2xl overflow-hidden mb-8 mx-4';
+                    
+                    const TypeIcon = ({ type }) => {
+                        switch (type) {
+                            case 'transport': return <span className="text-xl">✈️</span>;
+                            case 'sight': return <span className="text-xl">⛩️</span>;
+                            case 'food': return <span className="text-xl">🍜</span>;
+                            case 'shopping': return <span className="text-xl">🛍️</span>;
+                            case 'accommodation': return <span className="text-xl">🏨</span>;
+                            case 'amusement': return <span className="text-xl">🎢</span>;
+                            case 'leisure': return <span className="text-xl">🛀</span>;
+                            default: return <span className="text-xl">📍</span>;
+                        }
+                    };
+
+                    return (
+                        <div className={`card-container glass-light card-shadow`}>
+                            <div className="p-4">
+                                <div className="flex justify-between items-start">
+                                    <div className="flex items-center space-x-3">
+                                        <TypeIcon type={event.type} />
+                                        <div>
+                                            <div className="text-xs text-gray-500 font-medium">{event.time}</div>
+                                            <div className="text-lg font-bold text-gray-800 leading-tight">{event.title}</div>
+                                        </div>
+                                    </div>
+                                    {event.link && (
+                                        <a href={event.link} target="_blank" rel="noopener noreferrer" 
+                                           className="text-indigo-600 hover:text-indigo-800 p-2 rounded-full transition-colors"
+                                           title="地圖/連結 (離線無法開啟)">
+                                            🔗
+                                        </a>
+                                    )}
+                                </div>
+                                
+                                {(event.transport_note || event.event_note) && (
+                                    <div className="mt-3 pt-3 border-t border-gray-100 space-y-2 text-sm text-gray-600">
+                                        {event.transport_note && (
+                                            <div className="flex items-start">
+                                                <span className="font-semibold w-16 flex-shrink-0 text-indigo-500">交通：</span>
+                                                <span className="flex-1">{event.transport_note}</span>
+                                            </div>
+                                        )}
+                                        {event.event_note && (
+                                            <div className="flex items-start">
+                                                <span className="font-semibold w-16 flex-shrink-0 text-green-600">備註：</span>
+                                                <span className="flex-1">{event.event_note}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    );
+                };
+
+                return (
+                    <div className={background.className} style={background.style}>
+                        <header className="px-4 py-4 sticky top-0 bg-white/90 backdrop-blur-sm z-10 border-b border-gray-100">
+                            <h2 className="text-2xl font-bold text-indigo-700 date-style">{dayData.date}</h2>
+                            <p className="text-sm text-gray-600 mt-1">地點：{dayData.location}</p>
+                            <p className="text-xs text-gray-500 mt-1">
+                                {dayData.temperature.length > 0 && 
+                                    `天氣：${dayData.weather} | 氣溫變化 (${dayData.temp_hour_range})：${dayData.temperature.join('° / ')}°`
+                                }
+                            </p>
+                            {dayData.daily_pass && (
+                                <div className="mt-2 p-2 bg-indigo-50 border-l-4 border-indigo-400 text-sm text-indigo-800">
+                                    **建議交通套票**：{dayData.daily_pass}
+                                </div>
+                            )}
+                        </header>
+
+                        <section className="p-4">
+                            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded-lg shadow-sm mb-6 mx-4">
+                                <h3 className="font-semibold text-yellow-800 mb-2">每日提醒與備註 (可編輯，離線儲存)</h3>
+                                <textarea
+                                    value={dailyMemo}
+                                    onChange={handleMemoChange}
+                                    className="w-full p-2 text-sm text-gray-700 bg-white border border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500 h-20"
+                                    placeholder="輸入本日重要提醒..."
+                                />
+                            </div>
+                        </section>
+
+                        <section className="space-y-4 pt-2 pb-16">
+                            {dayData.events.map((event, index) => (
+                                <TripCard key={index} event={event} />
                             ))}
+                        </section>
+                    </div>
+                );
+            };
+
+            // 交通住宿頁面
+            const renderTools = () => {
+                const ToolSection = ({ title, data, renderItem }) => (
+                    <div className="mb-8">
+                        <h3 className="text-xl font-bold text-indigo-700 mb-3 border-b-2 border-indigo-200 pb-1">{title}</h3>
+                        <div className="space-y-3">
+                            {data.map((item, index) => renderItem(item, index))}
+                        </div>
+                    </div>
+                );
+
+                return (
+                    <div className="p-4 pt-6 pb-20 bg-white min-h-screen">
+                        <h1 className="text-3xl font-extrabold text-gray-900 mb-6">🎫 機票、住宿與票券</h1>
+                        
+                        {/* 航班資訊 */}
+                        <ToolSection title="✈️ 航班資訊" data={toolsData.flights} 
+                            renderItem={(flight, index) => (
+                                <div key={index} className="glass-light p-4 rounded-lg shadow-md border border-gray-100">
+                                    <p className="text-lg font-semibold text-gray-800">{flight.leg}：{flight.code}</p>
+                                    <p className="text-sm text-gray-600 mt-1">{flight.time}</p>
+                                    <p className="text-xs text-gray-500">機場：{flight.airport}</p>
+                                </div>
+                            )}
+                        />
+
+                        {/* 住宿資訊 */}
+                        <ToolSection title="🏨 住宿資訊" data={toolsData.hotels}
+                            renderItem={(hotel, index) => (
+                                <div key={index} className="glass-light p-4 rounded-lg shadow-md border border-gray-100">
+                                    <p className="text-lg font-semibold text-indigo-600">{hotel.name}</p>
+                                    <p className="text-sm text-gray-600 mt-1">入住日期：{hotel.dates}</p>
+                                    <p className="text-sm text-gray-600">地址：{hotel.address}</p>
+                                    <p className="text-sm text-gray-600">電話：{hotel.phone}</p>
+                                </div>
+                            )}
+                        />
+
+                        {/* 電子票券/QR Code */}
+                        <ToolSection title="🎫 電子票券 & 預約" data={toolsData.tickets}
+                            renderItem={(ticket, index) => (
+                                <div key={index} className="glass-light p-4 rounded-lg shadow-md border border-gray-100 flex justify-between items-center">
+                                    <div>
+                                        <p className="text-lg font-semibold text-green-700">{ticket.name}</p>
+                                        <p className="text-sm text-gray-600">日期：{ticket.date} | 類型：{ticket.type}</p>
+                                    </div>
+                                    <a href={ticket.link} target="_blank" rel="noopener noreferrer" 
+                                       className="bg-green-100 text-green-700 font-bold py-2 px-4 rounded-full text-sm hover:bg-green-200 transition-colors"
+                                       title="點擊開啟 (離線無法開啟)">
+                                        連結/QR
+                                    </a>
+                                </div>
+                            )}
+                        />
+
+                        {/* 緊急聯絡 */}
+                        <ToolSection title="🚨 緊急聯絡方式" data={toolsData.emergency}
+                            renderItem={(contact, index) => (
+                                <div key={index} className="glass-light p-4 rounded-lg shadow-md border border-gray-100">
+                                    <p className="text-lg font-semibold text-red-600">{contact.name}</p>
+                                    <p className="text-sm text-gray-600">電話：<a href={`tel:${contact.phone}`} className="text-blue-600 underline">{contact.phone}</a></p>
+                                </div>
+                            )}
+                        />
+                    </div>
+                );
+            };
+
+            // 分帳工具頁面 (已修正所有 Hooks 錯誤)
+            const renderSplit = () => {
+                // 費用計算邏輯
+                const calculations = useMemo(() => {
+                    const totalJPY = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+                    const totalTWD = (totalJPY * exchangeRate).toFixed(0);
+                    const halfJPY = totalJPY / TRAVELERS.length;
+                    const halfTWD = (halfJPY * exchangeRate).toFixed(0);
+
+                    const paidTotals = TRAVELERS.reduce((acc, traveler) => ({ ...acc, [traveler]: 0 }), {});
+                    expenses.forEach(exp => {
+                        paidTotals[exp.paidBy] += exp.amount;
+                    });
+
+                    const settlement = TRAVELERS.map(traveler => {
+                        const paid = paidTotals[traveler];
+                        const diff = paid - halfJPY;
+                        return {
+                            traveler,
+                            paid: paid,
+                            shouldPay: halfJPY,
+                            diff: diff,
+                            diffTWD: (diff * exchangeRate).toFixed(0)
+                        };
+                    });
+
+                    // 計算結算訊息
+                    const giver = settlement.find(s => s.diff < 0); // 應付錢給對方的人 (支出較少)
+                    const receiver = settlement.find(s => s.diff > 0); // 應收錢的人 (支出較多)
+
+                    let settlementMessage = "支出已平衡。";
+
+                    if (giver && receiver) {
+                        const amountToTransferJPY = Math.abs(giver.diff).toFixed(0);
+                        const amountToTransferTWD = Math.abs(giver.diffTWD);
+
+                        settlementMessage = (
+                            <>
+                                **{giver.traveler}** 應轉帳給 **{receiver.traveler}**：
+                                <span className="font-extrabold text-red-600 ml-2">{amountToTransferJPY} JPY</span> 
+                                (約 **{amountToTransferTWD} TWD**)
+                            </>
+                        );
+                    }
+
+                    return {
+                        totalJPY, totalTWD, halfJPY, halfTWD, settlement, settlementMessage
+                    };
+                }, [expenses, exchangeRate]);
+
+                const { totalJPY, totalTWD, halfJPY, halfTWD, settlement, settlementMessage } = calculations;
+
+                // 費用操作函數
+                const handleExpenseChange = (id, field, value) => {
+                    setExpenses(prev => 
+                        prev.map(exp => exp.id === id ? { ...exp, [field]: value } : exp)
+                    );
+                };
+
+                const addExpense = () => {
+                    const newId = Math.max(...expenses.map(exp => exp.id), 0) + 1;
+                    setExpenses(prev => [...prev, { id: newId, name: '', amount: 0, paidBy: TRAVELERS[0] }]);
+                };
+
+                const removeExpense = (id) => {
+                    setExpenses(prev => prev.filter(exp => exp.id !== id));
+                };
+
+                // 分帳項目元件
+                const ExpenseItem = ({ exp }) => (
+                    <div className="glass-light p-4 rounded-lg shadow-md border border-gray-100">
+                        <div className="flex justify-between items-center mb-2">
+                            <input 
+                                type="text" 
+                                placeholder="項目名稱"
+                                value={exp.name} 
+                                onChange={(e) => handleExpenseChange(exp.id, 'name', e.target.value)}
+                                className="text-base font-semibold w-2/3 p-1 rounded border border-gray-200 focus:border-indigo-500"
+                            />
+                            <button onClick={() => removeExpense(exp.id)} className="text-red-500 hover:text-red-700 p-1">
+                                🗑️
+                            </button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                            <label className="text-gray-600 flex items-center">
+                                支付人:
+                                <select 
+                                    value={exp.paidBy} 
+                                    onChange={(e) => handleExpenseChange(exp.id, 'paidBy', e.target.value)}
+                                    className="ml-2 p-1 border rounded bg-white text-gray-700"
+                                >
+                                    {TRAVELERS.map(t => <option key={t} value={t}>{t}</option>)}
+                                </select>
+                            </label>
+                            <label className="text-gray-600 flex items-center justify-end">
+                                金額 (JPY):
+                                <input 
+                                    type="number" 
+                                    value={exp.amount === 0 ? '' : exp.amount} 
+                                    onChange={(e) => handleExpenseChange(exp.id, 'amount', parseInt(e.target.value) || 0)}
+                                    className="expense-input ml-2 w-20"
+                                    min="0"
+                                />
+                            </label>
+                        </div>
+                    </div>
+                );
+
+                return (
+                    <div className="p-4 pt-6 pb-20 bg-white min-h-screen">
+                        <h1 className="text-3xl font-extrabold text-gray-900 mb-6">💰 分帳工具</h1>
+
+                        {/* 匯率設定區 */}
+                        <div className="bg-indigo-50 p-4 rounded-lg shadow-md mb-6">
+                            <h3 className="text-lg font-bold text-indigo-800 mb-2 flex items-center">
+                                匯率設定 (JPY → TWD)
+                            </h3>
+                            <div className="flex items-center space-x-3 text-sm">
+                                <span className="font-medium text-gray-700">1 JPY 約等於：</span>
+                                <input
+                                    type="number"
+                                    value={exchangeRate}
+                                    onChange={(e) => setExchangeRate(parseFloat(e.target.value) || 0)}
+                                    className="expense-input w-24 bg-white border-indigo-400"
+                                    step="0.001"
+                                    min="0"
+                                />
+                                <span className="font-medium text-gray-700"> TWD</span>
+                            </div>
+                            <p className="text-xs text-indigo-600 mt-2">請在此輸入您使用的即時匯率，結算金額會自動更新。</p>
                         </div>
 
-                        {/* Day Navigation Bar (僅在行程頁面顯示) */}
-                        {activeTab === 'itinerary' && (
-                            <div className="flex justify-between items-center px-4 py-2 border-b border-gray-100">
-                                <span className="text-xs text-gray-500">Day Navigation:</span>
-                                <NavArrow direction="left" onClick={prevDay} disabled={activeDayIndex === 0} />
-                                <span className="text-base font-semibold text-gray-700">
-                                    DAY {currentDayData.day} / {totalDays}
-                                </span>
-                                <NavArrow direction="right" onClick={nextDay} disabled={activeDayIndex === totalDays - 1} />
+                        {/* 總結算區 */}
+                        <div className="bg-green-100 p-4 rounded-lg shadow-lg mb-8">
+                            <h3 className="text-xl font-bold text-green-800 mb-3">總結算</h3>
+                            <div className="space-y-2 text-sm font-medium">
+                                <div className="flex justify-between">
+                                    <span>總支出 (JPY):</span>
+                                    <span className="font-extrabold text-gray-900">{totalJPY.toLocaleString()} JPY</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>總支出 (TWD):</span>
+                                    <span className="font-extrabold text-green-700">{totalTWD.toLocaleString()} TWD</span>
+                                </div>
+                                <div className="flex justify-between border-t border-green-300 pt-2 mt-2">
+                                    <span>**平均每人應付 (JPY):**</span>
+                                    <span className="font-extrabold text-green-700">{halfJPY.toLocaleString(undefined, { maximumFractionDigits: 0 })} JPY</span>
+                                </div>
                             </div>
-                        )}
+                            
+                            <div className="mt-4 p-3 bg-white rounded-lg border border-green-300">
+                                <h4 className="text-md font-bold text-green-800">最終結算</h4>
+                                <p className="text-sm mt-1 text-gray-800 font-semibold">{settlementMessage}</p>
+                            </div>
+                        </div>
+
+                        {/* 詳細明細 */}
+                        <h2 className="text-2xl font-bold text-gray-900 mb-4">📝 費用明細 ({expenses.length} 筆)</h2>
+                        <div className="space-y-3">
+                            {expenses.map(exp => <ExpenseItem key={exp.id} exp={exp} />)}
+                        </div>
+
+                        <button 
+                            onClick={addExpense}
+                            className="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg mt-6 shadow-md hover:bg-indigo-700 transition-colors"
+                        >
+                            + 新增費用項目
+                        </button>
+                        
+                        {/* 備註區 */}
+                        <div className="mt-10 pt-4 border-t border-gray-200">
+                            <h2 className="text-2xl font-bold text-gray-900 mb-3">備註 (離線儲存)</h2>
+                            <textarea
+                                value={notes}
+                                onChange={(e) => setNotes(e.target.value)}
+                                className="w-full p-3 text-sm text-gray-700 bg-gray-50 border border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500 h-32"
+                                placeholder="輸入額外備註..."
+                            />
+                        </div>
+                    </div>
+                );
+            };
+
+            // 總覽
+            const renderContent = () => {
+                switch (activeTab) {
+                    case 'itinerary':
+                        return <DailyItinerary 
+                                    dayData={currentDayData} 
+                                    dayIndex={currentDayIndex}
+                                    updateDailyMemo={updateDailyMemo}
+                                />;
+                    case 'tools':
+                        return renderTools();
+                    case 'split':
+                        return renderSplit();
+                    default:
+                        return <DailyItinerary 
+                                    dayData={currentDayData} 
+                                    dayIndex={currentDayIndex} 
+                                    updateDailyMemo={updateDailyMemo}
+                                />;
+                }
+            };
+
+            return (
+                <div className="min-h-screen bg-[#FBF9F2]">
+                    {/* Header: 標題與導航 */}
+                    <div className="sticky top-0 bg-white/95 backdrop-blur-sm z-20 shadow-md">
+                        <div className="max-w-4xl mx-auto p-4 flex justify-between items-center border-b border-gray-100">
+                            <h1 className="text-xl font-extrabold text-indigo-700 tracking-wider">SL Japan Travel 2025</h1>
+                            <div className="text-sm text-gray-500">
+                                {activeTab === 'itinerary' ? `${currentDayData.location}` : '工具'}
+                            </div>
+                        </div>
+
+                        {/* Tabs 導航 */}
+                        <div className="max-w-4xl mx-auto flex justify-around p-2 border-b border-gray-100">
+                            <button 
+                                onClick={() => setActiveTab('itinerary')}
+                                className={`flex-1 py-2 text-center text-sm font-semibold transition-colors duration-200 ${
+                                    activeTab === 'itinerary' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-indigo-500'
+                                }`}
+                            >
+                                每日行程
+                            </button>
+                            <button 
+                                onClick={() => setActiveTab('tools')}
+                                className={`flex-1 py-2 text-center text-sm font-semibold transition-colors duration-200 ${
+                                    activeTab === 'tools' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-indigo-500'
+                                }`}
+                            >
+                                機票/住宿
+                            </button>
+                            <button 
+                                onClick={() => setActiveTab('split')}
+                                className={`flex-1 py-2 text-center text-sm font-semibold transition-colors duration-200 ${
+                                    activeTab === 'split' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-indigo-500'
+                                }`}
+                            >
+                                分帳工具
+                            </button>
+                        </div>
                     </div>
 
-                    {/* Content Area */}
-                    {renderContent()}
+                    {/* Content */}
+                    <div className="max-w-4xl mx-auto">
+                        {renderContent()}
+                    </div>
 
-                    {/* 頁腳 (可選) */}
-                    <footer className="py-4 text-center text-xs text-gray-400">
-                        © SL Japan Travel 2025 | Powered by Gemini
-                    </footer>
+                    {/* Itinerary Navigation (Sticky Footer) */}
+                    {activeTab === 'itinerary' && (
+                        <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-2xl z-30">
+                            <div className="max-w-4xl mx-auto p-3 flex justify-between items-center">
+                                <NavArrow 
+                                    direction="left"
+                                    onClick={() => setCurrentDayIndex(prev => Math.max(0, prev - 1))}
+                                    disabled={currentDayIndex === 0}
+                                />
+                                <div className="text-xl font-extrabold text-indigo-700 date-style">
+                                    DAY {currentDayIndex + 1} / {maxDay}
+                                </div>
+                                <NavArrow 
+                                    direction="right"
+                                    onClick={() => setCurrentDayIndex(prev => Math.min(maxDay - 1, prev + 1))}
+                                    disabled={currentDayIndex === maxDay - 1}
+                                />
+                            </div>
+                        </div>
+                    )}
                 </div>
             );
         };
-        
-        // 使用 createRoot 渲染 (React 18 建議)
+
         const container = document.getElementById('root');
         const root = ReactDOM.createRoot(container);
         root.render(<App />);
-
     </script>
 </body>
 </html>
