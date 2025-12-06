@@ -10,7 +10,7 @@
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Playfair+Display:wght{700}&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     
     <style>
         /* 基礎樣式和字體 */
@@ -145,7 +145,7 @@
                 temperature: [8, 10, 12, 14, 13, 11, 9, 8], 
                 temp_hour_range: "10:00 - 18:00",
                 daily_pass: "名鐵單程票 (機場到飯店) + 名古屋地鐵週末環保票 (Donichi Eco Kippu, 600 JPY)",
-                memo: "Day 1 備註：請確保名鐵特急車票已購買。", // 新增 Memo
+                memo: "Day 1 備註：請確保名鐵特急車票已購買。**剛到日本先換好網卡。**", // 示範備註
                 events: [
                     { time: "09:00", title: "桃園 (TPE) ✈️ 名古屋 (NGO)", type: "transport", transport_note: "虎航 IT206 (請自行確認登機時間)", event_note: "Check-in & 出境 | D1 班機資訊", link: "" },
                     { time: "14:00", title: "抵達名古屋 NGO & 前往飯店", type: "hotel", suggested_departure: "14:00", transport_note: "名鐵特急/準急 -> 步行 | 約 40-50 分鐘", event_note: "VIA INN 名古屋站前椿町 | 入境通關、放行李", link: "https://goo.gl/maps/viainnugoya" },
@@ -163,7 +163,7 @@
                 temperature: [7, 8, 9, 11, 13, 12, 10, 9],
                 temp_hour_range: "10:00 - 18:00",
                 daily_pass: "名鐵犬山城下町套票 (Inuyama Castle Ticket) + 名古屋地鐵週末環保票 (Donichi Eco Kippu, 600 JPY)",
-                memo: "犬山城套票包含城池入場券，請妥善保管。", // 新增 Memo
+                memo: "犬山城套票包含城池入場券，請妥善保管。**穿好走的鞋子**。", // 示範備註
                 events: [
                     { time: "09:00", title: "犬山城下町 & 三光稻荷神社", type: "sight", suggested_departure: "08:20", transport_note: "名鐵犬山線 MuSKY (特急) | 約 40-50 分鐘", event_note: "【可愛粉紅鳥居】參觀日本現存最古老的天守閣之一，並在下町品嚐美食、逛街。", nearby_suggestions: ["戀小町糰子", "飛驒牛握壽司"], link: "https://goo.gl/maps/inuyamacastle" },
                     { time: "13:00", title: "前往名古屋城", type: "transport", suggested_departure: "11:50", transport_note: "名鐵小牧線/上飯田線/名城線 (轉乘一次) | 約 1 小時 10 分鐘 (含轉乘)", event_note: "從犬山站出發。交通券換入場券?", link: "https://goo.gl/maps/nagoyacastle" },
@@ -177,7 +177,7 @@
                 temperature: [5, 7, 9, 11, 10, 8, 7, 6],
                 temp_hour_range: "09:00 - 17:00",
                 daily_pass: "無套票建議 (短途 Meitetsu 單程票 + 新幹線/高速巴士)",
-                memo: "午餐鰻魚飯建議預約。新幹線和巴士車票需提前購買。", // 新增 Memo
+                memo: "午餐鰻魚飯建議預約。新幹線和巴士車票需提前購買。",
                 events: [
                     { 
                         time: "08:30", 
@@ -201,7 +201,7 @@
                 temperature: [-2, 0, 2, 4, 6, 5, 3, 2],
                 temp_hour_range: "09:00 - 17:00",
                 daily_pass: "富士山周遊巴士套票 (Kawaguchiko Sightseeing Bus Pass) - 1700 JPY/2 days",
-                memo: "富士急樂園全日遊，注意保暖。建議先玩高人氣設施。", // 新增 Memo
+                memo: "富士急樂園全日遊，注意保暖。建議先玩高人氣設施。",
                 events: [
                     { time: "09:00", title: "富士急樂園 (Fuji-Q Highland)", type: "sight", suggested_departure: "08:30", transport_note: "河口湖周遊巴士 (紅線/綠線) 或步行", event_note: "【尖叫系主題樂園】擁有多項世界紀錄級的雲霄飛車，如高飛車、FUJIYAMA等。", tags: ["刺激", "主題樂園"], link: "https://goo.gl/maps/fujiqhighland" }
                 ]
@@ -212,7 +212,7 @@
                 temperature: [1, 3, 5, 7, 8, 6, 4, 3],
                 temp_hour_range: "07:00 - 15:00",
                 daily_pass: "富士山周遊巴士套票 (Kawaguchiko Sightseeing Bus Pass) - 第二日使用",
-                memo: "新倉山淺間公園需爬山，請穿著舒適。六本木/晴空塔有聖誕活動。", // 新增 Memo
+                memo: "新倉山淺間公園需爬山，請穿著舒適。六本木/晴空塔有聖誕活動。",
                 events: [
                     { time: "07:30", title: "新倉山淺間公園", type: "sight", suggested_departure: "07:00", transport_note: "建議自駕/計程車/富士急行線 (下吉田站)", event_note: "【富士山經典視角】爬上 398 階的「忠靈塔」。", tags: ["絕景"], link: "https://goo.gl/maps/arakurayama" },
                     { time: "11:00", title: "天上山公園 (Ropeway) & 午餐", type: "sight", suggested_departure: "10:30", transport_note: "河口湖周遊巴士 (紅線) | 天上山公園纜車", event_note: "【狸貓與兔子傳說】可俯瞰河口湖和富士山全景。", link: "https://goo.gl/maps/kachiropeway" },
@@ -227,7 +227,7 @@
                 temperature: [3, 5, 7, 9, 10, 8, 6, 4],
                 temp_hour_range: "09:00 - 17:00",
                 daily_pass: "JR 東京都市地區周遊券 (Tokunai Pass, 760 JPY) 或 Suica/Pasmo",
-                memo: "Shibuya Sky 需預約門票 (16:00 時段)。", // 新增 Memo
+                memo: "Shibuya Sky 需預約門票 (16:00 時段)。**這是今天的重頭戲，不要遲到！**", // 示範備註
                 events: [
                     { time: "09:00", title: "明治神宮", type: "sight", suggested_departure: "08:40", transport_note: "JR 山手線 | 從鶯谷/上野出發約 20 分鐘", event_note: "【東京都市綠洲】供奉明治天皇與昭憲皇太后的神宮。", link: "https://goo.gl/maps/meijishrine" },
                     { time: "12:00", title: "Sports Shop Gallery 2 (逛街)", type: "shop", suggested_departure: "11:45", transport_note: "步行 | 從原宿/代代木至澀谷", event_note: "午餐時間彈性處理，此處為體育用品店逛街時間。", link: "https://goo.gl/maps/shibuyacrossing" },
@@ -242,7 +242,7 @@
                 temperature: [2, 4, 6, 8, 9, 7, 5, 3],
                 temp_hour_range: "09:00 - 17:00",
                 daily_pass: "東京地鐵一日券 (Tokyo Subway 24-hour Ticket, 800 JPY) - 涵蓋 Metro 和 Toei",
-                memo: "淺草今半午間套餐較划算。押上溫泉 (大黑湯) 營業時間注意。", // 新增 Memo
+                memo: "淺草今半午間套餐較划算。押上溫泉 (大黑湯) 營業時間注意。",
                 events: [
                     { time: "09:00", title: "淺草雷門", type: "sight", suggested_departure: "08:40", transport_note: "地鐵銀座線/都營淺草線 | 從上野/鶯谷出發", event_note: "【東京下町文化】標誌性的大燈籠，走過仲見世通，終點是淺草寺。", nearby_suggestions: ["淺草文化觀光中心", "隅田公園"], link: "https://goo.gl/maps/kaminarimon" },
                     { time: "11:30", title: "午餐: 淺草今半", type: "food", suggested_departure: "11:25", transport_note: "步行 | 淺草站周邊", event_note: "【老字號壽喜燒】午間套餐價格實惠。", tags: ["高CP值"], link: "https://goo.gl/maps/asakusaimahan" },
@@ -256,7 +256,7 @@
                 temperature: [4, 6, 8, 10, 9, 7, 5, 4],
                 temp_hour_range: "10:00 - 18:00",
                 daily_pass: "東京地鐵一日券 (Tokyo Subway 24-hour Ticket, 800 JPY) 或 Suica/Pasmo",
-                memo: "Ricoland 較遠，需預留交通時間。晚餐考慮新宿高島屋美食街。", // 新增 Memo
+                memo: "Ricoland 較遠，需預留交通時間。晚餐考慮新宿高島屋美食街。",
                 events: [
                     { time: "10:00", title: "Ricoland Tokyo Bay (重機用品)", type: "shop", suggested_departure: "09:20", transport_note: "地鐵有樂町線/百合鷗線 (新橋轉乘) | 目的地：東雲站 | 約 40 分鐘", event_note: "【騎士必訪聖地】東京灣地區的大型重機用品店。", tags: ["騎士必逛"], link: "https://goo.gl/maps/ricoland" },
                     { time: "13:00", title: "午餐: 木曽路", type: "food", suggested_departure: "12:00", transport_note: "地鐵/JR | 從東雲站返回新宿，約 1 小時", event_note: "木曽路(新宿三丁目店) Shabu Shabu / 壽喜燒", link: "https://goo.gl/maps/kisoji" },
@@ -269,7 +269,7 @@
                 temperature: [3, 5, 7, 9, 11, 10, 8, 6],
                 temp_hour_range: "09:00 - 17:00",
                 daily_pass: "JR Narita Express (N'EX) / Skyliner / Suica 單程票 (至機場)",
-                memo: "回程班機為 MM625，請務必在 14:00 前抵達 NRT T1 辦理登機。", // 新增 Memo
+                memo: "回程班機為 MM625，請務必在 14:00 前抵達 NRT T1 辦理登機。",
                 events: [
                     { time: "10:00", title: "前往成田機場 (NRT)", type: "transport", suggested_departure: "10:00", transport_note: "JR Narita Express (N'EX) or Skyliner | 約 1 小時 20 分鐘 (從新宿/上野)", event_note: "預留充裕時間至第一航廈 (T1)", link: "https://goo.gl/maps/naritaairport" },
                     { time: "14:30", title: "機場 Check-in & 午餐", type: "transport", suggested_departure: "13:00", transport_note: "機場報到", event_note: "櫃台報到，行李托運。", link: "" },
@@ -336,32 +336,35 @@
                             <Icon type="weather" className="mr-2" />
                             今日溫度變化 ({temp_hour_range})
                         </span>
-                        <span>
-                            <Icon type="temp_up" size="w-3 h-3" className="inline mr-1 text-red-500" />
+                        {/* 簡化且突顯最高/低溫，加上圖示 */}
+                        <span className="flex items-center text-base font-bold">
+                            <Icon type="temp_up" size="w-4 h-4" className="inline mr-1 text-red-500" />
                             {maxTemp}°C / 
-                            <Icon type="temp_down" size="w-3 h-3" className="inline ml-2 mr-1 text-blue-500" />
+                            <Icon type="temp_down" size="w-4 h-4" className="inline ml-2 mr-1 text-blue-500" />
                             {minTemp}°C
                         </span>
                     </div>
                     
-                    <div className="flex justify-between items-end h-16 space-x-1">
+                    {/* 簡化後的長條圖 (移除底部時間標籤) */}
+                    <div className="flex justify-around items-end h-12 space-x-2 px-2 border-t pt-2">
                         {temperature.map((temp, index) => {
-                            // Normalize the temperature for chart height (0 to 100%)
-                            const normalizedHeight = range > 0 ? ((temp - minTemp) / range) * 80 + 20 : 50; // min 20%, max 100%
+                            // Normalize the temperature for chart height (Min 10%, Max 90%)
+                            const normalizedHeight = range > 0 ? ((temp - minTemp) / range) * 80 + 10 : 50; 
                             const isMax = temp === maxTemp;
                             const isMin = temp === minTemp;
 
                             return (
                                 <div key={index} className="flex flex-col items-center w-full">
-                                    <span className={`text-xs mb-1 font-medium ${isMax ? 'text-red-500' : isMin ? 'text-blue-500' : 'text-gray-600'}`}>{temp}°</span>
+                                    {/* 頂部溫度值 */}
+                                    <span className={`text-xs font-medium ${isMax ? 'text-red-600' : isMin ? 'text-blue-600' : 'text-gray-700'}`}>{temp}°</span>
+                                    {/* 長條 */}
                                     <div 
-                                        className="w-1.5 rounded-full transition-all duration-500"
+                                        className="w-2.5 rounded-t-lg transition-all duration-500 mt-1"
                                         style={{ 
                                             height: `${normalizedHeight}%`, 
-                                            backgroundColor: isMax ? '#ef4444' : isMin ? '#3b82f6' : '#9ca3af',
+                                            backgroundColor: isMax ? '#f87171' : isMin ? '#60a5fa' : '#a1a1aa',
                                         }}
                                     ></div>
-                                    <span className="text-[10px] text-gray-500 mt-1">{index * 2 + 8}h</span>
                                 </div>
                             );
                         })}
@@ -372,7 +375,8 @@
 
         // 3. 行程事件組件
         const EventItem = ({ event, index }) => {
-            const isLast = index === tripData[tripData.length - 1].events.length - 1;
+            // Check if this is the last event of the last day in tripData
+            const isLast = index === tripData[tripData.length - 1].events.length - 1 && dayData.day === tripData.length;
 
             return (
                 <div className="flex relative pb-8">
@@ -468,18 +472,16 @@
                                 <p className="text-sm text-gray-700">{dayData.daily_pass}</p>
                             </div>
 
-                            {/* ** Memo Block (New Position: After Daily Pass, Before Events) ** */}
+                            {/* MEMO BLOCK: 放在行程活動之前 (已達成用戶要求) */}
                             {dayData.memo && (
                                 <div className="mt-4 p-4 bg-yellow-50/70 glass-light rounded-xl card-shadow border border-yellow-200">
                                     <h3 className="flex items-center text-sm font-bold text-yellow-800 mb-2">
                                         <Icon type="warning" className="mr-2 text-yellow-600" />
-                                        備註 / 注意事項
+                                        備註 / 注意事項 (可自行編輯)
                                     </h3>
                                     <p className="text-sm text-yellow-800 font-medium">{dayData.memo}</p>
                                 </div>
                             )}
-                            {/* ** End Memo Block ** */}
-
 
                             {/* Events Timeline */}
                             <div className="mt-6 pl-2 pr-2">
@@ -595,20 +597,54 @@
                     const share = amountJPY / splitCount;
 
                     // 1. 付款人淨值增加 (收回支出)
-                    acc[paidBy] += amountJPY * rate; // 換算成 TWD
+                    // 淨值計算: 支付總額 - 自己的分攤額
+                    acc[paidBy] += (amountJPY - (splitAmong[paidBy] ? share : 0)) * rate; 
 
                     // 2. 分攤人淨值減少 (應付分攤)
                     participants.forEach(name => {
-                        acc[name] -= share * rate; // 換算成 TWD
+                        if (name !== paidBy) {
+                             acc[name] -= share * rate; // 換算成 TWD
+                        }
                     });
 
-                    // 3. 處理付款人也是分攤人的情況 (多扣了一次)
-                    if (splitAmong[paidBy]) {
-                        acc[paidBy] -= share * rate; // 修正：扣掉自己的分攤額
-                    }
+                    // 舊的邏輯比較複雜且容易錯，我們改用更簡潔的：
+                    // 每個人應分攤 share JPY，付款人收回的錢 = 總額 - 自己的分攤額。
+                    // 簡單來說，如果 A 支付了 1000 JPY，應分攤 500 JPY：
+                    // A 的淨值變化 = +1000 (支付) - 500 (應分攤) = +500 (應收)
+                    // B 的淨值變化 = -500 (應分攤)
 
-                    return acc;
-                }, initialBalances);
+                    // 重新計算 balances，確保邏輯正確
+                    const finalBalances = travelers.reduce((acc, name) => ({ ...acc, [name]: 0 }), {});
+                    expenses.forEach(expense => {
+                        const { amountJPY, paidBy, splitAmong } = expense;
+                        const participants = Object.keys(splitAmong).filter(name => splitAmong[name]);
+                        const splitCount = participants.length;
+
+                        if (splitCount === 0) return;
+
+                        const share = amountJPY / splitCount;
+
+                        travelers.forEach(name => {
+                            let netChange = 0;
+                            // 1. 付款人的淨值: 支付額 - 應分攤額
+                            if (name === paidBy) {
+                                netChange += amountJPY;
+                                if (splitAmong[name]) {
+                                    netChange -= share;
+                                }
+                            }
+                            // 2. 非付款人的淨值: 應分攤額 (負值)
+                            else if (splitAmong[name]) {
+                                netChange -= share;
+                            }
+                            
+                            finalBalances[name] += netChange * rate;
+                        });
+                    });
+                    
+                    return finalBalances;
+                }, initialBalances); // 這裡 initialBalances 沒用到，但為了符合 useState Hook 規範先留著
+
             }, [expenses, travelers, rate]);
 
             // --- 介面操作 ---
@@ -619,6 +655,13 @@
             };
 
             const handleSplitToggle = (name) => {
+                // 確保至少有一個人被選中
+                const currentParticipants = Object.keys(newExpense.splitAmong).filter(key => newExpense.splitAmong[key]);
+                if (currentParticipants.length === 1 && currentParticipants[0] === name) {
+                    alert('至少需要一位分攤人！');
+                    return;
+                }
+                
                 setNewExpense(prev => ({
                     ...prev,
                     splitAmong: {
@@ -631,8 +674,14 @@
             const handleAddExpense = (e) => {
                 e.preventDefault();
                 const amount = parseFloat(newExpense.amountJPY);
+                const participants = Object.keys(newExpense.splitAmong).filter(name => newExpense.splitAmong[name]);
+
                 if (newExpense.description.trim() === '' || isNaN(amount) || amount <= 0) {
                     alert('請輸入有效的費用說明和金額！');
+                    return;
+                }
+                if (participants.length === 0) {
+                    alert('請選擇至少一位分攤人！');
                     return;
                 }
 
@@ -673,18 +722,24 @@
                 const balance1 = balances[p1] || 0;
                 const balance2 = balances[p2] || 0;
 
-                if (Math.abs(balance1) < 0.1) {
+                const tolerance = 1; // NT$1 容忍度
+                const finalBalance = balance1 + balance2;
+                
+                // 檢查是否有計算錯誤，淨值總和應為 0
+                if (Math.abs(finalBalance) > 5) {
+                    return `<span class="text-red-500">警告：分帳總淨值異常 (${finalBalance.toFixed(0)} TWD)。請檢查記錄。</span>`;
+                }
+
+                if (Math.abs(balance1) < tolerance) {
                     return `目前兩人淨值平衡，無需結算。`;
                 } else if (balance1 > 0) {
-                    // P1 (Sophie) 付多了
+                    // P1 (Sophie) 應收回
                     const amountToReceive = Math.abs(balance1);
-                    const amountToPay = Math.abs(balance2);
                     return `**${p1}** 應收回 **${p2}** 支付的 **NT$ ${amountToReceive.toFixed(0)}** (淨額結算)。`;
                 } else {
-                    // P2 (Li) 付多了
+                    // P2 (Li) 應收回
                     const amountToReceive = Math.abs(balance2);
-                    const amountToPay = Math.abs(balance1);
-                    return `**${p2}** 應收回 **${p1}** 支付的 **NT$ ${amountToPay.toFixed(0)}** (淨額結算)。`;
+                    return `**${p2}** 應收回 **${p1}** 支付的 **NT$ ${amountToReceive.toFixed(0)}** (淨額結算)。`;
                 }
             }, [balances, travelers]);
 
@@ -692,9 +747,9 @@
             // --- 渲染組件 ---
 
             const BalanceCard = ({ name, balance }) => {
-                const isPositive = balance > 1;
-                const isNegative = balance < -1;
-                const isZero = Math.abs(balance) < 1;
+                const tolerance = 1;
+                const isPositive = balance > tolerance;
+                const isNegative = balance < -tolerance;
 
                 return (
                     <div className={`p-3 rounded-lg shadow-inner flex flex-col items-center 
@@ -870,10 +925,35 @@
 
         // 7. 主要應用程式 (App)
         const App = () => {
-            const [activeDay, setActiveDay] = useState(1);
+            // 1. 根據當前日期計算應該展開的行程日 (自動跳轉至當天)
+            const TRIP_START_DATE = '2025-12-20'; // 請保持與 tripData[0].date 一致的日期
+            
+            const tripStartDate = new Date(TRIP_START_DATE);
+            const today = new Date();
+            
+            // 確保只計算日期差異，不考慮時間
+            today.setHours(0, 0, 0, 0); 
+            tripStartDate.setHours(0, 0, 0, 0);
+
+            const diffTime = today.getTime() - tripStartDate.getTime();
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); 
+            
+            // 預設展開天數 (1-based index)
+            let initialActiveDay = diffDays + 1; 
+
+            // 處理行程開始前或結束後的情況
+            if (initialActiveDay < 1) {
+                initialActiveDay = 1; // 行程前，顯示 Day 1
+            } else if (initialActiveDay > tripData.length) {
+                initialActiveDay = tripData.length; // 行程後，停在最後一天
+            }
+
+            // 使用計算出的天數作為初始 activeDay
+            const [activeDay, setActiveDay] = useState(initialActiveDay);
             const [currentTab, setCurrentTab] = useState('itinerary'); // 'itinerary', 'info', 'split'
 
             const handleToggle = (day) => {
+                // 點擊已經展開的卡片，則收合它 (設為 null)
                 setActiveDay(activeDay === day ? null : day);
             };
 
@@ -882,7 +962,7 @@
                 if (dayToScrollTo) {
                     const element = document.getElementById(`day-${dayToScrollTo}`);
                     if (element) {
-                        // 讓卡片標題（頂部）與視窗頂部對齊，並增加一點偏移量 (70px)
+                        // 滾動到當日行程標題，並增加偏移量 (70px)
                         window.scrollTo({
                             top: element.offsetTop - 70, 
                             behavior: 'smooth'
