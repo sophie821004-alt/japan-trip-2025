@@ -103,4 +103,644 @@
                 events: [
                     { time: "08:30", title: "熱田神宮", type: "sight", 
                       suggested_departure: "08:20", 
-                      transport_note: "名鐵 (名古屋站 -> 神宮
+                      // 修正錯誤：將交通備註保持在單行字串中
+                      transport_note: "名鐵 (名古屋站 -> 神宮前站) | 約 10 分鐘", 
+                      event_note: "三神器之一 | 開放時間09:00-16:30", 
+                      nearby_suggestions: ["白鳥庭園 (池泉迴遊式日式庭園)", "清水社 (美容祈願)", "信長塀 (日本三大土塀之一)"],
+                      tags: ["歷史"], link: "https://goo.gl/maps/atsutashrine" },
+                    { time: "10:30", title: "午餐 (蓬萊軒鰻魚飯神宮店)", type: "food", 
+                      suggested_departure: "10:25", 
+                      transport_note: "步行 | 約 5-8 分鐘 (近神宮西門)", 
+                      event_note: "建議提早排隊或預約", tags: ["必吃"], link: "https://goo.gl/maps/atsutahoraiken" },
+                    { time: "11:30", title: "返回飯店取行李", type: "transport", 
+                      suggested_departure: "11:20", 
+                      transport_note: "名鐵 (神宮前站 -> 名古屋站) | 約 10 分鐘", 
+                      event_note: "退房、取回寄放行李", link: "" },
+                    { time: "12:30", title: "移動至河口湖", type: "transport", 
+                      suggested_departure: "12:30", 
+                      transport_note: "新幹線 (名古屋-三島) + 富士急行巴士 | 約 3.5 - 4 小時", 
+                      event_note: "長途移動，建議預訂車票", link: "https://goo.gl/maps/kawaguchikostation" },
+                    { time: "16:00", title: "Check-in 河口湖", type: "hotel", 
+                      suggested_departure: "16:00", 
+                      transport_note: "步行/計程車 | 從河口湖站前往飯店", 
+                      event_note: "放鬆、準備明日行程", link: "" }
+                ]
+            },
+            {
+                day: 4, date: "12/23 (Tue)", location: "Fuji Area", weather: "cloudy", 
+                temperature: [-2, 0, 2, 4, 6, 5, 3, 2],
+                temp_hour_range: "08:00 - 16:00",
+                events: [
+                    { time: "06:00", title: "新倉山淺間公園", type: "sight", 
+                      suggested_departure: "05:40", 
+                      transport_note: "建議自駕或計程車 | 清晨", 
+                      event_note: "拍攝富士山+五重塔 (早晨逆光較少)", tags: ["絕景"], link: "https://goo.gl/maps/arakurayama" },
+                    { time: "10:00", title: "天上山公園 (Ropeway)", type: "sight", 
+                      suggested_departure: "09:30", 
+                      transport_note: "河口湖周遊巴士 (紅線)", 
+                      event_note: "搭乘纜車", link: "https://goo.gl/maps/kachiropeway" },
+                    { time: "14:00", title: "富士急/御殿場 Outlet", type: "shop", 
+                      suggested_departure: "13:00", 
+                      transport_note: "御殿場：高速巴士/自駕 | 富士急：富士急行線", 
+                      event_note: "視體力二選一", link: "https://goo.gl/maps/gotembaoutlet" }
+                ]
+            },
+            {
+                day: 5, date: "12/24 (Wed)", location: "Fuji -> Tokyo", weather: "snow", 
+                temperature: [1, 3, 5, 7, 8, 6, 4, 3],
+                temp_hour_range: "12:00 - 20:00",
+                events: [
+                    { time: "10:00", title: "移動至東京 (Check-in 鶯谷/上野)", type: "transport", 
+                      suggested_departure: "10:00", 
+                      transport_note: "高速巴士 or JR (新宿) | 約 2 小時", 
+                      event_note: "高速巴士相對實惠，但易塞車", link: "https://goo.gl/maps/shinjuku" },
+                    { time: "18:00", title: "六本木之丘點燈", type: "sight", 
+                      suggested_departure: "17:30", 
+                      transport_note: "地鐵 | 約 20-30 分鐘 (從新宿/上野)", 
+                      event_note: "聖誕節特別活動", tags: ["聖誕限定"], link: "https://goo.gl/maps/roppongihills" },
+                    { time: "20:00", title: "晴空塔聖誕市集", type: "sight", 
+                      suggested_departure: "19:20", 
+                      transport_note: "地鐵 (大江戶線/半藏門線) | 約 30-40 分鐘", 
+                      event_note: "東京晴空塔夢幻聖誕 2025", link: "https://goo.gl/maps/skytree" }
+                ]
+            },
+{
+                day: 6, date: "12/25 (Thu)", location: "Tokyo Shibuya", weather: "sunny", 
+                temperature: [3, 5, 7, 9, 10, 8, 6, 4],
+                temp_hour_range: "09:00 - 17:00",
+                events: [
+                    { time: "09:00", title: "明治神宮", type: "sight", 
+                      suggested_departure: "08:40", 
+                      transport_note: "JR 山手線 | 從鶯谷/上野出發約 20 分鐘", 
+                      event_note: "都會綠洲", link: "https://goo.gl/maps/meijishrine" },
+                    { time: "12:00", title: "午餐/Sports Shop Gallery 2", type: "shop", 
+                      suggested_departure: "11:45", 
+                      transport_note: "步行 | 從原宿/代代木至澀谷", 
+                      event_note: "逛街行程", link: "https://goo.gl/maps/shibuyacrossing" },
+                    { time: "16:00", title: "Shibuya Sky", type: "sight", 
+                      suggested_departure: "15:55", 
+                      transport_note: "步行 | 約 5 分鐘", 
+                      event_note: "需兩週前搶票! 日落時間約 16:30", 
+                      nearby_suggestions: ["宮下公園 (新地標/屋頂公園)", "忠犬八公像/十字路口", "澀谷PARCO (動漫迷挖寶)"],
+                      tags: ["預約", "日落"], link: "https://goo.gl/maps/shibuyasky" },
+                    { time: "18:00", title: "青之洞窟 (點燈)", type: "sight", 
+                      suggested_departure: "17:50", 
+                      transport_note: "步行 | 澀谷公園通~代代木公園", 
+                      event_note: "夢幻點燈", tags: ["點燈"], link: "https://goo.gl/maps/bluecave" },
+                    { time: "20:00", title: "晚餐: Steak Rice & Curry", type: "food", 
+                      suggested_departure: "19:50", 
+                      transport_note: "步行 | 澀谷站周邊", 
+                      event_note: "Center Beef Shibuya (Center Gai?)", link: "https://goo.gl/maps/centerbeef" }
+                ]
+            },
+            {
+                day: 7, date: "12/26 (Fri)", location: "Asakusa/Skytree", weather: "sunny", 
+                temperature: [2, 4, 6, 8, 9, 7, 5, 3],
+                temp_hour_range: "09:00 - 17:00",
+                events: [
+                    { time: "09:00", title: "淺草雷門", type: "sight", 
+                      suggested_departure: "08:40", 
+                      transport_note: "地鐵銀座線/都營淺草線 | 從上野/鶯谷出發", 
+                      event_note: "仲見世通吃小吃", 
+                      nearby_suggestions: ["淺草文化觀光中心 (頂樓免費展望)", "隅田公園 (河畔/晴空塔美景)", "傳法院通 (古色老街)"],
+                      link: "https://goo.gl/maps/kaminarimon" },
+                    { time: "11:30", title: "午餐: 淺草今半", type: "food", 
+                      suggested_departure: "11:25", 
+                      transport_note: "步行 | 淺草站周邊", 
+                      event_note: "壽喜燒午間套餐 (約¥3000起，高CP值)", tags: ["高CP值"], link: "https://goo.gl/maps/asakusaimahan" },
+                    { time: "14:00", title: "Pokemon Center 晴空塔", type: "shop", 
+                      suggested_departure: "13:45", 
+                      transport_note: "地鐵/東武線 | 淺草至押上站 | 約 15 分鐘", 
+                      event_note: "押上站", link: "https://goo.gl/maps/pokemonskytree" },
+                    { time: "17:00", title: "押上溫泉 (大黑湯)", type: "sight", 
+                      suggested_departure: "16:50", 
+                      transport_note: "步行 | 押上站周邊", 
+                      event_note: "傳統錢湯體驗", link: "https://goo.gl/maps/daikokuyu" }
+                ]
+            },
+            {
+                day: 8, date: "12/27 (Fri)", location: "Tokyo Shopping", weather: "cloudy", 
+                temperature: [4, 6, 8, 10, 9, 7, 5, 4],
+                temp_hour_range: "10:00 - 18:00",
+                events: [
+                    { time: "10:00", title: "Ricoland Tokyo Bay (重機用品)", type: "shop", 
+                      suggested_departure: "09:20", 
+                      transport_note: "地鐵有樂町線/百合鷗線 (新橋轉乘) | 目的地：東雲站 | 約 40 分鐘", 
+                      event_note: "重機用品聖地", tags: ["騎士必逛"], link: "https://goo.gl/maps/ricoland" },
+                    { time: "13:00", title: "午餐: 木曾路 (壽喜燒)", type: "food", 
+                      suggested_departure: "12:00", 
+                      transport_note: "地鐵/JR | 從東雲站返回新宿，約 1 小時", 
+                      event_note: "Shabu Shabu / 壽喜燒", link: "https://goo.gl/maps/kisoji" },
+                    { time: "15:00", title: "新宿逛街", type: "shop", 
+                      suggested_departure: "14:55", 
+                      transport_note: "步行 | 新宿站周邊", 
+                      event_note: "Lumine, Isetan, BicCamera", link: "https://goo.gl/maps/shinjuku" }
+                ]
+            },
+            {
+                day: 9, date: "12/28 (Sat)", location: "Back Home", weather: "sunny", 
+                temperature: [3, 5, 7, 9, 11, 10, 8, 6],
+                temp_hour_range: "09:00 - 17:00",
+                events: [
+                    { time: "10:00", title: "前往成田機場 (NRT)", type: "transport", 
+                      suggested_departure: "10:00", 
+                      transport_note: "JR Narita Express (N'EX) or Skyliner | 約 1 小時 20 分鐘 (從新宿/上野)", 
+                      event_note: "預留充裕時間至第一航廈 (T1)", link: "https://goo.gl/maps/naritaairport" },
+                    { time: "14:30", title: "抵達成田機場 (NRT)", type: "transport", 
+                      suggested_departure: "14:30", 
+                      transport_note: "機場免稅店購物", 
+                      event_note: "辦理登機手續", link: "" },
+                    { time: "16:35", title: "起飛 (NRT -> TPE)", type: "transport", 
+                      suggested_departure: "16:35", 
+                      transport_note: "航班資訊確認", 
+                      event_note: "祝旅途愉快！", link: "" },
+                    { time: "20:00", title: "抵達台北", type: "home", 
+                      suggested_departure: "20:00", 
+                      transport_note: "溫暖的家", 
+                      event_note: "甜蜜的家", link: "" }
+                ]
+            }
+        ];
+
+        const toolsData = {
+            flights: [
+                { leg: "去程", code: "IT206", time: "12/20 09:00 TPE -> 14:00 NGO", airport: "TPE/NGO" },
+                { leg: "回程", code: "MM625", time: "12/28 起飛 16:35 NRT", airport: "NRT T1" }
+            ],
+            hotels: [
+                { name: "VIA INN 名古屋站前椿町", dates: "12/20-12/22", address: "名古屋" },
+                { name: "河口湖飯店 (TBD)", dates: "12/22-12/24", address: "河口湖" },
+                { name: "Land About Tokyo", dates: "12/24-12/28", address: "鶯谷/上野" }
+            ],
+            emergency: [
+                { name: "旅外國人急難救助", phone: "+81-3-3280-7717" },
+                { name: "報警", phone: "110" },
+                { name: "救護車", phone: "119" }
+            ]
+        };
+
+        // --- ICONS & UTILITIES ---
+        const IconMap = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+        );
+        const IconExchange = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+        );
+        const IconLink = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+        );
+        const IconTime = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        );
+        const IconWeather = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+        );
+        
+        // 修正後的 Google Map 連結生成函式
+        const generateDayMapLink = (events) => {
+            const destinationTitles = events
+                .filter(e => e.link && e.type !== 'transport' && e.type !== 'hotel') // 過濾掉純交通和飯店登記，只留下景點/食物/購物
+                .map(e => e.title)
+                .filter(t => t); 
+            
+            if (destinationTitles.length === 0) return '#';
+            
+            // 使用所有目的地標題作為 Google Maps 查詢 (使用空白分隔，Google Maps 會自動解析)
+            const query = destinationTitles.join(' ');
+            
+            // 使用標準 Google Maps 搜尋連結格式
+            return `https://maps.app.goo.gl/wgZQJiUe7VP1EYHH8{encodeURIComponent(query)}`;
+        };
+
+        // 根據天氣和圖表資料，決定標頭顏色
+        const getHeaderStyle = (weather) => {
+            switch (weather.toLowerCase()) {
+                case 'sunny':
+                    return 'bg-blue-400 text-white';
+                case 'cloudy':
+                    return 'bg-gray-400 text-white';
+                case 'snow':
+                    return 'bg-sky-500 text-white';
+                default:
+                    return 'bg-indigo-400 text-white';
+            }
+        };
+
+        // 溫度趨勢圖 (簡易版)
+        function TemperatureChart({ temperatures, hourRange }) {
+            if (!temperatures || temperatures.length < 2) return null;
+            
+            const maxTemp = Math.max(...temperatures);
+            const minTemp = Math.min(...temperatures);
+            const range = Math.max(maxTemp - minTemp, 5); // 確保最小值為 5，避免除以零或圖形過扁
+            const width = 200;
+            const height = 40;
+
+            const points = temperatures.map((temp, index) => {
+                // X 座標: 根據順序在 0 到 width 之間分佈
+                const x = (index / (temperatures.length - 1)) * width;
+                // Y 座標: 反向計算 (溫度越高，Y越小，因為 SVG 座標系原點在左上)
+                const y = height - ((temp - minTemp) / range) * height; 
+                return `${x},${y}`;
+            }).join(' ');
+            
+            const [startHour, endHour] = hourRange.split(' - ').map(h => parseInt(h.split(':')[0]));
+            
+            return (
+                <div className="mt-3 px-4 w-full">
+                    <p className="text-xs font-bold text-white mb-1">
+                        <IconWeather className="w-4 h-4 inline mr-1" />
+                        {hourRange} ({minTemp}°C ~ {maxTemp}°C)
+                    </p>
+                    <svg width="100%" height="60" viewBox={`0 0 ${width} 60`} preserveAspectRatio="none">
+                        {/* 繪製線條 */}
+                        <polyline
+                            fill="none"
+                            stroke="#ffffff"
+                            strokeWidth="3"
+                            points={points}
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                        {/* 繪製溫度點和標籤 */}
+                        {temperatures.map((temp, index) => {
+                            const x = (index / (temperatures.length - 1)) * width;
+                            const y = height - ((temp - minTemp) / range) * height;
+                            
+                            return (
+                                <React.Fragment key={index}>
+                                    {/* 點 */}
+                                    <circle cx={x} cy={y} r="3" fill="#ffffff" />
+                                    {/* 溫度標籤 */}
+                                    <text x={x} y={y - 8} textAnchor="middle" fill="#ffffff" fontSize="12" fontWeight="bold">
+                                        {temp}°
+                                    </text>
+                                    {/* 小時標籤 */}
+                                    <text x={x} y={height + 15} textAnchor="middle" fill="#ffffffcc" fontSize="10">
+                                        {startHour + index}h
+                                    </text>
+                                </React.Fragment>
+                            );
+                        })}
+                    </svg>
+                </div>
+            );
+        }
+        
+        // 單一事件卡片元件
+        function EventCard({ event }) {
+            const getIcon = (type) => {
+                switch (type) {
+                    case 'transport': return '✈️';
+                    case 'hotel': return '🏨';
+                    case 'sight': return '🏯';
+                    case 'food': return '🍜';
+                    case 'shop': return '🛍️';
+                    case 'home': return '🏠';
+                    default: return '📍';
+                }
+            };
+
+            const departureTime = event.suggested_departure;
+
+            return (
+                <div className="flex items-start py-4 border-b border-gray-100 last:border-b-0">
+                    <div className="flex-shrink-0 mr-4 text-center">
+                        <div className="text-2xl">{getIcon(event.type)}</div>
+                        <div className="text-xs text-gray-500 font-semibold">{event.time}</div>
+                    </div>
+                    <div className="flex-grow">
+                        <div className="flex justify-between items-start mb-1">
+                            <h3 className="text-lg font-bold text-gray-800 leading-snug">{event.title}</h3>
+                            {departureTime && (
+                                <div className="text-right ml-4 flex-shrink-0">
+                                    <p className="text-xs text-gray-500">建議出發</p>
+                                    {/* 放大出發時間的樣式調整在這裡 */}
+                                    <p className="text-xl font-bold text-red-500 leading-none mt-0.5">{departureTime}</p>
+                                </div>
+                            )}
+                        </div>
+                        
+                        {event.event_note && (
+                            <p className="text-sm text-gray-700 mb-1 leading-snug">
+                                <span className="font-semibold text-gray-900">備註: </span>{event.event_note}
+                            </p>
+                        )}
+                        {event.transport_note && (
+                            <p className="text-xs text-gray-500 italic mb-1">
+                                交通: {event.transport_note}
+                            </p>
+                        )}
+                        
+                        {(event.link || event.tags?.length > 0) && (
+                            <div className="mt-2 flex flex-wrap items-center">
+                                {event.tags && event.tags.map(tag => (
+                                    <span key={tag} className="text-xs font-medium bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full mr-2 mb-1">
+                                        {tag}
+                                    </span>
+                                ))}
+                                {event.link && (
+                                    <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:text-blue-800 transition duration-150 ease-in-out flex items-center mb-1">
+                                        <IconLink className="w-4 h-4 mr-1" />
+                                        查看詳情 (地圖/網站)
+                                    </a>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+        
+        // 每日行程卡片元件
+        function TripCard({ trip }) {
+            const mapLink = generateDayMapLink(trip.events);
+            const headerStyle = getHeaderStyle(trip.weather);
+
+            return (
+                <div className="glass card-shadow rounded-2xl overflow-hidden mb-6 mx-4">
+                    
+                    {/* Header with Weather and Temperature Chart */}
+                    <div className={`p-4 ${headerStyle}`}>
+                        <div className="flex justify-between items-start mb-2">
+                            <div>
+                                <h2 className="text-2xl font-bold">DAY {trip.day} | {trip.date}</h2>
+                                <p className="text-sm font-medium opacity-90">{trip.location}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-lg font-bold capitalize flex items-center">
+                                    <IconWeather className="w-5 h-5 mr-1" /> {trip.weather}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        {/* Temperature Chart (Hourly Forecast) */}
+                        <TemperatureChart 
+                            temperatures={trip.temperature} 
+                            hourRange={trip.temp_hour_range}
+                        />
+
+                        {mapLink !== '#' && (
+                            <div className="mt-3 pt-3 border-t border-white/30">
+                                <a href={mapLink} target="_blank" rel="noopener noreferrer" className="block text-center bg-white/20 hover:bg-white/30 transition-colors duration-200 py-2 rounded-xl font-bold text-sm text-white flex items-center justify-center">
+                                    <IconMap className="w-5 h-5 mr-2" />
+                                    開啟 Google Maps 路線建議 (今日景點)
+                                </a>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Events List */}
+                    <div className="p-4 divide-y divide-gray-50">
+                        {trip.events.map((event, index) => (
+                            <EventCard key={index} event={event} />
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        // 分帳系統元件 (包含匯率換算) - 保持上次給出的完整版本
+        function Splitter({ budgetItems, setBudgetItems }) {
+            const [splitItem, setSplitItem] = useState({ name: '', cost: '', paidBy: TRAVELERS[0] });
+            const [exchangeRate, setExchangeRate] = useState(DEFAULT_RATE);
+            const [jpyInput, setJpyInput] = useState('');
+
+            // 匯率換算邏輯
+            const convertedTWD = (Number(jpyInput) * exchangeRate).toFixed(0).toLocaleString();
+            
+            const calculateFinalBalances = () => {
+                const balances = {};
+                TRAVELERS.forEach(t => balances[t] = 0); 
+
+                const totalCost = budgetItems.reduce((acc, curr) => acc + Number(curr.cost), 0);
+                
+                if (TRAVELERS.length === 0 || totalCost === 0) return balances;
+
+                const costPerPerson = totalCost / TRAVELERS.length;
+                
+                budgetItems.forEach(item => {
+                    if (item.paidBy && TRAVELERS.includes(item.paidBy)) {
+                        balances[item.paidBy] += Number(item.cost);
+                    }
+                });
+
+                TRAVELERS.forEach(t => {
+                    balances[t] = balances[t] - costPerPerson;
+                });
+                
+                return balances;
+            };
+
+            const balances = calculateFinalBalances();
+            const totalCost = budgetItems.reduce((acc, curr) => acc + Number(curr.cost), 0);
+
+            const handleAddItem = (e) => {
+                e.preventDefault();
+                if (splitItem.name && Number(splitItem.cost) > 0) {
+                    setBudgetItems([...budgetItems, { ...splitItem, cost: Number(splitItem.cost) }]);
+                    setSplitItem({ name: '', cost: '', paidBy: TRAVELERS[0] });
+                }
+            };
+            
+            const getBalanceColor = (balance) => {
+                if (balance > 0) return 'text-green-600 bg-green-100';
+                if (balance < 0) return 'text-red-600 bg-red-100';
+                return 'text-gray-600 bg-gray-100';
+            };
+
+
+            return (
+                <div className="p-5">
+                    <h2 className="text-xl font-bold mb-3 border-b pb-2 text-indigo-700">旅費分帳與匯率工具</h2>
+                    
+                    {/* 匯率換算區塊 */}
+                    <div className="mb-6 p-4 rounded-xl bg-indigo-50 border border-indigo-200">
+                        <h3 className="text-lg font-semibold mb-2 flex items-center text-indigo-800">
+                            <IconExchange className="w-5 h-5 mr-2" />
+                            日幣 (JPY) 換算
+                        </h3>
+                        <div className="flex space-x-2 mb-2 items-center">
+                            <label className="text-sm font-medium text-gray-700">即時匯率 (TWD/JPY):</label>
+                            <input
+                                type="number"
+                                step="0.001"
+                                value={exchangeRate}
+                                onChange={(e) => setExchangeRate(e.target.value)}
+                                className="w-20 text-center p-1 border rounded-md text-sm"
+                            />
+                        </div>
+                        <div className="flex space-x-2 items-center">
+                            <input
+                                type="number"
+                                placeholder="輸入日幣金額 (¥)"
+                                value={jpyInput}
+                                onChange={(e) => setJpyInput(e.target.value)}
+                                className="w-full p-2 border border-indigo-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                            />
+                            <p className="text-xl font-bold text-red-600">
+                                ➞ {convertedTWD} NTD
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {/* 分帳結果區塊 */}
+                    <div className="mb-6">
+                        <h3 className="text-lg font-semibold mb-3 text-gray-800">總結算 ({TRAVELERS.length} 人平分)</h3>
+                        <div className="flex justify-between items-center mb-2 p-2 bg-gray-100 rounded-lg">
+                            <p className="font-semibold text-sm">總花費 (JPY):</p>
+                            <p className="font-bold text-lg text-indigo-600">¥{totalCost.toLocaleString()}</p>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-center">
+                            {TRAVELERS.map(traveler => (
+                                <div key={traveler} className={`p-2 rounded-lg text-sm font-semibold border ${getBalanceColor(balances[traveler])}`}>
+                                    {traveler}: <br />
+                                    {balances[traveler] > 0 ? `應收 ¥${balances[traveler].toLocaleString()}` : 
+                                     (balances[traveler] < 0 ? `應付 ¥${(-balances[traveler]).toLocaleString()}` : `結清`)}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    {/* 新增項目表單 */}
+                    <h3 className="text-lg font-semibold mb-3 text-gray-800">新增分帳項目</h3>
+                    <form onSubmit={handleAddItem} className="space-y-3 p-4 bg-white border rounded-xl">
+                        <input
+                            type="text"
+                            placeholder="項目名稱 (例如: 晚餐)"
+                            value={splitItem.name}
+                            onChange={(e) => setSplitItem({ ...splitItem, name: e.target.value })}
+                            className="w-full p-2 border rounded-md"
+                            required
+                        />
+                        <input
+                            type="number"
+                            placeholder="金額 (日幣 ¥)"
+                            value={splitItem.cost}
+                            onChange={(e) => setSplitItem({ ...splitItem, cost: e.target.value })}
+                            className="w-full p-2 border rounded-md"
+                            required
+                        />
+                        <select
+                            value={splitItem.paidBy}
+                            onChange={(e) => setSplitItem({ ...splitItem, paidBy: e.target.value })}
+                            className="w-full p-2 border rounded-md bg-white"
+                        >
+                            {TRAVELERS.map(t => (
+                                <option key={t} value={t}>{t} 支付</option>
+                            ))}
+                        </select>
+                        <button type="submit" className="w-full bg-indigo-600 text-white p-2 rounded-md hover:bg-indigo-700 transition">
+                            記帳
+                        </button>
+                    </form>
+                    
+                    {/* 項目清單 */}
+                    <div className="mt-5 max-h-48 overflow-y-auto hide-scrollbar border rounded-xl bg-white">
+                        <h4 className="text-md font-semibold p-3 sticky top-0 bg-gray-50 border-b">項目明細</h4>
+                        <ul className="divide-y">
+                            {budgetItems.map((item, index) => (
+                                <li key={index} className="flex justify-between items-center p-3 text-sm">
+                                    <div className="flex-grow">
+                                        <p className="font-medium text-gray-800">{item.name}</p>
+                                        <p className="text-xs text-gray-500">付款人: {item.paidBy}</p>
+                                    </div>
+                                    <p className="font-bold text-red-500">¥{item.cost.toLocaleString()}</p>
+                                </li>
+                            ))}
+                        </ul>
+                        {budgetItems.length === 0 && <p className="text-center text-gray-500 py-4 text-sm">尚無記帳項目</p>}
+                    </div>
+                </div>
+            );
+        }
+
+        // 頂層應用程式元件
+        function App() {
+            const [activeTab, setActiveTab] = useState('schedule');
+            const [budgetItems, setBudgetItems] = useState([]); // 儲存分帳項目
+
+            const tabClass = (tabName) => 
+                `flex-1 py-3 px-1 text-center font-bold text-sm transition-colors duration-200 ${
+                    activeTab === tabName 
+                        ? 'text-indigo-600 border-b-4 border-indigo-600' 
+                        : 'text-gray-500 hover:text-gray-700'
+                }`;
+
+            return (
+                <div className="max-w-xl mx-auto min-h-screen bg-gray-50 pb-20">
+                    <header className="sticky top-0 z-50 glass backdrop-blur-md shadow-md">
+                        <div className="flex justify-around items-center pt-3">
+                            <h1 className="text-2xl font-bold text-gray-900 px-4">
+                                ✈️ 日本關西富士行 2025
+                            </h1>
+                        </div>
+                        
+                        {/* Tab Bar */}
+                        <div className="flex border-t mt-3">
+                            <button className={tabClass('schedule')} onClick={() => setActiveTab('schedule')}>
+                                行程表
+                            </button>
+                            <button className={tabClass('flights')} onClick={() => setActiveTab('flights')}>
+                                機票/住宿
+                            </button>
+                            <button className={tabClass('split')} onClick={() => setActiveTab('split')}>
+                                分帳工具
+                            </button>
+                        </div>
+                    </header>
+                    
+                    <main className="pt-4">
+                        {activeTab === 'schedule' && tripData.map(trip => (
+                            <TripCard key={trip.day} trip={trip} />
+                        ))}
+                        
+                        {activeTab === 'flights' && (
+                            <div className="p-5 space-y-6">
+                                <div className="bg-white p-5 rounded-xl shadow-lg">
+                                    <h3 className="text-xl font-bold mb-3 text-gray-800 border-b pb-2">機票資訊</h3>
+                                    {toolsData.flights.map((flight, index) => (
+                                        <div key={index} className="mb-4 border-b last:border-b-0 pb-3">
+                                            <p className="text-sm font-semibold">{flight.leg} ({flight.code})</p>
+                                            <p className="text-lg font-bold text-indigo-600">{flight.time}</p>
+                                            <p className="text-xs text-gray-500">機場: {flight.airport}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="bg-white p-5 rounded-xl shadow-lg">
+                                    <h3 className="text-xl font-bold mb-3 text-gray-800 border-b pb-2">住宿資訊</h3>
+                                    {toolsData.hotels.map((hotel, index) => (
+                                        <div key={index} className="mb-4 border-b last:border-b-0 pb-3">
+                                            <p className="text-sm font-semibold">{hotel.name}</p>
+                                            <p className="text-base text-gray-700">{hotel.dates}</p>
+                                            <p className="text-xs text-gray-500">地點: {hotel.address}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="bg-white p-5 rounded-xl shadow-lg bg-red-50">
+                                    <h3 className="text-xl font-bold mb-3 text-red-700 border-b pb-2">緊急聯絡</h3>
+                                    {toolsData.emergency.map((contact, index) => (
+                                        <div key={index} className="mb-4 border-b border-red-200 last:border-b-0 pb-3">
+                                            <p className="text-sm font-semibold text-red-600">{contact.name}</p>
+                                            <p className="text-lg font-bold text-red-800">{contact.phone}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        
+                        {activeTab === 'split' && (
+                            <div className="glass card-shadow rounded-2xl mx-4">
+                                <Splitter budgetItems={budgetItems} setBudgetItems={setBudgetItems} />
+                            </div>
+                        )}
+                    </main>
+                </div>
+            );
+        }
+
+        // 渲染應用程式
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
