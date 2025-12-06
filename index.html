@@ -295,7 +295,7 @@
                 ticket: "M16.5 6a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM12 3a9 9 0 100 18 9 9 0 000-18zm0 13.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3z",
                 emergency: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 10h4",
                 back: "M19.5 12h-15m0 0l6.75 6.75M4.5 12l6.75-6.75",
-                split: "M12 6.75a3.75 3.75 0 100 7.5 3.75 3.75 0 000-7.5zM15 13.5a3 3 0 11-6 0 3 3 0 016 0zM4.5 18.75h15A2.25 2.25 0 0021.75 16.5v-3.75a.75.75 0 00-1.5 0v3.75a.75.75 0 01-.75.75h-15A.75.75 0 013 16.5v-3.75a.75.75 0 00-1.5 0v3.75A2.25 2.25 0 004.5 18.75zM12 1.5a.75.75 0 00-.75.75v3.75a.75.75 0 001.5 0V2.25A.75.75 0 0012 1.5z"
+                split: "M12 6.75a3.75 3.75 0 100 7.5 3.75 3.75 0 000-7.5zM15 13.5a3 3 0 11-6 0 3 3 0 016 0zM4.5 18.75h15A2.25 2.25 0 0021.75 16.5v-3.75a.75.75 0 00-1.5 0v3.75a.75.75 0 01-.75.75h-15A.75.75 0 003 16.5v-3.75a.75.75 0 00-1.5 0v3.75A2.25 2.25 0 004.5 18.75zM12 1.5a.75.75 0 00-.75.75v3.75a.75.75 0 001.5 0V2.25A.75.75 0 0012 1.5z"
             };
 
             const typeToColor = {
@@ -374,9 +374,10 @@
         };
 
         // 3. 行程事件組件
-        const EventItem = ({ event, index }) => {
-            // Check if this is the last event of the last day in tripData
-            const isLast = index === tripData[tripData.length - 1].events.length - 1 && dayData.day === tripData.length;
+        // 修正：從 props 接收 dayData
+        const EventItem = ({ event, index, dayData }) => { 
+            // Check if this is the last event of the trip (不是最後一天，就是最後一天行程的最後一個)
+            const isLast = index === dayData.events.length - 1 && dayData.day === tripData.length;
 
             return (
                 <div className="flex relative pb-8">
@@ -486,7 +487,8 @@
                             {/* Events Timeline */}
                             <div className="mt-6 pl-2 pr-2">
                                 {dayData.events.map((event, index) => (
-                                    <EventItem key={index} event={event} index={index} />
+                                    // 修正：將 dayData 傳遞給 EventItem
+                                    <EventItem key={index} event={event} index={index} dayData={dayData} /> 
                                 ))}
                             </div>
                         </div>
@@ -587,63 +589,36 @@
             const balances = useMemo(() => {
                 const initialBalances = travelers.reduce((acc, name) => ({ ...acc, [name]: 0 }), {});
 
-                return expenses.reduce((acc, expense) => {
+                // 重新計算 balances，確保邏輯正確
+                const finalBalances = travelers.reduce((acc, name) => ({ ...acc, [name]: 0 }), {});
+                expenses.forEach(expense => {
                     const { amountJPY, paidBy, splitAmong } = expense;
                     const participants = Object.keys(splitAmong).filter(name => splitAmong[name]);
                     const splitCount = participants.length;
 
-                    if (splitCount === 0) return acc;
+                    if (splitCount === 0) return;
 
                     const share = amountJPY / splitCount;
 
-                    // 1. 付款人淨值增加 (收回支出)
-                    // 淨值計算: 支付總額 - 自己的分攤額
-                    acc[paidBy] += (amountJPY - (splitAmong[paidBy] ? share : 0)) * rate; 
-
-                    // 2. 分攤人淨值減少 (應付分攤)
-                    participants.forEach(name => {
-                        if (name !== paidBy) {
-                             acc[name] -= share * rate; // 換算成 TWD
-                        }
-                    });
-
-                    // 舊的邏輯比較複雜且容易錯，我們改用更簡潔的：
-                    // 每個人應分攤 share JPY，付款人收回的錢 = 總額 - 自己的分攤額。
-                    // 簡單來說，如果 A 支付了 1000 JPY，應分攤 500 JPY：
-                    // A 的淨值變化 = +1000 (支付) - 500 (應分攤) = +500 (應收)
-                    // B 的淨值變化 = -500 (應分攤)
-
-                    // 重新計算 balances，確保邏輯正確
-                    const finalBalances = travelers.reduce((acc, name) => ({ ...acc, [name]: 0 }), {});
-                    expenses.forEach(expense => {
-                        const { amountJPY, paidBy, splitAmong } = expense;
-                        const participants = Object.keys(splitAmong).filter(name => splitAmong[name]);
-                        const splitCount = participants.length;
-
-                        if (splitCount === 0) return;
-
-                        const share = amountJPY / splitCount;
-
-                        travelers.forEach(name => {
-                            let netChange = 0;
-                            // 1. 付款人的淨值: 支付額 - 應分攤額
-                            if (name === paidBy) {
-                                netChange += amountJPY;
-                                if (splitAmong[name]) {
-                                    netChange -= share;
-                                }
-                            }
-                            // 2. 非付款人的淨值: 應分攤額 (負值)
-                            else if (splitAmong[name]) {
+                    travelers.forEach(name => {
+                        let netChange = 0;
+                        // 1. 付款人的淨值: 支付額 - 應分攤額
+                        if (name === paidBy) {
+                            netChange += amountJPY;
+                            if (splitAmong[name]) {
                                 netChange -= share;
                             }
-                            
-                            finalBalances[name] += netChange * rate;
-                        });
+                        }
+                        // 2. 非付款人的淨值: 應分攤額 (負值)
+                        else if (splitAmong[name]) {
+                            netChange -= share;
+                        }
+                        
+                        finalBalances[name] += netChange * rate;
                     });
-                    
-                    return finalBalances;
-                }, initialBalances); // 這裡 initialBalances 沒用到，但為了符合 useState Hook 規範先留著
+                });
+                
+                return finalBalances;
 
             }, [expenses, travelers, rate]);
 
