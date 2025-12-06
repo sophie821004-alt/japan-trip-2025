@@ -31,10 +31,12 @@
         // 設定預設匯率 (例如：0.22)
         const DEFAULT_RATE = 0.22;
 
-        // --- DATA SOURCE (包含溫度資訊) ---
+        // --- DATA SOURCE (包含每小時溫度預報) ---
         const tripData = [
             {
-                day: 1, date: "12/20 (Sat)", location: "Nagoya", weather: "sunny", temperature: "8°C ~ 14°C",
+                day: 1, date: "12/20 (Sat)", location: "Nagoya", weather: "sunny", 
+                temperature: [8, 10, 12, 14, 13, 11, 9, 8], // 8小時溫度
+                temp_hour_range: "10:00 - 18:00",
                 events: [
                     { time: "09:00", title: "桃園 (TPE) ✈️ 名古屋 (NGO)", type: "transport", 
                       transport_note: "虎航 IT206 (請自行確認登機時間)", 
@@ -70,7 +72,9 @@
                 ]
             },
             {
-                day: 2, date: "12/21 (Sun)", location: "Inuyama/Nagoya", weather: "cloudy", temperature: "7°C ~ 13°C",
+                day: 2, date: "12/21 (Sun)", location: "Inuyama/Nagoya", weather: "cloudy", 
+                temperature: [7, 8, 9, 11, 13, 12, 10, 9],
+                temp_hour_range: "10:00 - 18:00",
                 events: [
                     { time: "09:00", title: "犬山城下町 & 三光稻荷神社", type: "sight", 
                       suggested_departure: "08:20", 
@@ -93,19 +97,10 @@
                 ]
             },
             {
-                day: 3, date: "12/22 (Mon)", location: "Nagoya -> Fuji", weather: "sunny", temperature: "5°C ~ 11°C",
+                day: 3, date: "12/22 (Mon)", location: "Nagoya -> Fuji", weather: "sunny", 
+                temperature: [5, 7, 9, 11, 10, 8, 7, 6],
+                temp_hour_range: "09:00 - 17:00",
                 events: [
                     { time: "08:30", title: "熱田神宮", type: "sight", 
                       suggested_departure: "08:20", 
-                      transport_note: "名鐵 (名古屋站 -> 神宮前站) | 約 10 分鐘", 
-                      event_note: "三神器之一 | 開放時間09:00-16:30", 
-                      nearby_suggestions: ["白鳥庭園 (池泉迴遊式日式庭園)", "清水社 (美容祈願)", "信長塀 (日本三大土塀之一)"],
-                      tags: ["歷史"], link: "https://goo.gl/maps/atsutashrine" },
-                    { time: "10:30", title: "午餐 (蓬萊軒鰻魚飯神宮店)", type: "food", 
-                      suggested_departure: "10:25", 
-                      transport_note: "步行 | 約 5-8 分鐘 (近神宮西門)", 
-                      event_note: "建議提早排隊或預約", tags: ["必吃"], link: "https://goo.gl/maps/atsutahoraiken" },
-                    { time: "11:30", title: "返回飯店取行李", type: "transport", 
-                      suggested_departure: "11:20", 
-                      transport_note: "名鐵 (神宮前站 -> 名古屋站) | 約 10 分鐘", 
-                      event_note:
+                      transport_note: "名鐵 (名古屋站 -> 神宮
