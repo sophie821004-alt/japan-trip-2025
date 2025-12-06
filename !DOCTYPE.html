@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2025 日本行 | Japan Trip</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #f4f4f5; -webkit-tap-highlight-color: transparent; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .card-shadow { box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 antialiased">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- DATA SOURCE (Parsed from your PDF + Enriched) ---
+        const tripData = [
+            {
+                day: 1, date: "12/20 (Sat)", location: "Nagoya", weather: "sunny",
+                events: [
+                    { time: "14:00", title: "抵達名古屋 NGO", type: "transport", note: "入境通關", link: "https://goo.gl/maps/nagoyaairport" },
+                    { time: "15:00", title: "VIA INN 名古屋站前椿町", type: "hotel", note: "放行李 | 走路40分/準急50分", link: "https://goo.gl/maps/viainnugoya" },
+                    { time: "16:00", title: "大須觀音 & 商店街", type: "sight", note: "必吃：矢場豬排 (Miso Katsu) | 營業至 20:00", tags: ["必吃", "逛街"], link: "https://goo.gl/maps/osukannon" },
+                    { time: "18:00", title: "榮商圈 (Sakae)", type: "shop", note: "Skyle (Uniqlo/GU), Alpen Nagoya (~21:00)", link: "https://goo.gl/maps/sakae" },
+                    { time: "21:00", title: "綠洲21 (Oasis 21)", type: "sight", note: "拍攝夜景", tags: ["拍照"], link: "https://goo.gl/maps/oasis21" },
+                    { time: "21:30", title: "千里馬藥局", type: "shop", note: "營業至 22:00 (回飯店順路)", link: "https://goo.gl/maps/senrima" }
+                ]
+            },
+            {
+                day: 2, date: "12/21 (Sun)", location: "Inuyama/Nagoya", weather: "cloudy",
+                events: [
+                    { time: "07:30", title: "前往犬山城", type: "transport", note: "名鐵犬山線 MuSKY (指定席)", link: "https://goo.gl/maps/inuyamacastle" },
+                    { time: "09:00", title: "三光稻荷神社", type: "sight", note: "洗錢神社、粉紅愛心繪馬", tags: ["求財", "戀愛運"], link: "https://goo.gl/maps/sankoinari" },
+                    { time: "10:00", title: "犬山城下町", type: "food", note: "午餐：飛騨牛すき焼き 肉兵衛 | 必吃：五平餅", tags: ["美食"], link: "https://goo.gl/maps/inuyamatown" },
+                    { time: "13:00", title: "名古屋城", type: "sight", note: "交通：名鐵小牧線 -> 名城線", link: "https://goo.gl/maps/nagoyacastle" },
+                    { time: "18:00", title: "名古屋車站商圈", type: "shop", note: "BicCamera (西店/JR Gate Tower)", link: "https://goo.gl/maps/nagoyastation" }
+                ]
+            },
+            {
+                day: 3, date: "12/22 (Mon)", location: "Nagoya -> Fuji", weather: "sunny",
+                events: [
+                    { time: "08:30", title: "熱田神宮", type: "sight", note: "三神器之一 | 名鐵神宮前站", tags: ["歷史"], link: "https://goo.gl/maps/atsutashrine" },
+                    { time: "10:30", title: "午餐 (蓬萊軒鰻魚飯?)", type: "food", note: "建議提早排隊或預約", tags: ["必吃"], link: "https://goo.gl/maps/atsutahoraiken" },
+                    { time: "12:30", title: "移動至河口湖", type: "transport", note: "長途移動 (新幹線+巴士/電車)", link: "https://goo.gl/maps/kawaguchikostation" },
+                    { time: "16:00", title: "Check-in 河口湖", type: "hotel", note: "放鬆、準備明日行程", link: "" }
+                ]
+            },
+            {
+                day: 4, date: "12/23 (Tue)", location: "Fuji Area", weather: "cloudy",
+                events: [
+                    { time: "06:00", title: "新倉山淺間公園", type: "sight", note: "拍攝富士山+五重塔 (早晨逆光較少)", tags: ["絕景"], link: "https://goo.gl/maps/arakurayama" },
+                    { time: "10:00", title: "天上山公園 (Ropeway)", type: "sight", note: "搭乘纜車", link: "https://goo.gl/maps/kachiropeway" },
+                    { time: "14:00", title: "富士急/御殿場 Outlet", type: "shop", note: "視體力二選一", link: "https://goo.gl/maps/gotembaoutlet" }
+                ]
+            },
+            {
+                day: 5, date: "12/24 (Wed)", location: "Fuji -> Tokyo", weather: "snow",
+                events: [
+                    { time: "10:00", title: "移動至東京", type: "transport", note: "高速巴士 or JR (新宿)", link: "https://goo.gl/maps/shinjuku" },
+                    { time: "18:00", title: "六本木之丘點燈", type: "sight", note: "聖誕節特別活動", tags: ["聖誕限定"], link: "https://goo.gl/maps/roppongihills" },
+                    { time: "20:00", title: "晴空塔聖誕市集", type: "sight", note: "夢幻聖誕 2025", link: "https://goo.gl/maps/skytree" }
+                ]
+            },
+            {
+                day: 6, date: "12/25 (Thu)", location: "Tokyo Shibuya", weather: "sunny",
+                events: [
+                    { time: "09:00", title: "明治神宮", type: "sight", note: "都會綠洲", link: "https://goo.gl/maps/meijishrine" },
+                    { time: "12:00", title: "午餐: Sports Shop Gallery 2", type: "shop", note: "逛街行程", link: "https://goo.gl/maps/shibuyacrossing" },
+                    { time: "16:00", title: "Shibuya Sky", type: "sight", note: "需兩週前搶票! 日落時間約 16:30", tags: ["預約", "日落"], link: "https://goo.gl/maps/shibuyasky" },
+                    { time: "18:00", title: "青之洞窟", type: "sight", note: "澀谷公園通~代代木公園", tags: ["點燈"], link: "https://goo.gl/maps/bluecave" },
+                    { time: "20:00", title: "晚餐: Steak Rice & Curry", type: "food", note: "Center Beef Shibuya (Center Gai?)", link: "https://goo.gl/maps/centerbeef" }
+                ]
+            },
+            {
+                day: 7, date: "12/26 (Fri)", location: "Asakusa/Skytree", weather: "sunny",
+                events: [
+                    { time: "09:00", title: "淺草雷門", type: "sight", note: "仲見世通吃小吃", link: "https://goo.gl/maps/kaminarimon" },
+                    { time: "11:30", title: "午餐: 淺草今半", type: "food", note: "壽喜燒午間套餐 (約¥3000起)", tags: ["高CP值"], link: "https://goo.gl/maps/asakusaimahan" },
+                    { time: "14:00", title: "Pokemon Center 晴空塔", type: "shop", note: "押上站", link: "https://goo.gl/maps/pokemonskytree" },
+                    { time: "17:00", title: "押上溫泉", type: "sight", note: "大黑湯 (傳統錢湯)", link: "https://goo.gl/maps/daikokuyu" }
+                ]
+            },
+            {
+                day: 8, date: "12/27 (Sat)", location: "Tokyo Shopping", weather: "cloudy",
+                events: [
+                    { time: "10:00", title: "Ricoland Tokyo Bay", type: "shop", note: "東雲站 (Shinonome) | 重機用品聖地", tags: ["騎士必逛"], link: "https://goo.gl/maps/ricoland" },
+                    { time: "13:00", title: "午餐: 木曾路 (新宿三丁目)", type: "food", note: "Shabu Shabu / 壽喜燒", link: "https://goo.gl/maps/kisoji" },
+                    { time: "15:00", title: "新宿逛街", type: "shop", note: "Lumine, Isetan, BicCamera", link: "https://goo.gl/maps/shinjuku" }
+                ]
+            },
+            {
+                day: 9, date: "12/28 (Sun)", location: "Back Home", weather: "sunny",
+                events: [
+                    { time: "14:30", title: "抵達成田機場 (NRT)", type: "transport", note: "第一航廈 (T1)", link: "https://goo.gl/maps/naritaairport" },
+                    { time: "16:35", title: "起飛 (NRT -> TPE)", type: "transport", note: "航班資訊確認", link: "" },
+                    { time: "20:00", title: "抵達台北", type: "home", note: "甜蜜的家", link: "" }
+                ]
+            }
+        ];
+
+        const toolsData = {
+            flights: [
+                { leg: "去程", code: "TBD", time: "12/20 抵達 14:00", airport: "NGO" },
+                { leg: "回程", code: "TBD", time: "12/28 起飛 16:35", airport: "NRT T1" }
+            ],
+            hotels: [
+                { name: "VIA INN 名古屋站前椿町", dates: "12/20-12/22", address: "名古屋" },
+                { name: "河口湖飯店 (TBD)", dates: "12/22-12/24", address: "河口湖" },
+                { name: "Land About Tokyo", dates: "12/24-12/28", address: "鶯谷/上野" }
+            ],
+            emergency: [
+                { name: "旅外國人急難救助", phone: "+81-3-3280-7717" },
+                { name: "報警", phone: "110" },
+                { name: "救護車", phone: "119" }
+            ]
+        };
+
+        // --- ICONS ---
+        const IconMap = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+        );
+        const IconWeather = ({ type }) => {
+            const icons = {
+                sunny: "☀️", cloudy: "☁️", rain: "🌧️", snow: "❄️"
+            };
+            return <span className="text-2xl">{icons[type] || "🌤️"}</span>;
+        };
+
+        // --- COMPONENTS ---
+
+        function App() {
+            const [view, setView] = useState('itinerary'); // itinerary | tools
+            const [currentDay, setCurrentDay] = useState(1);
+            const [budgetItems, setBudgetItems] = useState([]);
+            const [newItem, setNewItem] = useState({ name: '', cost: '' });
+
+            const activeDayData = tripData.find(d => d.day === currentDay);
+
+            // Mock budget adding
+            const addBudgetItem = () => {
+                if(!newItem.name || !newItem.cost) return;
+                setBudgetItems([...budgetItems, { ...newItem, id: Date.now() }]);
+                setNewItem({ name: '', cost: '' });
+            };
+
+            const totalSpent = budgetItems.reduce((acc, curr) => acc + Number(curr.cost), 0);
+
+            return (
+                <div className="max-w-md mx-auto min-h-screen pb-20 relative bg-gray-50 shadow-2xl overflow-hidden">
+                    
+                    {/* Header */}
+                    <div className="bg-white px-6 pt-12 pb-4 sticky top-0 z-20 shadow-sm">
+                        <div className="flex justify-between items-center mb-4">
+                            <div>
+                                <h1 className="text-2xl font-bold text-gray-900 tracking-tight">2025 日本行 🇯🇵</h1>
+                                <p className="text-xs text-gray-500 font-medium tracking-wide">12/20 - 12/28</p>
+                            </div>
+                            <div className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold">
+                                {view === 'itinerary' ? `Day ${currentDay}` : '工具箱'}
+                            </div>
+                        </div>
+
+                        {/* Day Selector (Only in Itinerary View) */}
+                        {view === 'itinerary' && (
+                            <div className="flex space-x-3 overflow-x-auto hide-scrollbar pb-2">
+                                {tripData.map((d) => (
+                                    <button 
+                                        key={d.day}
+                                        onClick={() => setCurrentDay(d.day)}
+                                        className={`flex-shrink-0 flex flex-col items-center justify-center w-14 h-16 rounded-xl transition-all duration-300 border ${
+                                            currentDay === d.day 
+                                            ? 'bg-gray-900 text-white border-gray-900 shadow-lg transform scale-105' 
+                                            : 'bg-white text-gray-400 border-gray-100'
+                                        }`}
+                                    >
+                                        <span className="text-xs font-bold">D{d.day}</span>
+                                        <span className="text-[10px] mt-1 opacity-80">{d.date.split(' ')[0]}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Content Area */}
+                    <div className="p-4 space-y-4">
+                        
+                        {view === 'itinerary' && (
+                            <div className="animate-fade-in">
+                                {/* Weather Header */}
+                                <div className="bg-gradient-to-r from-blue-500 to-blue-400 text-white p-4 rounded-2xl shadow-md mb-6 flex justify-between items-center">
+                                    <div>
+                                        <p className="text-sm opacity-90">目前地點</p>
+                                        <p className="text-xl font-bold">{activeDayData.location}</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <IconWeather type={activeDayData.weather} />
+                                        <p className="text-xs mt-1">預報</p>
+                                    </div>
+                                </div>
+
+                                {/* Timeline */}
+                                <div className="space-y-4 relative">
+                                    {/* Vertical Line */}
+                                    <div className="absolute left-4 top-4 bottom-4 w-0.5 bg-gray-200 z-0"></div>
+
+                                    {activeDayData.events.map((event, idx) => (
+                                        <div key={idx} className="relative z-10 pl-10">
+                                            {/* Dot */}
+                                            <div className={`absolute left-2.5 top-5 w-3 h-3 rounded-full border-2 border-white shadow-sm ${
+                                                event.type === 'food' ? 'bg-orange-500' : 
+                                                event.type === 'sight' ? 'bg-blue-500' :
+                                                event.type === 'shop' ? 'bg-purple-500' : 'bg-gray-400'
+                                            }`}></div>
+
+                                            {/* Card */}
+                                            <div className="bg-white rounded-xl p-4 card-shadow border border-gray-50">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <div>
+                                                        <span className="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded mr-2">
+                                                            {event.time}
+                                                        </span>
+                                                        {event.tags && event.tags.map(tag => (
+                                                            <span key={tag} className="text-[10px] font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded mr-1">
+                                                                {tag}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <h3 className="font-bold text-gray-800 text-lg mb-1">{event.title}</h3>
+                                                <p className="text-sm text-gray-500 mb-3 leading-relaxed">{event.note}</p>
+                                                
+                                                {event.link && (
+                                                    <a href={event.link} target="_blank" className="flex items-center justify-center w-full py-2 bg-gray-50 hover:bg-gray-100 rounded-lg text-xs font-bold text-gray-600 transition-colors">
+                                                        <IconMap className="w-4 h-4 mr-1" /> 導航 GO
+                                                    </a>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {view === 'tools' && (
+                            <div className="space-y-6 animate-fade-in">
+                                {/* Budget Section */}
+                                <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                                    <h2 className="font-bold text-gray-800 mb-4 flex items-center">
+                                        <span className="text-xl mr-2">💰</span> 記帳小工具
+                                    </h2>
+                                    <div className="bg-gray-50 rounded-xl p-4 mb-4 text-center">
+                                        <p className="text-xs text-gray-500">目前總花費</p>
+                                        <p className="text-3xl font-bold text-gray-800">¥{totalSpent.toLocaleString()}</p>
+                                    </div>
+                                    <div className="space-y-2 mb-4 max-h-40 overflow-y-auto">
+                                        {budgetItems.map(item => (
+                                            <div key={item.id} className="flex justify-between text-sm border-b border-gray-100 pb-2">
+                                                <span>{item.name}</span>
+                                                <span className="font-mono">¥{item.cost}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="flex space-x-2">
+                                        <input 
+                                            type="text" 
+                                            placeholder="項目 (ex: 午餐)" 
+                                            className="flex-1 bg-gray-100 rounded-lg px-3 py-2 text-sm outline-none"
+                                            value={newItem.name}
+                                            onChange={(e) => setNewItem({...newItem, name: e.target.value})}
+                                        />
+                                        <input 
+                                            type="number" 
+                                            placeholder="¥" 
+                                            className="w-20 bg-gray-100 rounded-lg px-3 py-2 text-sm outline-none"
+                                            value={newItem.cost}
+                                            onChange={(e) => setNewItem({...newItem, cost: e.target.value})}
+                                        />
+                                        <button onClick={addBudgetItem} className="bg-gray-900 text-white rounded-lg px-4 text-xl font-bold">+</button>
+                                    </div>
+                                </div>
+
+                                {/* Info Sections */}
+                                <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                                    <h3 className="font-bold text-gray-700 mb-3">✈️ 航班資訊</h3>
+                                    {toolsData.flights.map((f, i) => (
+                                        <div key={i} className="text-sm mb-2 pb-2 border-b border-gray-50 last:border-0">
+                                            <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs mr-2">{f.leg}</span>
+                                            {f.time} @ {f.airport}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                                    <h3 className="font-bold text-gray-700 mb-3">🏨 住宿資訊</h3>
+                                    {toolsData.hotels.map((h, i) => (
+                                        <div key={i} className="text-sm mb-2">
+                                            <p className="font-bold">{h.name}</p>
+                                            <p className="text-xs text-gray-500">{h.dates} | {h.address}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Bottom Nav */}
+                    <div className="fixed bottom-0 w-full max-w-md bg-white border-t border-gray-100 flex justify-around py-3 pb-6 z-30 glass">
+                        <button 
+                            onClick={() => setView('itinerary')}
+                            className={`flex flex-col items-center ${view === 'itinerary' ? 'text-gray-900' : 'text-gray-400'}`}
+                        >
+                            <span className="text-xl">🗺️</span>
+                            <span className="text-[10px] font-bold mt-1">行程</span>
+                        </button>
+                        <button 
+                            onClick={() => setView('tools')}
+                            className={`flex flex-col items-center ${view === 'tools' ? 'text-gray-900' : 'text-gray-400'}`}
+                        >
+                            <span className="text-xl">🧳</span>
+                            <span className="text-[10px] font-bold mt-1">工具</span>
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
