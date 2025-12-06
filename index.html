@@ -1,3 +1,28 @@
+您好，感謝您提供錯誤截圖！
+
+從您提供的圖片來看，主要的錯誤是：
+
+ReferenceError: dailyMemos is not defined (圖片 image_45dfb6.png 和 image_45dff3.png)
+
+這表示在 TripCard 元件中使用了變數 dailyMemos，但這個變數在該元件的作用域內並未被定義或傳入。
+
+Warning: ReactDOM.render is no longer supported in React 18 (圖片 image_45e019.png)
+
+這是 React 版本不匹配的警告，但通常不會造成程式崩潰。
+
+Unterminated string constant (圖片 image_504d95.png - 雖然沒截圖到錯誤行，但這類錯誤常發生)
+
+在某個字串中可能缺少了單引號或雙引號。
+
+我查看了上一個版本的程式碼，發現我在 TripCard 元件中呼叫 UserMemo 時，確實忘記傳入 dailyMemos 變數。
+
+修正方案
+我將更新 App 元件，確保所有必需的 props 都正確傳遞給 TripCard 元件，並將 TripCard 元件中所有用到 dailyMemos 的地方改為使用從父元件傳入的 currentMemo 和 onUpdateMemo。
+
+請用以下修正後的程式碼完全替換您現有的 index.html 檔案：
+
+HTML
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -400,7 +425,8 @@
             
             const query = destinationTitles.join(' ');
             
-            return `https://maps.app.goo.gl/4vPwvUh3fD3yXnQi8${encodeURIComponent(query)}`;
+            // [修正] 修正地圖連結，避免語法錯誤
+            return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
         };
 
         // 根據主題決定卡片樣式
@@ -557,6 +583,7 @@
         }
         
         // 每日行程卡片元件
+        // [修正] 確保 currentMemo 和 onUpdateMemo 參數被正確接收
         function TripCard({ trip, currentMemo, onUpdateMemo }) { 
             const mapLink = generateDayMapLink(trip.events);
             // 由於主題統一為淺色，isDark 始終為 false
@@ -611,9 +638,10 @@
                         />
 
                         {/* 我的每日備註欄位 */}
+                        {/* [修正] 將 dailyMemos[selectedDay] 替換為傳入的 currentMemo */}
                         <UserMemo 
                             day={trip.day}
-                            currentMemo={dailyMemos[selectedDay]} 
+                            currentMemo={currentMemo} 
                             onUpdateMemo={onUpdateMemo} 
                             isDarkTheme={isDark}
                         />
@@ -922,6 +950,7 @@
                         {activeTab === 'schedule' && currentTrip && (
                             <TripCard 
                                 trip={currentTrip} 
+                                // [修正] 將 dailyMemos[selectedDay] 傳遞為 prop
                                 currentMemo={dailyMemos[selectedDay]} 
                                 onUpdateMemo={handleUpdateMemo} 
                             />
@@ -981,6 +1010,7 @@
         }
 
         // 渲染應用程式
+        // [注意] 保持 ReactDOM.render 方便單頁應用，儘管有 React 18 警告
         ReactDOM.render(<App />, document.getElementById('root'));
     </script>
 </body>
