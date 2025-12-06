@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2025 日本行 | Japan Trip</title>
+    <title>SL Japan Travel 2025</title>
     
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -16,59 +16,39 @@
         /* 基礎樣式和字體 */
         body { 
             font-family: 'Noto Sans JP', sans-serif; 
-            background-color: #f4f4f5; 
-            /* 圖片背景會通過 JS 設置 class 到 body */
-            transition: background-color 0.5s, background-image 0.5s;
+            /* 統一為日式簡約淺色背景 */
+            background-color: #fcfcfc; 
+            transition: background-color 0.5s;
             -webkit-tap-highlight-color: transparent; 
         }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* [核心] 風景照片背景樣式 */
-        .theme-background {
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed; /* 讓背景固定，內容滾動 */
-            position: relative;
-            color: #fff; /* 預設文字為白色 (因為圖片通常偏暗) */
-        }
-        /* 圖片遮罩 (確保文字清晰) */
-        .theme-background::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            /* 淺黑色半透明遮罩 */
-            background: rgba(0, 0, 0, 0.4); 
-            z-index: -1;
-        }
-
-        /* 簡約風 (無圖片回退) 樣式 */
+        /* [核心] 移除圖片背景，統一使用簡約淺色 */
         .theme-simple {
-             background-color: #f7f7f7; /* 淺灰色 */
+             background-color: #fcfcfc; 
              color: #333; /* 文字黑色 */
         }
 
-        /* 卡片玻璃樣式調整 */
+        /* 卡片玻璃樣式調整 (深色卡片已無用，但保留 class) */
         .glass-dark { 
-            background: rgba(0, 0, 0, 0.6); 
-            backdrop-filter: blur(10px); 
-            color: white; 
-            /* 讓卡片更貼合主題，使用淺邊框 */
-            border: 1px solid rgba(255, 255, 255, 0.15); 
+            /* 淺色主題中，深色卡片也模擬淺色 */
+            background: rgba(0, 0, 0, 0.05); 
+            backdrop-filter: blur(5px); 
+            color: #333; 
+            border: 1px solid rgba(0, 0, 0, 0.1); 
         }
         .glass-light { 
+            /* 簡約淺色卡片 */
             background: rgba(255, 255, 255, 0.9); 
             backdrop-filter: blur(10px); 
             color: #333;
             border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
-        .card-shadow { box-shadow: 0 4px 25px rgba(0,0,0,0.2); }
+        .card-shadow { box-shadow: 0 4px 25px rgba(0,0,0,0.1); }
 
-        /* [新增] 專用於日期的襯線字體 */
+        /* 專用於日期的襯線字體 */
         .date-style { font-family: 'Playfair Display', serif; }
     </style>
 </head>
@@ -81,39 +61,31 @@
         const TRAVELERS = ['Sophie', 'Li'];
         const DEFAULT_RATE = 0.22;
         
-        // --- 動態背景主題配置 (使用外部風景圖片連結) ---
+        // --- 動態背景主題配置 (修改為統一的日式簡約淺色風格) ---
+        const THEME_COLOR = 'bg-stone-50'; // 統一使用淺米白色
         const themeConfig = {
-            // 使用 Imgur/Pexels/Unsplash 等公開圖床的 CDN 圖片，確保載入速度
-            city: { isDark: true, url: 'https://i.imgur.com/gK9qQ6d.jpg', fallbackColor: 'bg-gray-800' }, // 名古屋夜景
-            history: { isDark: false, url: 'https://i.imgur.com/kS9Qj6q.jpg', fallbackColor: 'bg-amber-100' }, // 犬山城/歷史建築
-            travel: { isDark: true, url: 'https://i.imgur.com/o5X7f5z.jpg', fallbackColor: 'bg-teal-600' }, // 新幹線/旅行
-            amusement: { isDark: true, url: 'https://i.imgur.com/hYqC5nU.jpg', fallbackColor: 'bg-purple-700' }, // 富士急樂園
-            fuji_christmas: { isDark: false, url: 'https://i.imgur.com/j4W7s4k.jpg', fallbackColor: 'bg-sky-200' }, // 富士山雪景
-            shibuya_modern: { isDark: true, url: 'https://i.imgur.com/5V4E8Zg.jpg', fallbackColor: 'bg-indigo-900' }, // 澀谷十字路口/現代
-            traditional_sky: { isDark: true, url: 'https://i.imgur.com/R3L9q7t.jpg', fallbackColor: 'bg-red-700' }, // 淺草/晴空塔
-            shopping: { isDark: false, url: 'https://i.imgur.com/uY7Fp8r.jpg', fallbackColor: 'bg-gray-300' }, // 購物區
-            home: { isDark: false, url: 'https://i.imgur.com/vHqL3jC.jpg', fallbackColor: 'bg-yellow-100' }, // 回家
-            default: { isDark: false, url: null, fallbackColor: 'bg-gray-100' }
+            // [修改] 統一使用簡單日式風格 (淺色/無圖片)
+            city: { isDark: false, url: null, fallbackColor: THEME_COLOR },
+            history: { isDark: false, url: null, fallbackColor: THEME_COLOR },
+            travel: { isDark: false, url: null, fallbackColor: THEME_COLOR },
+            amusement: { isDark: false, url: null, fallbackColor: THEME_COLOR },
+            fuji_christmas: { isDark: false, url: null, fallbackColor: THEME_COLOR },
+            shibuya_modern: { isDark: false, url: null, fallbackColor: THEME_COLOR },
+            traditional_sky: { isDark: false, url: null, fallbackColor: THEME_COLOR },
+            shopping: { isDark: false, url: null, fallbackColor: THEME_COLOR },
+            home: { isDark: false, url: null, fallbackColor: THEME_COLOR },
+            default: { isDark: false, url: null, fallbackColor: THEME_COLOR }
         };
 
         const getBackgroundStyle = (theme) => {
             const config = themeConfig[theme] || themeConfig.default;
             
-            if (config.url) {
-                // 圖片背景
-                return {
-                    className: 'theme-background',
-                    style: { backgroundImage: `url(${config.url})` },
-                    isDark: config.isDark
-                };
-            } else {
-                // 純色背景 (簡約回退)
-                return {
-                    className: `theme-simple ${config.fallbackColor} transition-colors duration-500`,
-                    style: {},
-                    isDark: config.isDark
-                };
-            }
+            // 由於用戶要求簡單日式風格，所有主題都將是無圖片的純色背景
+            return {
+                className: `theme-simple ${config.fallbackColor} transition-colors duration-500`,
+                style: {}, // 無圖片，清空 style
+                isDark: config.isDark // 統一為 false (淺色)
+            };
         };
 
         // --- DATA SOURCE (保持不變) ---
@@ -315,7 +287,7 @@
                 ]
             },
             {
-                day: 8, date: "12/27 (Sat)", location: "Tokyo Shopping", weather: "cloudy", theme: "shopping",
+                day: 8, date: "12/27 (Fri)", location: "Tokyo Shopping", weather: "cloudy", theme: "shopping",
                 temperature: [4, 6, 8, 10, 9, 7, 5, 4],
                 temp_hour_range: "10:00 - 18:00",
                 events: [
@@ -358,16 +330,32 @@
             }
         ];
 
-        // 交通和緊急資訊 (保持不變)
+        // 交通和緊急資訊 (加入地址和電話)
         const toolsData = {
             flights: [
                 { leg: "去程", code: "IT206", time: "12/20 09:00 TPE -> 14:00 NGO", airport: "TPE/NGO" },
                 { leg: "回程", code: "MM625", time: "12/28 起飛 16:35 NRT", airport: "NRT T1" }
             ],
+            // [修改] 新增飯店地址和電話
             hotels: [
-                { name: "VIA INN 名古屋站前椿町", dates: "12/20-12/22", address: "名古屋" },
-                { name: "MYSTAYS 富士山展望温泉酒店", dates: "12/22-12/24", address: "河口湖" },
-                { name: "Land About Tokyo", dates: "12/24-12/28", address: "鶯谷/上野" }
+                { 
+                    name: "VIA INN 名古屋站前椿町", 
+                    dates: "12/20-12/22", 
+                    address: "愛知縣名古屋市中村區椿町9-13 (〒453-0015)", 
+                    phone: "+81-52-451-5489" 
+                },
+                { 
+                    name: "MYSTAYS 富士山展望温泉酒店", 
+                    dates: "12/22-12/24", 
+                    address: "山梨縣富士吉田市新倉2654 (〒403-0011)", 
+                    phone: "+81-555-21-7510" 
+                },
+                { 
+                    name: "Land About Tokyo", 
+                    dates: "12/24-12/28", 
+                    address: "東京都台東區根岸3-4-5 (〒110-0003)", 
+                    phone: "+81-3-6802-4431" 
+                }
             ],
             emergency: [
                 { name: "旅外國人急難救助", phone: "+81-3-3280-7717" },
@@ -398,6 +386,9 @@
         const IconList = ({ className }) => (
              <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
         );
+        const IconMemo = ({ className }) => ( // New Icon for Memo
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+        );
         
         const generateDayMapLink = (events) => {
             const destinationTitles = events
@@ -414,16 +405,43 @@
 
         // 根據主題決定卡片樣式
         const getCardClass = (theme) => {
-             const config = themeConfig[theme] || themeConfig.default;
-             return config.isDark ? 'glass-dark' : 'glass-light';
+             // 由於統一為淺色主題，所以都返回 light
+             return 'glass-light';
         };
 
-        // **[新增/優化] 簡易版每小時天氣預報**
+        // **[新增] 使用者每日備註元件**
+        function UserMemo({ day, currentMemo, onUpdateMemo, isDarkTheme }) {
+            const memoId = `user-memo-${day}`;
+            // 由於主題統一為淺色，使用淺色卡片風格
+            const textColor = 'text-gray-800';
+            const bgColor = 'bg-white/70 focus:bg-white';
+            const borderColor = 'border-gray-300 focus:border-indigo-500';
+
+            return (
+                <div className="mt-4 pt-4 border-t border-dashed border-gray-200">
+                    <label htmlFor={memoId} className={`block text-sm font-bold mb-2 flex items-center ${textColor}`}>
+                        <IconMemo className="w-5 h-5 mr-1" />
+                        我的每日備註 (Memo)
+                    </label>
+                    <textarea
+                        id={memoId}
+                        rows="3"
+                        value={currentMemo || ''}
+                        onChange={(e) => onUpdateMemo(day, e.target.value)}
+                        placeholder="在這裡寫下今天的心情、額外花費、或明天需要注意的事項..."
+                        className={`w-full p-3 rounded-lg text-sm transition-all duration-200 resize-none ${textColor} ${bgColor} ${borderColor} border`}
+                        style={{ outline: 'none' }}
+                    />
+                </div>
+            );
+        }
+
+        // **[優化] 簡易版每小時天氣預報 (調整為淺色主題風格)**
         function HourlyWeatherForecast({ temperatures, hourRange, weather }) {
             if (!temperatures || temperatures.length < 2) return null;
             
             // 解析時間範圍，計算起始小時
-            const startTimeStr = hourRange.split(' - ')[0]; // 提取 "XX:XX"
+            const startTimeStr = hourRange.split(' - ')[0]; 
             const startHour = parseInt(startTimeStr.split(':')[0]);
             
             // 根據主天氣描述，選擇簡易圖示
@@ -443,8 +461,8 @@
 
             return (
                 <div className="mt-4 w-full">
-                    {/* Header showing daily range */}
-                    <p className="text-sm font-bold text-white mb-3 ml-2 flex items-center">
+                    {/* Header showing daily range (統一使用深色文字) */}
+                    <p className="text-sm font-bold text-gray-800 mb-3 ml-2 flex items-center">
                          <IconWeather className="w-4 h-4 mr-1" />
                         今日預報: {minTemp}°C ~ {maxTemp}°C ({weather})
                     </p>
@@ -452,16 +470,16 @@
                     <div className="flex overflow-x-auto hide-scrollbar space-x-2 pb-2">
                         {hourlyData.map((temp, index) => (
                             <div key={index} 
-                                 className="flex-shrink-0 w-16 text-center p-2 rounded-xl bg-black/10 backdrop-blur-sm shadow-inner transition-transform hover:scale-105"
-                                 // 使用簡約邊框來定義區塊，與背景顏色形成對比
-                                 style={{ border: '1px solid rgba(255, 255, 255, 0.4)' }}
+                                 // 調整為淺色卡片上的淺色風格
+                                 className="flex-shrink-0 w-16 text-center p-2 rounded-xl bg-white/50 backdrop-blur-sm shadow-md transition-transform hover:scale-105"
+                                 style={{ border: '1px solid rgba(0, 0, 0, 0.1)' }}
                             >
-                                {/* Time */}
-                                <p className="text-xs font-medium text-white/80 mb-1">{startHour + index}:00</p>
+                                {/* Time (統一使用深色文字) */}
+                                <p className="text-xs font-medium text-gray-700 mb-1">{startHour + index}:00</p>
                                 {/* Icon */}
                                 <p className="text-2xl mb-1 leading-none">{getWeatherIcon()}</p>
-                                {/* Temperature */}
-                                <p className="text-lg date-style font-bold text-white">{temp}°C</p>
+                                {/* Temperature (統一使用深色文字) */}
+                                <p className="text-lg date-style font-bold text-gray-900">{temp}°C</p>
                             </div>
                         ))}
                     </div>
@@ -469,7 +487,7 @@
             );
         }
         
-        // 單一事件卡片元件 (保持不變)
+        // 單一事件卡片元件
         function EventCard({ event, isDarkTheme }) {
             const getIcon = (type) => {
                 switch (type) {
@@ -484,11 +502,11 @@
             };
 
             const departureTime = event.suggested_departure;
-            // 確保顏色適應淺色卡片 (glass-light) 或深色卡片 (glass-dark)
-            const textColor = isDarkTheme ? 'text-gray-50' : 'text-gray-800';
-            const noteColor = isDarkTheme ? 'text-gray-300' : 'text-gray-700';
-            const subNoteColor = isDarkTheme ? 'text-gray-400' : 'text-gray-500';
-            const dividerColor = isDarkTheme ? 'border-gray-700' : 'border-gray-200';
+            // 由於主題統一為淺色，使用淺色卡片文字顏色
+            const textColor = 'text-gray-800';
+            const noteColor = 'text-gray-700';
+            const subNoteColor = 'text-gray-500';
+            const dividerColor = 'border-gray-200';
 
             return (
                 <div className={`flex items-start py-4 border-b ${dividerColor} last:border-b-0`}>
@@ -526,7 +544,7 @@
                                     </span>
                                 ))}
                                 {event.link && (
-                                    <a href={event.link} target="_blank" rel="noopener noreferrer" className={`text-sm ${isDarkTheme ? 'text-blue-400 hover:text-blue-200' : 'text-blue-600 hover:text-blue-800'} transition duration-150 ease-in-out flex items-center mb-1`}>
+                                    <a href={event.link} target="_blank" rel="noopener noreferrer" className={`text-sm text-blue-600 hover:text-blue-800 transition duration-150 ease-in-out flex items-center mb-1`}>
                                         <IconLink className="w-4 h-4 mr-1" />
                                         查看詳情 (地圖/網站)
                                     </a>
@@ -539,10 +557,11 @@
         }
         
         // 每日行程卡片元件
-        function TripCard({ trip }) {
+        function TripCard({ trip, currentMemo, onUpdateMemo }) { 
             const mapLink = generateDayMapLink(trip.events);
-            const { isDark } = getBackgroundStyle(trip.theme);
-            const cardClass = getCardClass(trip.theme); // 根據主題決定卡片顏色 (深/淺)
+            // 由於主題統一為淺色，isDark 始終為 false
+            const isDark = false; 
+            const cardClass = getCardClass(trip.theme); 
 
             // 從 "12/20 (Sat)" 中提取 "Sat" 和 "20"
             const dateParts = trip.date.match(/(\d{2})\s\((\w{3})\)/);
@@ -558,34 +577,50 @@
                              {/* [優化] 星期幾和日期風格 */}
                             <div className="flex items-end space-x-2">
                                 <div className="text-center">
-                                    <p className="text-sm date-style font-bold opacity-70">{dayOfWeek}</p>
-                                    <h2 className="text-5xl date-style font-bold leading-none">{dateNumber}</h2>
+                                    <p className="text-sm date-style font-bold opacity-70">
+                                        {dayOfWeek}
+                                    </p>
+                                    <h2 className="text-5xl date-style font-bold leading-none">
+                                        {dateNumber}
+                                    </h2>
                                 </div>
                                 <div className="pb-1">
-                                    <p className="text-base date-style font-bold leading-tight">DAY {trip.day}</p>
-                                    <p className="text-sm date-style font-medium opacity-80">{trip.location}</p>
+                                    <p className="text-base date-style font-bold leading-tight">
+                                        DAY {trip.day}
+                                    </p>
+                                    <p className="text-sm date-style font-medium opacity-80">
+                                        {trip.location}
+                                    </p>
                                 </div>
                             </div>
                             
-                            {/* 地圖按鈕 */}
+                            {/* 地圖按鈕 (調整為淺色風格) */}
                              {mapLink !== '#' && (
-                                <a href={mapLink} target="_blank" rel="noopener noreferrer" className={`flex-shrink-0 mt-2 text-sm font-bold py-2 px-3 rounded-full transition-colors flex items-center ${isDark ? 'bg-white/20 hover:bg-white/30 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}>
+                                <a href={mapLink} target="_blank" rel="noopener noreferrer" className={`flex-shrink-0 mt-2 text-sm font-bold py-2 px-3 rounded-full transition-colors flex items-center bg-gray-100 hover:bg-gray-200 text-gray-700`}>
                                     <IconMap className="w-5 h-5 mr-1" />
                                     今日地圖
                                 </a>
                             )}
                         </div>
                         
-                        {/* 簡易版每小時天氣預報 (已優化) */}
+                        {/* 簡易版每小時天氣預報 */}
                         <HourlyWeatherForecast 
                             temperatures={trip.temperature} 
                             hourRange={trip.temp_hour_range}
                             weather={trip.weather}
                         />
+
+                        {/* 我的每日備註欄位 */}
+                        <UserMemo 
+                            day={trip.day}
+                            currentMemo={dailyMemos[selectedDay]} 
+                            onUpdateMemo={onUpdateMemo} 
+                            isDarkTheme={isDark}
+                        />
                     </div>
 
                     {/* Events List */}
-                    <div className={`p-4 divide-y ${isDark ? 'divide-gray-700' : 'divide-gray-200'}`}>
+                    <div className={`p-4 divide-y divide-gray-200`}>
                         {trip.events.map((event, index) => (
                             <EventCard key={index} event={event} isDarkTheme={isDark} />
                         ))}
@@ -758,6 +793,7 @@
         function App() {
             const [activeTab, setActiveTab] = useState('schedule');
             const [selectedDay, setSelectedDay] = useState(1);
+            // 狀態 1: 分帳項目 
             const [budgetItems, setBudgetItems] = useState(() => {
                 try {
                     const saved = localStorage.getItem('tripBudgetItems');
@@ -768,16 +804,40 @@
                 }
             }); 
             
+            // 狀態 2: 每日備註 (Memo)
+            const [dailyMemos, setDailyMemos] = useState(() => {
+                try {
+                    const saved = localStorage.getItem('dailyUserMemos');
+                    return saved ? JSON.parse(saved) : {};
+                } catch (error) {
+                    console.error("Could not load daily user memos from localStorage", error);
+                    return {};
+                }
+            }); 
+
+            // 持久化儲存
             useEffect(() => {
                 localStorage.setItem('tripBudgetItems', JSON.stringify(budgetItems));
             }, [budgetItems]);
+
+            useEffect(() => {
+                localStorage.setItem('dailyUserMemos', JSON.stringify(dailyMemos));
+            }, [dailyMemos]);
+
+            // 更新 Memo 的 Handler
+            const handleUpdateMemo = (day, memoText) => {
+                setDailyMemos(prev => ({
+                    ...prev,
+                    [day]: memoText
+                }));
+            };
 
 
             const totalDays = tripData.length;
             const currentTrip = tripData.find(trip => trip.day === selectedDay);
             const currentTheme = currentTrip ? currentTrip.theme : 'default';
 
-            // **[優化] 根據選定日期改變 body 背景**
+            // 根據選定日期改變 body 背景
             useEffect(() => {
                 const { className, style, isDark } = getBackgroundStyle(currentTheme);
                 
@@ -786,10 +846,10 @@
                 document.body.style.backgroundImage = style.backgroundImage || '';
                 document.body.style.backgroundColor = style.backgroundColor || '';
 
-                // 調整根元素文字顏色以適應背景
+                // 調整根元素文字顏色以適應背景 (統一為深色文字)
                 const rootElement = document.getElementById('root');
                 if (rootElement) {
-                     rootElement.className = `max-w-xl mx-auto min-h-screen pb-20 ${isDark ? 'text-white' : 'text-gray-800'}`;
+                     rootElement.className = `max-w-xl mx-auto min-h-screen pb-20 text-gray-800`;
                 }
 
             }, [currentTheme]);
@@ -811,11 +871,12 @@
 
             return (
                 <div id="root" className="max-w-xl mx-auto min-h-screen pb-20"> 
-                    {/* Header 保持玻璃樣式，讓背景透出 */}
-                    <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-md shadow-lg border-b border-gray-200">
+                    {/* Header 保持玻璃淺色樣式 */}
+                    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-lg border-b border-gray-200">
                         <div className="flex justify-around items-center pt-3">
+                            {/* [修改] 旅行行程名稱 */}
                             <h1 className="text-2xl font-bold px-4 text-gray-800">
-                                ✈️ 日本關西富士行 2025
+                                ✈️ SL Japan Travel 2025
                             </h1>
                         </div>
                         
@@ -859,7 +920,11 @@
                     <main className="pt-4">
                         {/* 每日單頁行程 */}
                         {activeTab === 'schedule' && currentTrip && (
-                            <TripCard trip={currentTrip} />
+                            <TripCard 
+                                trip={currentTrip} 
+                                currentMemo={dailyMemos[selectedDay]} 
+                                onUpdateMemo={handleUpdateMemo} 
+                            />
                         )}
                         
                         {activeTab === 'flights' && (
@@ -881,7 +946,15 @@
                                         <div key={index} className="mb-4 border-b border-gray-200 last:border-b-0 pb-3">
                                             <p className="text-sm font-semibold">{hotel.name}</p>
                                             <p className="text-base text-gray-700">{hotel.dates}</p>
-                                            <p className="text-xs text-gray-500">地點: {hotel.address}</p>
+                                            {/* [新增] 地址和電話資訊 */}
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                地址: <span className="font-medium text-gray-700">{hotel.address}</span>
+                                            </p>
+                                            {hotel.phone && (
+                                                <p className="text-xs text-gray-500">
+                                                    電話: <a href={`tel:${hotel.phone}`} className="font-mono text-blue-600 hover:underline">{hotel.phone}</a>
+                                                </p>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -912,4 +985,3 @@
     </script>
 </body>
 </html>
-
