@@ -181,7 +181,6 @@
                         title: "熱田神宮", 
                         type: "sight", 
                         suggested_departure: "08:20", 
-                        // 修正: 補上字串結尾的引號 "
                         transport_note: "名鐵 (名古屋站 -> 神宮前站) | 7分鐘", 
                         event_note: "【三神器之一：草薙劍】供奉日本神話中的草薙劍（複製品）。", 
                         tags: ["歷史"], 
@@ -454,12 +453,8 @@
         );
 
         const SplitTool = ({ travelers }) => {
-            // State for expenses (JPY)
-            const [expenses, setExpenses] = useState([
-                { id: 1, description: 'D1 矢場豬排', amount: 4500, paidBy: 'Sophie', sharedBy: ['Sophie', 'Li'] },
-                { id: 2, description: 'D2 犬山城門票', amount: 1000, paidBy: 'Li', sharedBy: ['Sophie', 'Li'] },
-                { id: 3, description: 'D3 鰻魚飯', amount: 6000, paidBy: 'Sophie', sharedBy: ['Sophie', 'Li'] },
-            ]);
+            // MODIFIED: 修正為空陣列，確保初始狀態沒有任何費用
+            const [expenses, setExpenses] = useState([]); 
             
             // 費用計算邏輯 (簡單平均分配)
             const calculateSummary = useMemo(() => {
@@ -493,6 +488,14 @@
                 return summary;
             }, [expenses, travelers]);
 
+            const summary = calculateSummary;
+            const netAmount = summary.Sophie ? summary.Sophie.net : 0;
+            const settlementMessage = netAmount === 0 ? '帳目平衡。' : (
+                netAmount < 0 ? 
+                    `Sophie 應付 Li JPY ${Math.abs(netAmount).toFixed(0)}` :
+                    `Li 應付 Sophie JPY ${Math.abs(netAmount).toFixed(0)}`
+            );
+
 
             return (
                 // 移除 max-w-4xl mx-auto，讓內容撐滿父容器 (max-w-4xl)
@@ -506,7 +509,7 @@
                         <h4 className="text-xl font-bold mb-4 border-b pb-2 text-gray-700">費用結算總覽</h4>
                         <div className="grid grid-cols-2 gap-4">
                             {travelers.map(name => {
-                                const data = calculateSummary[name];
+                                const data = summary[name];
                                 const netColor = data.net >= 0 ? 'text-green-600' : 'text-red-600';
                                 return (
                                     <div key={name} className="p-3 bg-gray-50 rounded-lg border border-gray-200">
@@ -520,27 +523,31 @@
                                 );
                             })}
                         </div>
-                        <p className="mt-4 text-sm text-gray-500 text-center">
-                            {calculateSummary.Sophie?.net < 0 ? 
-                                `Li 應付 Sophie JPY ${Math.abs(calculateSummary.Sophie.net).toFixed(0)}` :
-                                (calculateSummary.Li?.net < 0 ?
-                                `Sophie 應付 Li JPY ${Math.abs(calculateSummary.Li.net).toFixed(0)}` : 
-                                '帳目平衡。')}
+                        <p className="mt-4 text-sm text-gray-500 text-center font-semibold">
+                            {settlementMessage}
                         </p>
                     </div>
 
                     {/* Expense List Card */}
                     <div className="glass-light p-6 rounded-2xl shadow-lg mt-6">
                         <h4 className="text-xl font-bold mb-4 border-b pb-2 text-gray-700">費用清單 ({expenses.length}筆)</h4>
-                        <ul className="space-y-3">
-                            {expenses.map(exp => (
-                                <li key={exp.id} className="text-sm p-3 border-l-4 border-blue-400 bg-blue-50/50 rounded-md">
-                                    <p className="font-semibold text-gray-800">{exp.description}</p>
-                                    <p className="text-lg font-bold text-blue-800">JPY {exp.amount.toFixed(0)}</p>
-                                    <p className="text-xs text-gray-600 mt-1">由 <span className="font-bold">{exp.paidBy}</span> 支付 / 共用者: {exp.sharedBy.join(', ')}</p>
-                                </li>
-                            ))}
-                        </ul>
+                        
+                        {expenses.length === 0 ? (
+                             <p className="text-center text-gray-500 py-4">
+                                目前沒有任何費用記錄，請新增項目以開始分帳。
+                            </p>
+                        ) : (
+                            <ul className="space-y-3">
+                                {expenses.map(exp => (
+                                    <li key={exp.id} className="text-sm p-3 border-l-4 border-blue-400 bg-blue-50/50 rounded-md">
+                                        <p className="font-semibold text-gray-800">{exp.description}</p>
+                                        <p className="text-lg font-bold text-blue-800">JPY {exp.amount.toFixed(0)}</p>
+                                        <p className="text-xs text-gray-600 mt-1">由 <span className="font-bold">{exp.paidBy}</span> 支付 / 共用者: {exp.sharedBy.join(', ')}</p>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                        
                         <p className="mt-4 text-center text-gray-500 text-sm">（新增費用表單已略去，以保持程式碼簡潔。）</p>
                     </div>
                 </div>
@@ -679,7 +686,7 @@
 
 
             return (
-                // 修正: 將左右邊距從 mx-6 改為 mx-4 (更適合手機)，並維持 mb-12 間距 
+                // 修正: 將左右邊距改為 mx-4，更適合手機
                 <div className={`${cardClass} card-shadow rounded-2xl overflow-hidden mb-12 mx-4`}> 
                     
                     <div className="p-4">
@@ -728,7 +735,7 @@
                     <DailyPassSuggestion suggestion={trip.daily_pass} />
 
                     <div className="p-4 pt-0">
-                        {/* 修正：將 space-y-4 改為 space-y-6 增加行距，並將圓點邊框變大 */}
+                        {/* 修正：維持 space-y-6 增加行距 (排版調整) */}
                         <ul className="space-y-6 border-l-2 border-gray-200 pl-4"> 
                             {trip.events.map((event, index) => {
                                 const IconComponent = getIconForType(event.type);
@@ -736,7 +743,7 @@
                                 
                                 return (
                                     <li key={index} className="relative">
-                                        {/* 修正：將 border-4 改為 border-[6px] 讓圓點更明顯 */}
+                                        {/* 修正：維持 border-[6px] 讓圓點更明顯 */}
                                         <div className={`absolute -left-5 top-1 h-4 w-4 rounded-full border-[6px] border-white ${iconColor} bg-white flex items-center justify-center`}>
                                             <div className="h-2 w-2 rounded-full" style={{ backgroundColor: iconColor.replace('text-', 'bg-').replace('-500', '-600') }}></div>
                                         </div>
@@ -857,7 +864,7 @@
                         
                         {/* Daily Navigation (Only visible on 'daily' tab) */}
                         {tab === 'daily' && (
-                            // 修正: 將左右邊距從 mx-6 改為 mx-4
+                            // 修正: 將左右邊距改為 mx-4
                             <div className="flex items-center justify-between p-4 bg-white/70 backdrop-blur-sm mt-4 mx-4 rounded-xl shadow-md sticky top-24 z-10 border border-gray-100">
                                 <button onClick={goToPreviousDay} disabled={currentDay === 1} className="p-2 disabled:opacity-30 hover:bg-gray-200 rounded-full transition-colors">
                                     <IconArrowLeft className="w-6 h-6" />
