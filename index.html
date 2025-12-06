@@ -149,6 +149,11 @@
                 isDark: config.isDark 
             };
         };
+        
+        // Google Maps 搜尋連結基礎 URL
+        const MAP_BASE_URL = 'https://www.google.com/maps/search/?api=1&query=';
+        const createMapLink = (query) => MAP_BASE_URL + encodeURIComponent(query);
+
 
         const tripData = [
             // Day 1 (12/20) - 名古屋抵達
@@ -160,14 +165,14 @@
                 memo: "Day 1 備註：請確保名鐵特急車票已購買。**剛到日本先換好網卡。**", 
                 events: [
                     { time: "09:00", title: "桃園 (TPE) ✈️ 名古屋 (NGO)", type: "transport", transport_note: "虎航 IT206 (請自行確認登機時間)", event_note: "Check-in & 出境 | D1 班機資訊", link: "" },
-                    { time: "14:00-14:40", title: "抵達NGO 逛街", type: "leisure", transport_note: "", event_note: "機場逛逛", link: "" },
-                    { time: "14:40-15:00", title: "機場小吃", type: "food", transport_note: "", event_note: "在機場簡單吃點東西", link: "" },
-                    { time: "15:00-15:50", title: "前往飯店放行李", type: "accommodation", transport_note: "VIA INN 名古屋站前椿町", event_note: "特急+走路約 40 分鐘，準急+走路約 50 分鐘", link: "https://maps.app.goo.gl/g6978G6f9Z7n9bL49" },
-                    { time: "16:00-16:30", title: "前往大須觀音", type: "sight", transport_note: "地鐵 | 大須觀音站", event_note: "預留 30 分鐘抓寶可夢", link: "https://maps.app.goo.gl/vG6w4K9uL8K2hC3X8" },
-                    { time: "17:30-晚上", title: "大須觀音 & 大須商店街", type: "shopping", transport_note: "地鐵 | 大須觀音站", event_note: "多數店家營業至 20:00", link: "https://maps.app.goo.gl/9w8A2YfHqX7qL5Yw5" },
-                    { time: "晚餐", title: "晚餐：鰻魚飯或味噌豬排 (Op. 1 天婦羅豬排 天婦羅町本店)", type: "food", event_note: "若 D1 沒吃到 Harbs 甜點，可在此時段補吃", link: "https://maps.app.goo.gl/z69R5A7fB5R7zN9m7" },
-                    { time: "晚上", title: "榮商圈 / SKY-LE / UNIQLO GU", type: "shopping", event_note: "UNIQLO GU (~20:00), SKY-LE (~21:00)", link: "https://maps.app.goo.gl/yBw4g8cW7M2wL5Hw8" },
-                    { time: "晚上", title: "綠洲21 拍照 / 千里馬藥局", type: "leisure", transport_note: "", event_note: "綠洲 21 拍夜景，千里馬藥局營業至 22:00，回飯店時可經過逛逛", link: "https://maps.app.goo.gl/y6K2vC3X8L8K4vG6f" }
+                    { time: "14:00-14:40", title: "抵達NGO 逛街", type: "leisure", transport_note: "", event_note: "機場逛逛", link: createMapLink('中部國際機場 新特麗亞') },
+                    { time: "14:40-15:00", title: "機場小吃", type: "food", transport_note: "", event_note: "在機場簡單吃點東西", link: createMapLink('中部國際機場+餐廳') },
+                    { time: "15:00-15:50", title: "前往飯店放行李", type: "accommodation", transport_note: "VIA INN 名古屋站前椿町", event_note: "特急+走路約 40 分鐘，準急+走路約 50 分鐘", link: createMapLink('VIA INN 名古屋站前椿町') },
+                    { time: "16:00-16:30", title: "前往大須觀音", type: "sight", transport_note: "地鐵 | 大須觀音站", event_note: "預留 30 分鐘抓寶可夢", link: createMapLink('大須觀音') },
+                    { time: "17:30-晚上", title: "大須觀音 & 大須商店街", type: "shopping", transport_note: "地鐵 | 大須觀音站", event_note: "多數店家營業至 20:00", link: createMapLink('大須商店街') },
+                    { time: "晚餐", title: "晚餐：鰻魚飯或味噌豬排 (Op. 1 天婦羅豬排 天婦羅町本店)", type: "food", event_note: "若 D1 沒吃到 Harbs 甜點，可在此時段補吃", link: createMapLink('天婦羅町本店 名古屋') },
+                    { time: "晚上", title: "榮商圈 / SKY-LE / UNIQLO GU", type: "shopping", event_note: "UNIQLO GU (~20:00), SKY-LE (~21:00)", link: createMapLink('榮商圈 SKY-LE') },
+                    { time: "晚上", title: "綠洲21 拍照 / 千里馬藥局", type: "leisure", transport_note: "", event_note: "綠洲 21 拍夜景，千里馬藥局營業至 22:00，回飯店時可經過逛逛", link: createMapLink('綠洲21') }
                 ]
             },
             // Day 2 (12/21) - 古城文化之旅
@@ -178,15 +183,15 @@
                 daily_pass: "名古屋地鐵週末環保票 (Donichi Eco Kippu, 600 JPY)",
                 memo: "Day 2 備註：今天多利用地鐵一日券。建議購買名鐵犬山特急車票。",
                 events: [
-                    { time: "07:00-07:30", title: "飯店早餐", type: "food", event_note: "開放時間 06:30-09:30", link: "" },
-                    { time: "07:30-09:00", title: "前往犬山城", type: "transport", transport_note: "名鐵犬山線 MuSKY (所有席位均為指定席)", event_note: "早點出發避開人潮", link: "https://maps.app.goo.gl/hG9yF8m3Z7n9bL49" },
-                    { time: "09:00-10:00", title: "洗錢 / 三光稻荷神社", type: "sight", event_note: "三光稻荷神社 (在犬山城路上)", link: "https://maps.app.goo.gl/E8G9fD3X8L8K4vG6f" },
-                    { time: "10:00-12:00", title: "犬山城下町", type: "sight", event_note: "逛犬山城下町，品嚐當地小吃", link: "https://maps.app.goo.gl/hW4g8cW7M2wL5Hw8" },
-                    { time: "12:00-13:00", title: "午餐：飛騨牛燒肉專門店 (肉兵衛本店或犬山小紋)", type: "food", event_note: "需確認營業時間", link: "https://maps.app.goo.gl/z4R7zN9m7B5R5A7f" },
-                    { time: "13:00-14:30", title: "前往名古屋城", type: "transport", transport_note: "名鐵小牧線 > 上飯田站 (不換乘) > 上飯田線 >平安通站 (換乘) > 名城線 > 名古屋城站", event_note: "注意名古屋城的交通轉換", link: "https://maps.app.goo.gl/uR6tF8m3Z7n9bL49" },
-                    { time: "14:30-16:00", title: "名古屋城", type: "sight", event_note: "交通券換入場券，注意關門時間 (16:30)", link: "https://maps.app.goo.gl/T8G9fD3X8L8K4vG6f" },
-                    { time: "16:30-18:00", title: "晚餐 / 名鐵百貨商圈", type: "food", event_note: "若 D1 沒吃到鰻魚飯的話可此時段吃", link: "https://maps.app.goo.gl/hYw4g8cW7M2wL5Hw8" },
-                    { time: "晚上", title: "UNIQLO / BicCamera / 千里馬藥局", type: "shopping", event_note: "BicCamera 名古屋車站店西店 / JR TOWER 店 營業 (~21:00)，千里馬藥局營業至 22:00", link: "https://maps.app.goo.gl/y6K2vC3X8L8K4vG6f" }
+                    { time: "07:00-07:30", title: "飯店早餐", type: "food", event_note: "開放時間 06:30-09:30", link: createMapLink('VIA INN 名古屋站前椿町 早餐') },
+                    { time: "07:30-09:00", title: "前往犬山城", type: "transport", transport_note: "名鐵犬山線 MuSKY (所有席位均為指定席)", event_note: "早點出發避開人潮", link: createMapLink('犬山城') },
+                    { time: "09:00-10:00", title: "洗錢 / 三光稻荷神社", type: "sight", event_note: "三光稻荷神社 (在犬山城路上)", link: createMapLink('三光稻荷神社') },
+                    { time: "10:00-12:00", title: "犬山城下町", type: "sight", event_note: "逛犬山城下町，品嚐當地小吃", link: createMapLink('犬山城下町') },
+                    { time: "12:00-13:00", title: "午餐：飛騨牛燒肉專門店 (肉兵衛本店或犬山小紋)", type: "food", event_note: "需確認營業時間", link: createMapLink('肉兵衛本店 犬山') },
+                    { time: "13:00-14:30", title: "前往名古屋城", type: "transport", transport_note: "名鐵小牧線 > 上飯田站 (不換乘) > 上飯田線 >平安通站 (換乘) > 名城線 > 名古屋城站", event_note: "注意名古屋城的交通轉換", link: createMapLink('名古屋城') },
+                    { time: "14:30-16:00", title: "名古屋城", type: "sight", event_note: "交通券換入場券，注意關門時間 (16:30)", link: createMapLink('名古屋城') },
+                    { time: "16:30-18:00", title: "晚餐 / 名鐵百貨商圈", type: "food", event_note: "若 D1 沒吃到鰻魚飯的話可此時段吃", link: createMapLink('名鐵百貨本店') },
+                    { time: "晚上", title: "UNIQLO / BicCamera / 千里馬藥局", type: "shopping", event_note: "BicCamera 名古屋車站店西店 / JR TOWER 店 營業 (~21:00)，千里馬藥局營業至 22:00", link: createMapLink('千里馬藥局 名古屋站') }
                 ]
             },
             // Day 3 (12/22) - 早上熱田神宮 & 中午前往富士山 🗻
@@ -197,14 +202,14 @@
                 daily_pass: "JR 高速巴士 (名古屋 -> 富士急樂園)",
                 memo: "Day 3 備註：務必確認黑貓宅急便寄件。",
                 events: [
-                    { time: "08:00", title: "Check-out & 行李寄送", type: "accommodation", event_note: "將大件行李寄送到東京 Land About Tokyo (黑貓宅急便)", link: "" },
-                    { time: "09:00", title: "熱田神宮", type: "sight", transport_note: "名鐵或地鐵 (神宮西站)", event_note: "參拜後需預留時間返回車站", link: "https://maps.app.goo.gl/G6f9Z7n9bL49hG9y" },
-                    { time: "11:00", title: "午餐：名古屋站附近快速用餐", type: "food", event_note: "在車站周邊快速解決午餐，準備搭車", link: "https://maps.app.goo.gl/jR5A7fB5R7zN9m7C" },
+                    { time: "08:00", title: "Check-out & 行李寄送", type: "accommodation", event_note: "將大件行李寄送到東京 Land About Tokyo (黑貓宅急便)", link: createMapLink('黑貓宅急便 名古屋車站') },
+                    { time: "09:00", title: "熱田神宮", type: "sight", transport_note: "名鐵或地鐵 (神宮西站)", event_note: "參拜後需預留時間返回車站", link: createMapLink('熱田神宮') },
+                    { time: "11:00", title: "午餐：名古屋站附近快速用餐", type: "food", event_note: "在車站周邊快速解決午餐，準備搭車", link: createMapLink('名古屋車站周邊午餐') },
                     { time: "12:00", title: "高速巴士：名古屋 -> 富士急樂園", type: "transport", transport_note: "JR 東海高速巴士 | 車程約 4.5hr。", event_note: "巴士時間已調整至中午。帶點零食和水。", link: "https://www.japan-guide.com/bus/fuji.html" },
-                    { time: "16:30", title: "抵達富士急樂園站", type: "transport", event_note: "轉乘至飯店 (可能需搭乘計程車或接駁車)", link: "https://maps.app.goo.gl/A7fB5R7zN9m7CjR5" },
-                    { time: "17:30", title: "MYSTAYS 富士山展望溫泉酒店 Check-in", type: "accommodation", event_note: "確認房間的富士山景觀！", link: "https://maps.app.goo.gl/3X8L8K4vG6fy6K2" },
-                    { time: "20:00", title: "晚餐：飯店附近或溫泉設施用餐", type: "food", event_note: "飯店溫泉設施或附近居酒屋", link: "" },
-                    { time: "21:30", title: "體驗飯店溫泉", type: "leisure", event_note: "", link: "" }
+                    { time: "16:30", title: "抵達富士急樂園站", type: "transport", event_note: "轉乘至飯店 (可能需搭乘計程車或接駁車)", link: createMapLink('富士急樂園站') },
+                    { time: "17:30", title: "MYSTAYS 富士山展望溫泉酒店 Check-in", type: "accommodation", event_note: "確認房間的富士山景觀！", link: createMapLink('MYSTAYS 富士山展望溫泉酒店') },
+                    { time: "20:00", title: "晚餐：飯店附近或溫泉設施用餐", type: "food", event_note: "飯店溫泉設施或附近居酒屋", link: createMapLink('富士吉田+晚餐') },
+                    { time: "21:30", title: "體驗飯店溫泉", type: "leisure", event_note: "", link: createMapLink('MYSTAYS 富士山展望溫泉酒店+溫泉') }
                 ]
             },
             // Day 4 (12/23) - 富士急樂園 🎢
@@ -216,10 +221,10 @@
                 memo: "請備妥防寒衣物，山區氣溫較低。建議先玩高人氣的雲霄飛車。", 
                 events: [
                     { time: "09:00", title: "富士急樂園 開園", type: "amusement", event_note: "使用通票入園，建議先排隊玩高飛車或ええじゃないか", link: toolsData.tickets[1].link },
-                    { time: "12:30", title: "午餐：樂園內餐廳", type: "food", event_note: "在園區內選擇喜歡的主題餐廳", link: "https://maps.app.goo.gl/K4vG6fy6K2vC3X8L8" },
-                    { time: "15:00", title: "鬼屋戰慄迷宮 / 其他設施", type: "amusement", event_note: "挑戰世界最長最可怕的鬼屋！", link: "https://www.fujiq.jp/en/fujikyu_maps/" },
-                    { time: "18:00", title: "晚餐：河口湖車站附近", type: "food", event_note: "嘗試當地的餺飥麵 (ほうとう) 或燒肉", link: "https://maps.app.goo.gl/9m7CjR5A7fB5R7zN9" },
-                    { time: "20:00", title: "返回飯店休息 / 溫泉", type: "leisure", event_note: "", link: "" }
+                    { time: "12:30", title: "午餐：樂園內餐廳", type: "food", event_note: "在園區內選擇喜歡的主題餐廳", link: createMapLink('富士急樂園+餐廳') },
+                    { time: "15:00", title: "鬼屋戰慄迷宮 / 其他設施", type: "amusement", event_note: "挑戰世界最長最可怕的鬼屋！", link: createMapLink('富士急樂園+戰慄迷宮') },
+                    { time: "18:00", title: "晚餐：河口湖車站附近", type: "food", event_note: "嘗試當地的餺飥麵 (ほうとう) 或燒肉", link: createMapLink('河口湖車站+晚餐') },
+                    { time: "20:00", title: "返回飯店休息 / 溫泉", type: "leisure", event_note: "", link: createMapLink('MYSTAYS 富士山展望溫泉酒店') }
                 ]
             },
             // Day 5 (12/24) - 河口湖觀光 & 傍晚前往東京 & 晚上晴空塔 🎄
@@ -230,14 +235,14 @@
                 daily_pass: "富士山周遊巴士 + 高速巴士 (河口湖 -> 東京)", 
                 memo: "上午專注於富士山周邊觀光。下午搭乘晚班巴士前往東京。請提前確認巴士票。", 
                 events: [
-                    { time: "09:00", title: "Check-out & 寄放行李", type: "accommodation", event_note: "辦理退房手續，將行李寄放在飯店櫃台或車站置物櫃", link: "" },
-                    { time: "09:30", title: "河口湖天上山公園 (Kachi Kachi 山纜車)", type: "sight", transport_note: "河口湖周遊巴士 (紅線)", event_note: "欣賞河口湖全景與富士山", link: "https://maps.app.goo.gl/g6f9Z7n9bL49hG9yF" },
-                    { time: "11:30", title: "新倉山淺間公園", type: "sight", transport_note: "富士急行線下吉田站", event_note: "爬上忠靈塔拍攝富士山經典照", link: "https://maps.app.goo.gl/E8G9fD3X8L8K4vG6f" },
-                    { time: "13:30", title: "午餐：河口湖周邊餐廳", type: "food", event_note: "建議在河口湖車站附近用餐", link: "" },
+                    { time: "09:00", title: "Check-out & 寄放行李", type: "accommodation", event_note: "辦理退房手續，將行李寄放在飯店櫃台或車站置物櫃", link: createMapLink('河口湖車站+行李寄放') },
+                    { time: "09:30", title: "河口湖天上山公園 (Kachi Kachi 山纜車)", type: "sight", transport_note: "河口湖周遊巴士 (紅線)", event_note: "欣賞河口湖全景與富士山", link: createMapLink('河口湖天上山公園+纜車') },
+                    { time: "11:30", title: "新倉山淺間公園", type: "sight", transport_note: "富士急行線下吉田站", event_note: "爬上忠靈塔拍攝富士山經典照", link: createMapLink('新倉山淺間公園') },
+                    { time: "13:30", title: "午餐：河口湖周邊餐廳", type: "food", event_note: "建議在河口湖車站附近用餐", link: createMapLink('河口湖午餐推薦') },
                     { time: "16:30", title: "高速巴士：河口湖 -> 新宿/東京站", type: "transport", transport_note: "巴士約 17:00 出發 | 車程約 2 小時", event_note: "搭乘預訂的巴士前往東京", link: "https://www.highwaybus.com/gp/reservation/rsvPlanList?routeGroupNo=1&routeNo=111&displayType=4" },
-                    { time: "19:30", title: "抵達新宿 / 前往飯店 Land About Tokyo Check-in", type: "accommodation", transport_note: "地鐵或JR至日暮里站", event_note: "於旅館 Land About Tokyo Check-in，領取行李", link: "https://maps.app.goo.gl/J7n9bL49hG9yF8m3Z" },
-                    { time: "21:00", title: "晚餐：上野/日暮里附近", type: "food", event_note: "在飯店附近快速用餐", link: "" },
-                    { time: "22:00", title: "晴空塔聖誕活動 / 六本木點燈 (二選一)", type: "sight", event_note: "選擇其中一個點燈活動，欣賞聖誕夜景", link: "https://maps.app.goo.gl/T8G9fD3X8L8K4vG6f" }
+                    { time: "19:30", title: "抵達新宿 / 前往飯店 Land About Tokyo Check-in", type: "accommodation", transport_note: "地鐵或JR至日暮里站", event_note: "於旅館 Land About Tokyo Check-in，領取行李", link: createMapLink('Land About Tokyo') },
+                    { time: "21:00", title: "晚餐：上野/日暮里附近", type: "food", event_note: "在飯店附近快速用餐", link: createMapLink('日暮里+晚餐') },
+                    { time: "22:00", title: "晴空塔聖誕活動 / 六本木點燈 (二選一)", type: "sight", event_note: "選擇其中一個點燈活動，欣賞聖誕夜景", link: createMapLink('東京+六本木之丘+點燈') }
                 ]
             },
             // Day 6 (12/25) - 澀谷與原宿 & 晚上六本木點燈 🎄
@@ -248,13 +253,13 @@
                 daily_pass: "東京地鐵一日券", 
                 memo: "聖誕節當天人潮眾多。務必注意 Shibuya Sky 的預約時間。", 
                 events: [
-                    { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: "" },
-                    { time: "10:00", title: "明治神宮", type: "sight", transport_note: "地鐵至代代木站/原宿站", event_note: "日本最重要的神社之一", link: "https://maps.app.goo.gl/g7n9bL49hG9yF8m3Z" },
-                    { time: "午餐", title: "午餐：Sports shop Gallery 2 (澀谷)", type: "shopping", event_note: "在澀谷逛運動用品店，並在周邊用餐", link: "https://maps.app.goo.gl/P2L5Hw8Yw4g8cW7M2wL" },
+                    { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo+早餐') },
+                    { time: "10:00", title: "明治神宮", type: "sight", transport_note: "地鐵至代代木站/原宿站", event_note: "日本最重要的神社之一", link: createMapLink('明治神宮') },
+                    { time: "午餐", title: "午餐：Sports shop Gallery 2 (澀谷)", type: "shopping", event_note: "在澀谷逛運動用品店，並在周邊用餐", link: createMapLink('Gallery 2 澀谷') },
                     { time: "14:00", title: "澀谷 Sky 展望台", type: "sight", event_note: "兩周前訂票，先確認時間。觀賞夕陽或夜景", link: toolsData.tickets[0].link },
-                    { time: "18:00", title: "青之洞窟", type: "sight", event_note: "冬季限定燈飾活動 (通常在澀谷舉行)", link: "" },
-                    { time: "晚餐", title: "晚餐：Steak Rice & Curry Restaurant", type: "food", event_note: "您指定的餐廳", link: "https://maps.app.goo.gl/A7fB5R7zN9m7CjR5" },
-                    { time: "晚上", title: "六本木之丘聖誕點燈 (Roppongi Illumination)", type: "sight", transport_note: "地鐵至六本木站", event_note: "欣賞華麗的櫸木坂大道點燈", link: "https://maps.app.goo.gl/wYw4g8cW7M2wL5Hw8" }
+                    { time: "18:00", title: "青之洞窟", type: "sight", event_note: "冬季限定燈飾活動 (通常在澀谷舉行)", link: createMapLink('青之洞窟+澀谷') },
+                    { time: "晚餐", title: "晚餐：Steak Rice & Curry Restaurant", type: "food", event_note: "您指定的餐廳", link: createMapLink('東京 Steak Rice & Curry Restaurant') },
+                    { time: "晚上", title: "六本木之丘聖誕點燈 (Roppongi Illumination)", type: "sight", transport_note: "地鐵至六本木站", event_note: "欣賞華麗的櫸木坂大道點燈", link: createMapLink('六本木之丘') }
                 ]
             },
             // Day 7 (12/26) - 淺草、晴空塔與押上溫泉 ⛩️
@@ -265,12 +270,12 @@
                 daily_pass: "東京地鐵一日券", 
                 memo: "Day 7 備註：主要在淺草/押上周邊活動，可多利用地鐵。", 
                 events: [
-                    { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: "" },
-                    { time: "10:00", title: "淺草寺 (Sensoji Temple) & 雷門", type: "sight", transport_note: "地鐵至淺草站", event_note: "參觀雷門、仲見世通，抽籤求運勢", link: "https://maps.app.goo.gl/G6f9Z7n9bL49hG9yF" },
-                    { time: "午餐", title: "午餐：淺草今半 (壽喜燒/便宜午餐)", type: "food", event_note: "平日中午便宜很多，約一人 1000 台幣左右", link: "https://maps.app.goo.gl/k3B2vC3X8L8K4vG6f" },
-                    { time: "15:00", title: "晴空塔 (Tokyo Skytree) & Pokemon Center", type: "shopping", transport_note: "地鐵至押上站", event_note: "登塔觀景或在周邊的 Solamachi 購物，尋找 Pokemon Center", link: "https://maps.app.goo.gl/T8G9fD3X8L8K4vG6f" },
-                    { time: "18:00", title: "押上天然溫泉 大黑湯", type: "leisure", transport_note: "近押上站 (Oshiage)", event_note: "體驗日式溫泉，放鬆身心", link: "https://maps.app.goo.gl/wJ7n9bL49hG9yF8m3" },
-                    { time: "晚餐", title: "晚餐：溫泉周邊或返回上野", type: "food", event_note: "享用晚餐後返回飯店", link: "" }
+                    { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo+早餐') },
+                    { time: "10:00", title: "淺草寺 (Sensoji Temple) & 雷門", type: "sight", transport_note: "地鐵至淺草站", event_note: "參觀雷門、仲見世通，抽籤求運勢", link: createMapLink('淺草寺 雷門') },
+                    { time: "午餐", title: "午餐：淺草今半 (壽喜燒/便宜午餐)", type: "food", event_note: "平日中午便宜很多，約一人 1000 台幣左右", link: createMapLink('淺草今半') },
+                    { time: "15:00", title: "晴空塔 (Tokyo Skytree) & Pokemon Center", type: "shopping", transport_note: "地鐵至押上站", event_note: "登塔觀景或在周邊的 Solamachi 購物，尋找 Pokemon Center", link: createMapLink('東京晴空塔+Pokemon Center') },
+                    { time: "18:00", title: "押上天然溫泉 大黑湯", type: "leisure", transport_note: "近押上站 (Oshiage)", event_note: "體驗日式溫泉，放鬆身心", link: createMapLink('押上天然溫泉 大黑湯') },
+                    { time: "晚餐", title: "晚餐：溫泉周邊或返回上野", type: "food", event_note: "享用晚餐後返回飯店", link: createMapLink('押上+晚餐推薦') }
                 ]
             },
             // Day 8 (12/27) - Ricoland (東雲) 與新宿採購 🛍️ (已修正 Ricoland 地點與順序)
@@ -281,14 +286,14 @@
                 daily_pass: "Suica/Pasmo 卡", 
                 memo: "Day 8 備註：最後採購日。上午先前往 Ricoland，再前往新宿用餐及購物。", 
                 events: [
-                    { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: "" },
+                    { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo+早餐') },
                     { 
                         time: "09:00", 
                         title: "Ricoland Tokyo Bay (機車用品店)", 
                         type: "shopping", 
                         transport_note: "JR 至新橋轉臨海線至東雲站 (Shinonome)，約 40 分鐘。或搭乘計程車/巴士。", 
                         event_note: "地址: 2-chōme-7-12 Shinonome, Koto City. 營業時間: 10:00–20:00 (週六)。請預留交通時間。", 
-                        link: "https://maps.google.com/?cid=13768552619504221624&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQ" // 修正後的 Ricoland 連結
+                        link: createMapLink('Ricoland Tokyo Bay Shinonome') // 修正為正確搜尋連結
                     },
                     { 
                         time: "12:00", 
@@ -296,17 +301,17 @@
                         type: "food", 
                         transport_note: "從東雲站搭乘臨海線轉 JR 至新宿三丁目站", 
                         event_note: "享用壽喜燒/懷石料理，需確認預約", 
-                        link: "https://maps.app.goo.gl/Hw4g8cW7M2wL5Hw8" 
+                        link: createMapLink('木曾路 新宿三丁目店') 
                     },
                     { 
                         time: "14:30", 
                         title: "新宿站周邊逛街", 
                         type: "shopping", 
                         event_note: "逛伊勢丹、高島屋或新宿東口一帶的藥妝/百貨", 
-                        link: "https://maps.app.goo.gl/L5Hw8Yw4g8cW7M2w" 
+                        link: createMapLink('新宿東口+百貨公司') 
                     },
-                    { time: "晚餐", title: "晚餐：新宿或返回上野 (最後一晚)", type: "food", event_note: "最後一晚晚餐，可以選擇喜歡的餐廳", link: "" },
-                    { time: "20:00", title: "回飯店整理行李", type: "leisure", event_note: "準備隔日登機", link: "" }
+                    { time: "晚餐", title: "晚餐：新宿或返回上野 (最後一晚)", type: "food", event_note: "最後一晚晚餐，可以選擇喜歡的餐廳", link: createMapLink('新宿+晚餐推薦') },
+                    { time: "20:00", title: "回飯店整理行李", type: "leisure", event_note: "準備隔日登機", link: createMapLink('Land About Tokyo') }
                 ]
             },
             // Day 9 (12/28) - 啟程返家 ✈️
@@ -317,10 +322,10 @@
                 daily_pass: "京成電鐵或巴士 (飯店 -> 成田機場)", 
                 memo: "Day 9 備註：提早 3 小時抵達 NRT 機場。請確認 Land About Tokyo 的退房時間。", 
                 events: [
-                    { time: "11:00", title: "Land About Tokyo Check-out", type: "accommodation", event_note: "確認退房手續，打包行李", link: "" },
-                    { time: "12:00", title: "前往 NRT 機場", type: "transport", transport_note: "京成電鐵 Access Express 或 Skyliner (從日暮里/上野出發)", event_note: "根據班機時間預留充足交通時間", link: "https://maps.app.goo.gl/uJ7n9bL49hG9yF8m3" },
-                    { time: "13:35", title: "NRT T1 Check-in", type: "transport", event_note: "樂桃 MM625 (請務必再次確認起飛時間 16:35)", link: "" },
-                    { time: "16:35", title: "成田 (NRT) ✈️ 桃園 (TPE)", type: "transport", event_note: "回程班機資訊，旅程結束！", link: "" }
+                    { time: "11:00", title: "Land About Tokyo Check-out", type: "accommodation", event_note: "確認退房手續，打包行李", link: createMapLink('Land About Tokyo') },
+                    { time: "12:00", title: "前往 NRT 機場", type: "transport", transport_note: "京成電鐵 Access Express 或 Skyliner (從日暮里/上野出發)", event_note: "根據班機時間預留充足交通時間", link: createMapLink('成田機場+第一航廈') },
+                    { time: "13:35", title: "NRT T1 Check-in", type: "transport", event_note: "樂桃 MM625 (請務必再次確認起飛時間 16:35)", link: createMapLink('成田機場+第一航廈+樂桃航空') },
+                    { time: "16:35", title: "成田 (NRT) ✈️ 桃園 (TPE)", type: "transport", event_note: "回程班機資訊，旅程結束！", link: createMapLink('桃園國際機場') }
                 ]
             }
         ];
@@ -565,7 +570,7 @@
 
             // 處理日期切換
             const nextDay = () => setActiveDayIndex((prev) => Math.min(prev + 1, totalDays - 1));
-            const prevDay = () => setActiveDayIndex((prev) => Math.max(prev - 1, 0));
+            const prevDay = () => setActiveDayIndex((prev) => Math.min(prev - 1, 0));
 
             // 渲染工具頁面
             const renderTools = () => {
@@ -856,6 +861,7 @@
                         {/* Day Navigation Bar (僅在行程頁面顯示) */}
                         {activeTab === 'itinerary' && (
                             <div className="flex justify-between items-center px-4 py-2 border-b border-gray-100">
+                                <span className="text-xs text-gray-500">Day Navigation:</span>
                                 <NavArrow direction="left" onClick={prevDay} disabled={activeDayIndex === 0} />
                                 <span className="text-base font-semibold text-gray-700">
                                     DAY {currentDayData.day} / {totalDays}
