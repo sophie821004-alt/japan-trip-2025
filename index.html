@@ -727,11 +727,10 @@
         function TripCard({ trip, dailyMemos, selectedDay, onUpdateMemo }) { 
             const mapLink = generateDayMapLink(trip.events);
             const cardClass = getCardClass(trip.theme); 
-
-            // 從 "12/20 (Sat)" 中提取 "Sat" 和 "20"
-            const dateParts = trip.date.match(/(\d{2})\s\((\w{3})\)/);
-            const dayOfWeek = dateParts ? dateParts[2].toUpperCase() : 'DAY';
-            const dateNumber = dateParts ? dateParts[1] : trip.day;
+            
+            // [修正] 新增變數以整合顯示日期與 DayX
+            const monthDay = trip.date.split(' ')[0]; // e.g., "12/20"
+            const dayNumber = trip.day; // e.g., 1
 
             return (
                 <div className={`${cardClass} card-shadow rounded-2xl overflow-hidden mb-6 mx-4`}>
@@ -739,27 +738,18 @@
                     {/* Header with Date and Location */}
                     <div className="p-4">
                         <div className="flex justify-between items-start">
-                             {/* [優化] 星期幾和日期風格 */}
-                            <div className="flex items-end space-x-2">
-                                <div className="text-center">
-                                    <p className="text-sm date-style font-bold opacity-70">
-                                        {dayOfWeek}
-                                    </p>
-                                    <h2 className="text-5xl date-style font-bold leading-none">
-                                        {dateNumber}
-                                    </h2>
-                                </div>
-                                <div className="pb-1">
-                                    <p className="text-base date-style font-bold leading-tight">
-                                        DAY {trip.day}
-                                    </p>
-                                    <p className="text-sm date-style font-medium opacity-80">
-                                        {trip.location}
-                                    </p>
-                                </div>
+                             
+                            {/* [修正] 整合日期和 DayX 顯示: 12/20 (Day1) */}
+                            <div className="flex flex-col items-start">
+                                <h2 className="text-3xl date-style font-bold leading-none text-gray-800">
+                                    {monthDay} (<span className="text-indigo-600">Day{dayNumber}</span>)
+                                </h2>
+                                <p className="text-sm date-style font-medium opacity-80 mt-1">
+                                    {trip.location}
+                                </p>
                             </div>
                             
-                            {/* 地圖按鈕 (調整為淺色風格) */}
+                            {/* 地圖按鈕 */}
                              {mapLink !== '#' && (
                                 <a href={mapLink} target="_blank" rel="noopener noreferrer" className={`flex-shrink-0 mt-2 text-sm font-bold py-2 px-3 rounded-full transition-colors flex items-center bg-gray-100 hover:bg-gray-200 text-gray-700`}>
                                     <IconMap className="w-5 h-5 mr-1" />
@@ -1135,7 +1125,6 @@
                     <main className="pt-4">
                         {/* 每日單頁行程 */}
                         {activeTab === 'schedule' && currentTrip && (
-                            // 【修正點 3】: 在 App 元件中正確傳遞 dailyMemos 和 selectedDay 給 TripCard
                             <TripCard 
                                 trip={currentTrip} 
                                 dailyMemos={dailyMemos} 
