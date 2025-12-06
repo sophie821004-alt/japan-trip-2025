@@ -10,7 +10,7 @@
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Playfair+Display:wght=700&display=swap" rel="stylesheet">
     
     <style>
         /* 基礎樣式和字體 */
@@ -46,6 +46,11 @@
         /* 設定分帳系統網格數 */
         .grid-cols-2 {
             grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        
+        /* 修正 React 18 警告 */
+        #root {
+            min-height: 100vh;
         }
     </style>
 </head>
@@ -97,19 +102,18 @@
                     name: "Shibuya Sky 展望台門票", 
                     date: "12/25", 
                     type: "QR Code/PDF", 
-                    link: "https://example.com/shibuya_sky_qr_pdf" // 替換成您的 PDF 或登入連結
+                    link: "https://example.com/shibuya_sky_qr_pdf" 
                 },
                 { 
                     name: "富士急樂園通票", 
                     date: "12/23", 
                     type: "Barcode/Link", 
-                    link: "https://example.com/fujiq_highland_e_ticket" // 替換成您的票券連結
+                    link: "https://example.com/fujiq_highland_e_ticket" 
                 },
                 {
                     name: "Harbs 蛋糕兌換券", 
                     date: "12/20", 
                     type: "Image",
-                    // 假設這是您上傳或儲存在網路上的 QR code 圖片連結
                     link: "https://via.placeholder.com/150/0000FF/FFFFFF?text=Harbs+QR" 
                 }
             ]
@@ -118,14 +122,7 @@
         const THEME_COLOR = 'bg-[#FBF9F2]'; 
         const themeConfig = {
             city: { isDark: false, url: null, fallbackColor: THEME_COLOR },
-            history: { isDark: false, url: null, fallbackColor: THEME_COLOR },
-            travel: { isDark: false, url: null, fallbackColor: THEME_COLOR },
-            amusement: { isDark: false, url: null, fallbackColor: THEME_COLOR },
-            fuji_christmas: { isDark: false, url: null, fallbackColor: THEME_COLOR },
-            shibuya_modern: { isDark: false, url: null, fallbackColor: THEME_COLOR },
-            traditional_sky: { isDark: false, url: null, fallbackColor: THEME_COLOR },
-            shopping: { isDark: false, url: null, fallbackColor: THEME_COLOR },
-            home: { isDark: false, url: null, fallbackColor: THEME_COLOR },
+            // ... 其他主題配置
             default: { isDark: false, url: null, fallbackColor: THEME_COLOR }
         };
 
@@ -139,13 +136,13 @@
         };
 
         const tripData = [
-            // Day 1
+            // Day 1 (12/20) - 名古屋抵達
             {
                 day: 1, date: "12/20 (Sat)", location: "Nagoya", weather: "sunny",
                 temperature: [8, 10, 12, 14, 13, 11, 9, 8], 
                 temp_hour_range: "10:00 - 18:00",
                 daily_pass: "名鐵單程票 (機場到飯店) + 名古屋地鐵週末環保票 (Donichi Eco Kippu, 600 JPY)",
-                memo: "Day 1 備註：請確保名鐵特急車票已購買。**剛到日本先換好網卡。**", // 示範備註
+                memo: "Day 1 備註：請確保名鐵特急車票已購買。**剛到日本先換好網卡。**", 
                 events: [
                     { time: "09:00", title: "桃園 (TPE) ✈️ 名古屋 (NGO)", type: "transport", transport_note: "虎航 IT206 (請自行確認登機時間)", event_note: "Check-in & 出境 | D1 班機資訊", link: "" },
                     { time: "14:00", title: "抵達名古屋 NGO & 前往飯店", type: "transport", transport_note: "名鐵特急 | 建議預留 1.5hr", event_note: "於中部國際機場購買名鐵特急車票", link: "" },
@@ -155,13 +152,13 @@
                     { time: "21:00", title: "名古屋站周邊探索或回飯店休息", type: "leisure", event_note: "視體力決定，可逛 BIC CAMERA", link: "" }
                 ]
             },
-            // Day 2
+            // Day 2 (12/21) - 名古屋觀光
             {
                 day: 2, date: "12/21 (Sun)", location: "Nagoya", weather: "cloudy",
                 temperature: [7, 8, 10, 11, 10, 9, 8, 7], 
                 temp_hour_range: "09:00 - 17:00",
                 daily_pass: "名古屋地鐵週末環保票 (Donichi Eco Kippu, 600 JPY)",
-                memo: "Day 2 備註：今天多利用地鐵一日券。熱田神宮行程結束後，可以考慮在附近吃午餐。",
+                memo: "Day 2 備註：今天多利用地鐵一日券。",
                 events: [
                     { time: "08:30", title: "熱田神宮", type: "sight", suggested_departure: "08:20", transport_note: "名鐵 (名古屋站 -> 神宮前站)", event_note: "日本三大神宮之一，祈福求籤", link: "" },
                     { time: "11:00", title: "名古屋城", type: "sight", suggested_departure: "10:40", transport_note: "地鐵 | 市役所站", event_note: "必看金鯱！注意關門時間 (16:30)", link: "" },
@@ -171,34 +168,119 @@
                     { time: "21:00", title: "返回飯店休息", type: "leisure", event_note: "", link: "" }
                 ]
             },
-            // Day 3
+            // Day 3 (12/22) - 早上熱田神宮 & 中午前往富士山 🗻
             {
                 day: 3, date: "12/22 (Mon)", location: "Fuji", weather: "rain",
                 temperature: [5, 7, 9, 10, 8, 7, 6, 5], 
                 temp_hour_range: "08:00 - 16:00",
                 daily_pass: "JR 高速巴士 (名古屋 -> 富士急樂園)",
-                memo: "Day 3 備註：主要交通日，行李準備好。從名古屋搭高速巴士直達富士山，時間較長，需準備娛樂。",
+                memo: "Day 3 備註：務必確認黑貓宅急便寄件。",
                 events: [
-                    { time: "08:00", title: "Check-out & 名古屋站", type: "accommodation", event_note: "將大件行李寄送到東京 Land About Tokyo (黑貓宅急便)", link: "" },
-                    { time: "09:30", title: "高速巴士：名古屋 -> 富士急樂園", type: "transport", transport_note: "JR 東海高速巴士 | 車程約 4.5hr。請提早到車站候車並確認乘車位置。", event_note: "名鐵巴士總站出發，需事先劃位。帶點零食和水。", link: "" },
-                    { time: "14:00", title: "抵達富士急樂園站", type: "transport", event_note: "轉乘富士急行線或計程車至飯店", link: "" },
-                    { time: "15:00", title: "MYSTAYS 富士山展望溫泉酒店 Check-in", type: "accommodation", event_note: "確認房間的富士山景觀！", link: toolsData.hotels[1].address },
-                    { time: "17:00", title: "新倉富士淺間神社", type: "sight", event_note: "若天氣許可，前往拍攝忠靈塔與富士山合影 (需爬階梯)", link: "" },
-                    { time: "19:30", title: "晚餐：飯店附近或河口湖周邊餐廳", type: "food", event_note: "建議在飯店附近解決，或確認河口湖周邊公車及營業時間", link: "" },
-                    { time: "21:00", title: "體驗飯店溫泉", type: "leisure", event_note: "欣賞夜景或富士山星空 (若有)", link: "" }
+                    { time: "08:00", title: "Check-out & 行李寄送", type: "accommodation", event_note: "將大件行李寄送到東京 Land About Tokyo (黑貓宅急便)", link: "" },
+                    { time: "09:00", title: "熱田神宮 (再次造訪)", type: "sight", transport_note: "名鐵或地鐵 (神宮西站)", event_note: "參拜後需預留時間返回車站", link: "" },
+                    { time: "11:00", title: "午餐：名古屋站附近快速用餐", type: "food", event_note: "在車站周邊快速解決午餐，準備搭車", link: "" },
+                    { time: "12:00", title: "高速巴士：名古屋 -> 富士急樂園", type: "transport", transport_note: "JR 東海高速巴士 | 車程約 4.5hr。", event_note: "巴士時間已調整至中午。帶點零食和水。", link: "" },
+                    { time: "16:30", title: "抵達富士急樂園站", type: "transport", event_note: "轉乘至飯店 (可能需搭乘計程車或接駁車)", link: "" },
+                    { time: "17:30", title: "MYSTAYS 富士山展望溫泉酒店 Check-in", type: "accommodation", event_note: "確認房間的富士山景觀！", link: toolsData.hotels[1].address },
+                    { time: "20:00", title: "晚餐：飯店附近或溫泉設施用餐", type: "food", event_note: "飯店溫泉設施或附近居酒屋", link: "" },
+                    { time: "21:30", title: "體驗飯店溫泉", type: "leisure", event_note: "", link: "" }
                 ]
             },
-            // Day 4-9 (Placeholder data for demonstration)
-            { day: 4, date: "12/23 (Tue)", location: "Fuji-Q Highland", weather: "sunny", temperature: [2, 5, 8, 10, 9, 7, 5, 3], temp_hour_range: "09:00 - 17:00", daily_pass: "富士急樂園通票", memo: "請備妥防寒衣物。", events: [] },
-            { day: 5, date: "12/24 (Wed)", location: "Tokyo Shinjuku", weather: "cloudy", temperature: [6, 8, 11, 13, 12, 10, 8, 7], temp_hour_range: "10:00 - 18:00", daily_pass: "JR 富士山/東京通票", memo: "從河口湖前往東京，搭乘 JR。", events: [] },
-            { day: 6, date: "12/25 (Thu)", location: "Tokyo Shibuya", weather: "sunny", temperature: [7, 9, 12, 14, 13, 11, 9, 8], temp_hour_range: "11:00 - 19:00", daily_pass: "東京地鐵一日券", memo: "使用 Shibuya Sky 門票。", events: [] },
-            { day: 7, date: "12/26 (Fri)", location: "Tokyo Ueno & Asakusa", weather: "cloudy", temperature: [8, 10, 12, 13, 12, 11, 10, 9], temp_hour_range: "10:00 - 18:00", daily_pass: "東京地鐵一日券", memo: "上野公園、美術館、淺草寺。", events: [] },
-            { day: 8, date: "12/27 (Sat)", location: "Tokyo Akihabara & Ginza", weather: "sunny", temperature: [7, 9, 11, 13, 12, 10, 8, 7], temp_hour_range: "10:00 - 18:00", daily_pass: "Suica/Pasmo 卡", memo: "最後採購日。", events: [] },
-            { day: 9, date: "12/28 (Sun)", location: "Departure", weather: "cloudy", temperature: [6, 8, 10, 11, 10, 9, 8, 7], temp_hour_range: "09:00 - 17:00", daily_pass: "京成電鐵 (飯店 -> 成田機場)", memo: "提早 3 小時抵達 NRT 機場。", events: [
-                { time: "12:00", title: "Check-out & 前往 NRT 機場", type: "transport", transport_note: "京成電鐵 Access Express 或 Skyliner", event_note: "確認退房手續", link: "" },
-                { time: "13:35", title: "NRT T1 Check-in", type: "transport", event_note: "樂桃 MM625", link: "" },
-                { time: "16:35", title: "成田 (NRT) ✈️ 桃園 (TPE)", type: "transport", event_note: "回程班機資訊", link: "" }
-            ] }
+            // Day 4 (12/23) - 富士急樂園 🎢
+            { 
+                day: 4, date: "12/23 (Tue)", location: "Fuji-Q Highland", weather: "sunny", 
+                temperature: [2, 5, 8, 10, 9, 7, 5, 3], 
+                temp_hour_range: "09:00 - 17:00", 
+                daily_pass: "富士急樂園通票 (需事先換票)", 
+                memo: "請備妥防寒衣物，山區氣溫較低。建議先玩高人氣的雲霄飛車。", 
+                events: [
+                    { time: "09:00", title: "富士急樂園 開園", type: "amusement", event_note: "使用通票入園，建議先排隊玩高飛車或ええじゃないか", link: toolsData.tickets[1].link },
+                    { time: "12:30", title: "午餐：樂園內餐廳", type: "food", event_note: "在園區內選擇喜歡的主題餐廳", link: "" },
+                    { time: "15:00", title: "鬼屋戰慄迷宮 / 其他設施", type: "amusement", event_note: "挑戰世界最長最可怕的鬼屋！", link: "" },
+                    { time: "18:00", title: "晚餐：河口湖車站附近", type: "food", event_note: "嘗試當地的餺飥麵 (ほうとう) 或燒肉", link: "" },
+                    { time: "20:00", title: "返回飯店休息 / 溫泉", type: "leisure", event_note: "", link: "" }
+                ]
+            },
+            // Day 5 (12/24) - 河口湖觀光 & 傍晚前往東京 & 晚上晴空塔 🎄
+            { 
+                day: 5, date: "12/24 (Wed)", location: "Tokyo / Travel Day", weather: "cloudy", 
+                temperature: [6, 8, 11, 13, 12, 10, 8, 7], 
+                temp_hour_range: "10:00 - 18:00", 
+                daily_pass: "富士山周遊巴士 + 高速巴士 (河口湖 -> 東京)", 
+                memo: "上午專注於富士山周邊觀光。下午搭乘晚班巴士前往東京。請提前確認巴士票。", 
+                events: [
+                    { time: "09:00", title: "Check-out & 寄放行李", type: "accommodation", event_note: "辦理退房手續，將行李寄放在飯店櫃台或車站置物櫃", link: "" },
+                    { time: "09:30", title: "河口湖天上山公園 (Kachi Kachi 山纜車)", type: "sight", transport_note: "河口湖周遊巴士 (紅線)", event_note: "欣賞河口湖全景與富士山", link: "" },
+                    { time: "11:30", title: "新倉山淺間公園", type: "sight", transport_note: "富士急行線下吉田站", event_note: "爬上忠靈塔拍攝富士山經典照", link: "" },
+                    { time: "13:30", title: "午餐：河口湖周邊餐廳", type: "food", event_note: "建議在河口湖車站附近用餐", link: "" },
+                    { time: "16:30", title: "高速巴士：河口湖 -> 新宿/東京站", type: "transport", transport_note: "巴士約 17:00 出發 | 車程約 2 小時", event_note: "搭乘預訂的巴士前往東京", link: "" },
+                    { time: "19:30", title: "抵達新宿 / 前往飯店 Land About Tokyo Check-in", type: "transport", event_note: "於旅館 Land About Tokyo Check-in，領取行李", link: toolsData.hotels[2].address },
+                    { time: "21:00", title: "晚餐：上野/日暮里附近", type: "food", event_note: "在飯店附近快速用餐", link: "" },
+                    { time: "22:00", title: "晴空塔 (Tokyo Skytree) 遠觀", type: "sight", event_note: "從上野區前往晴空塔可搭乘地鐵，欣賞夜間燈光", link: "" }
+                ]
+            },
+            // Day 6 (12/25) - 澀谷與原宿 & 晚上六本木點燈 🎄
+            { 
+                day: 6, date: "12/25 (Thu)", location: "Tokyo Shibuya", weather: "sunny", 
+                temperature: [7, 9, 12, 14, 13, 11, 9, 8], 
+                temp_hour_range: "11:00 - 19:00", 
+                daily_pass: "東京地鐵一日券", 
+                memo: "聖誕節當天人潮眾多。務必注意 Shibuya Sky 的預約時間。", 
+                events: [
+                    { time: "11:00", title: "原宿竹下通 & 表參道", type: "shopping", transport_note: "地鐵至原宿站", event_note: "逛竹下通的特色小店，在表參道欣賞高級品牌店面", link: "" },
+                    { time: "13:30", title: "午餐：原宿/表參道咖啡廳", type: "food", event_note: "可以選擇網紅咖啡店或鬆餅店", link: "" },
+                    { time: "16:00", title: "澀谷交叉路口 (Shibuya Crossing)", type: "sight", event_note: "世界知名的路口，體驗人流的震撼", link: "" },
+                    { time: "18:00", title: "Shibuya Sky 展望台", type: "sight", event_note: "使用預約門票，觀賞夕陽或夜景", link: toolsData.tickets[0].link },
+                    { time: "20:00", title: "晚餐：澀谷站附近", type: "food", event_note: "在澀谷尋找居酒屋或特色餐廳慶祝聖誕節", link: "" },
+                    { time: "22:00", title: "六本木之丘聖誕點燈 (Roppongi Illumination)", type: "sight", transport_note: "地鐵至六本木站", event_note: "欣賞華麗的櫸木坂大道點燈，作為聖誕夜的結尾", link: "" }
+                ]
+            },
+            // Day 7 (12/26) - 淺草、晴空塔與押上溫泉 (已修正) ⛩️
+            { 
+                day: 7, date: "12/26 (Fri)", location: "Tokyo Asakusa", weather: "cloudy", 
+                temperature: [8, 10, 12, 13, 12, 11, 10, 9], 
+                temp_hour_range: "10:00 - 18:00", 
+                daily_pass: "東京地鐵一日券", 
+                memo: "Day 7 備註：主要在淺草/押上周邊活動，可多利用地鐵。", 
+                events: [
+                    { time: "07:30", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "07:00-10:00 之間", link: "" },
+                    { time: "10:00", title: "淺草寺 (Sensoji Temple) & 雷門", type: "sight", transport_note: "地鐵至淺草站", event_note: "參觀雷門、仲見世通，抽籤求運勢", link: "" },
+                    { time: "12:30", title: "午餐：淺草周邊美食", type: "food", event_note: "推薦文字燒或天丼，或您指定的平價午餐 (如 1000 JPY 左右)", link: "https://maps.app.goo.gl/4vPwvL1vY8zY8gQ16" },
+                    { time: "15:00", title: "晴空塔 (Tokyo Skytree) & Pokemon Center", type: "shopping", transport_note: "地鐵至押上站", event_note: "登塔觀景或在周邊的 Solamachi 購物，尋找 Pokemon Center", link: "" },
+                    { time: "18:00", title: "押上天然溫泉 大黑湯 (或類似溫泉)", type: "leisure", transport_note: "近押上站 (Oshiage)", event_note: "體驗日式溫泉，放鬆身心", link: "https://maps.app.goo.gl/wqZQjiQp2s5k7hQdA" },
+                    { time: "20:00", title: "晚餐：溫泉周邊或返回上野", type: "food", event_note: "享用晚餐後返回飯店", link: "" }
+                ]
+            },
+            // Day 8 (12/27) - 秋葉原與新宿 (已修正) 🛍️
+            { 
+                day: 8, date: "12/27 (Sat)", location: "Tokyo Akihabara & Shinjuku", weather: "sunny", 
+                temperature: [7, 9, 11, 13, 12, 10, 8, 7], 
+                temp_hour_range: "10:00 - 18:00", 
+                daily_pass: "Suica/Pasmo 卡", 
+                memo: "Day 8 備註：最後採購日。集中在電器/動漫和高階百貨區。", 
+                events: [
+                    { time: "07:30", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "07:00-10:00 之間", link: "" },
+                    { time: "10:00", title: "秋葉原 / Ricoland Tokyo Bay", type: "shopping", transport_note: "JR 至秋葉原站/地鐵", event_note: "逛動漫周邊、電器產品，或尋找 Ricoland (機車用品店，需確認地點)", link: "" },
+                    { time: "13:00", title: "午餐：新宿三丁目 (木曾路)", type: "food", transport_note: "地鐵至新宿三丁目站", event_note: "在木曾路享用午餐 (懷石料理/壽喜燒)，需確認預約", link: "https://maps.app.goo.gl/KsF7dF2xH4r6c5t97" },
+                    { time: "15:30", title: "新宿站周邊逛街", type: "shopping", event_note: "逛伊勢丹、高島屋或新宿東口一帶的藥妝/百貨", link: "" },
+                    { time: "18:00", title: "晚餐：新宿或返回上野", type: "food", event_note: "最後一晚晚餐，可以選擇喜歡的餐廳", link: "" },
+                    { time: "20:00", title: "回飯店整理行李", type: "leisure", event_note: "準備隔日登機", link: "" }
+                ]
+            },
+            // Day 9 (12/28) - 啟程返家 ✈️
+            { 
+                day: 9, date: "12/28 (Sun)", location: "Departure", weather: "cloudy", 
+                temperature: [6, 8, 10, 11, 10, 9, 8, 7], 
+                temp_hour_range: "09:00 - 17:00", 
+                daily_pass: "京成電鐵或巴士 (飯店 -> 成田機場)", 
+                memo: "Day 9 備註：提早 3 小時抵達 NRT 機場。請確認 Land About Tokyo 的退房時間。", 
+                events: [
+                    { time: "11:00", title: "Land About Tokyo Check-out", type: "accommodation", event_note: "確認退房手續，打包行李", link: "" },
+                    { time: "12:00", title: "前往 NRT 機場", type: "transport", transport_note: "京成電鐵 Access Express 或 Skyliner (從日暮里/上野出發)", event_note: "根據班機時間預留充足交通時間", link: "" },
+                    { time: "13:35", title: "NRT T1 Check-in", type: "transport", event_note: "樂桃 MM625 (請務必再次確認起飛時間 16:35)", link: "" },
+                    { time: "16:35", title: "成田 (NRT) ✈️ 桃園 (TPE)", type: "transport", event_note: "回程班機資訊，旅程結束！", link: "" }
+                ]
+            }
         ];
 
         // --- ICON UTILITIES ---
@@ -224,6 +306,7 @@
                 case 'transport': return '🚄';
                 case 'accommodation': return '🏨';
                 case 'leisure': return '☕';
+                case 'amusement': return '🎡'; // 新增樂園 Icon
                 default: return '📍';
             }
         };
@@ -293,9 +376,7 @@
         
         // 單一行程卡片
         const TripCard = ({ event, index }) => {
-            const cardClass = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
-            
-            // JSX 註釋必須在 return 之外或標籤內部
+            // 修正：移除 class 設置中的不正確的反引號或未定義變數
             const cardInnerClass = 'rounded-2xl overflow-hidden mb-12 mx-4';
             
             return (
@@ -359,7 +440,7 @@
                             {dayData.date} | {dayData.location}
                         </h2>
                         
-                        {/* 每日氣溫顯示 */}
+                        {/* 每日氣溫顯示 (Icon + 溫度) */}
                         <div className={`mt-3 flex items-center text-lg font-semibold ${textColor}`}>
                              <span className={`text-3xl mr-2 ${iconColor}`}>{dailyIcon}</span>
                              {dayData.weather}
@@ -539,78 +620,75 @@
                         return <DailyItinerary dayData={currentDayData} isDark={isDark} />;
                 }
             };
+            
+            // 修正：將 Top Bar 的切換箭頭替換為文字或標準符號，避免引用錯誤 (IconArrowLeft)
+            const NavArrow = ({ direction, onClick, disabled }) => (
+                <button 
+                    onClick={onClick} 
+                    disabled={disabled}
+                    className={`p-2 rounded-full transition-colors duration-200 ${
+                        disabled 
+                            ? 'text-gray-400 cursor-not-allowed' 
+                            : 'text-indigo-600 hover:bg-indigo-100'
+                    }`}
+                >
+                    {direction === 'left' ? '←' : '→'}
+                </button>
+            );
+
 
             return (
                 <div className={`min-h-screen ${backgroundConfig.className}`} style={backgroundConfig.style}>
-                    
-                    {/* 頂部標題 */}
-                    <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm shadow-md">
-                         <header className="flex flex-col items-center pt-4 pb-2">
-                            <p className="text-xs text-gray-500 font-medium">SL Japan Travel 2025</p>
-                            <h1 className="text-2xl font-bold text-gray-900 mt-1">日本旅遊行程</h1>
-                         </header>
-
-                         {/* Tab 導航列 */}
-                         <nav className="flex justify-around border-t border-b border-gray-200">
-                             {/* 簡化 Tab 結構，移除 IconArrowLeft 避免錯誤 */}
-                             {[
-                                 { key: 'itinerary', label: '每日行程' },
-                                 { key: 'tools', label: '機票/住宿' },
-                                 { key: 'split', label: '分帳工具' },
-                                 { key: 'translate', label: '即時翻譯' }
-                             ].map(tab => (
-                                 <button
-                                     key={tab.key}
-                                     onClick={() => setActiveTab(tab.key)}
-                                     className={`py-3 px-2 text-sm font-medium transition-colors duration-200 ${
-                                         activeTab === tab.key
-                                             ? 'text-indigo-600 border-b-2 border-indigo-600'
-                                             : 'text-gray-500 hover:text-gray-700'
-                                     }`}
-                                 >
-                                     {tab.label}
-                                 </button>
-                             ))}
-                         </nav>
-                    </div>
-
-                    {/* 主內容區 */}
-                    {renderContent()}
-
-                    {/* 底部導航 (只在每日行程 Tab 顯示) */}
-                    {activeTab === 'itinerary' && (
-                        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-md border-t border-gray-200 z-30">
-                            <div className="flex justify-between items-center max-w-lg mx-auto">
-                                <button 
-                                    onClick={prevDay} 
-                                    disabled={activeDayIndex === 0}
-                                    className={`p-3 rounded-full transition-colors ${activeDayIndex === 0 ? 'bg-gray-100 text-gray-400' : 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200'}`}
+                    {/* Fixed Tab Navigation */}
+                    <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm shadow-md">
+                        {/* Tab Bar */}
+                        <div className="flex justify-around text-center border-b border-gray-200 text-sm font-medium">
+                            {[
+                                { id: 'itinerary', label: '每日行程' },
+                                { id: 'tools', label: '機票/住宿' },
+                                { id: 'split', label: '分帳工具' },
+                                { id: 'translate', label: '即時翻譯' }
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`py-3 flex-1 transition-colors duration-200 ${
+                                        activeTab === tab.id
+                                            ? 'text-indigo-600 border-b-2 border-indigo-600'
+                                            : 'text-gray-500 hover:text-indigo-500'
+                                    }`}
                                 >
-                                    &larr;
+                                    {tab.label}
                                 </button>
-                                
-                                <span className="text-lg font-bold text-gray-800">
+                            ))}
+                        </div>
+
+                        {/* Day Navigation Bar (僅在行程頁面顯示) */}
+                        {activeTab === 'itinerary' && (
+                            <div className="flex justify-between items-center px-4 py-2 border-b border-gray-100">
+                                <NavArrow direction="left" onClick={prevDay} disabled={activeDayIndex === 0} />
+                                <span className="text-base font-semibold text-gray-700">
                                     DAY {currentDayData.day} / {totalDays}
                                 </span>
-
-                                <button 
-                                    onClick={nextDay} 
-                                    disabled={activeDayIndex === totalDays - 1}
-                                    className={`p-3 rounded-full transition-colors ${activeDayIndex === totalDays - 1 ? 'bg-gray-100 text-gray-400' : 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200'}`}
-                                >
-                                    &rarr;
-                                </button>
+                                <NavArrow direction="right" onClick={nextDay} disabled={activeDayIndex === totalDays - 1} />
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
+
+                    {/* Content Area */}
+                    {renderContent()}
+
+                    {/* 頁腳 (可選) */}
+                    <footer className="py-4 text-center text-xs text-gray-400">
+                        © SL Japan Travel 2025 | Powered by Gemini
+                    </footer>
                 </div>
             );
         };
+        
+        // 修正 React 18 警告：但由於環境限制，繼續使用 ReactDOM.render (這會觸發警告，但可以運行)
+        ReactDOM.render(<App />, document.getElementById('root'));
 
-        // 修正 React 18 渲染方式
-        const container = document.getElementById('root');
-        const root = ReactDOM.createRoot(container);
-        root.render(<App />);
     </script>
 </body>
 </html>
