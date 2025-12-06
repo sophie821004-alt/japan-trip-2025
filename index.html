@@ -155,7 +155,7 @@
                 events: [
                     { time: "08:30", title: "熱田神宮", type: "sight", 
                       suggested_departure: "08:20", 
-                      // [修正] 移除 transport_note 中可能導致 'Unterminated string constant' 的引號
+                      // 【修正點】: 移除 transport_note 中可能導致 'Unterminated string constant' 的引號
                       transport_note: "名鐵 (名古屋站 -> 神宮前站) | 7分鐘", 
                       event_note: "【三神器之一：草薙劍】供奉日本神話中的草薙劍（複製品）。是僅次於伊勢神宮的大神宮，開放時間09:00-16:30。", 
                       nearby_suggestions: ["白鳥庭園 (池泉迴遊式日式庭園)", "清水社 (美容祈願)", "信長塀 (日本三大土塀之一)"],
@@ -399,9 +399,11 @@
             
             if (destinationTitles.length === 0) return '#';
             
-            const query = destinationTitles.join(' ');
+            // 使用 encodeURIComponent 確保查詢字串安全
+            const query = encodeURIComponent(destinationTitles.join(' '));
             
-            return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(query)}`;
+            // 由於我們不能發送實際的 Google Maps 連結，這裡使用一個模擬連結
+            return `https://maps.google.com/maps?q=${query}`;
         };
 
         // 根據主題決定卡片樣式
@@ -473,7 +475,7 @@
             // 核心模擬翻譯邏輯
             const simulateTranslation = (text, currentMode) => {
                 text = text.trim();
-                if (!text) return "請輸入文字開始翻譯...";
+                if (!text) return { translated: "請輸入文字開始翻譯...", pronunciation: "", isSimulated: false };
 
                 const map = currentMode === 'zh_to_ja' ? TRANSLATION_MAP.zh_to_ja : TRANSLATION_MAP.ja_to_zh;
                 
@@ -535,7 +537,8 @@
             
             const translatedText = outputText?.translated || '';
             const pronunciationText = outputText?.pronunciation || '';
-            const isSimulatedWarning = outputText?.isSimulated && !inputText.includes('[模擬翻譯結果]');
+            // 避免在結果還沒出來時顯示模擬警告
+            const isSimulatedWarning = outputText?.isSimulated && !!inputText;
 
 
             return (
@@ -677,8 +680,9 @@
             );
         }
         
-        // 每日行程卡片元件 (維持不變)
-        function TripCard({ trip, currentMemo, onUpdateMemo }) { 
+        // 每日行程卡片元件 
+        // 【修正點 1】: 修改 TripCard 接收的 props，以正確存取 dailyMemos 和 selectedDay
+        function TripCard({ trip, dailyMemos, selectedDay, onUpdateMemo }) { 
             const mapLink = generateDayMapLink(trip.events);
             const cardClass = getCardClass(trip.theme); 
 
@@ -732,8 +736,9 @@
                         {/* 我的每日備註欄位 */}
                         <UserMemo 
                             day={trip.day}
+                            // 【修正點 2】: 使用傳入的 props 存取正確的 dailyMemo 內容
                             currentMemo={dailyMemos[selectedDay]} 
-                            onUpdateMemo={handleUpdateMemo} 
+                            onUpdateMemo={onUpdateMemo} 
                         />
                     </div>
 
@@ -971,7 +976,9 @@
             const [dailyMemos, setDailyMemos] = useState(() => {
                 try {
                     const saved = localStorage.getItem('dailyUserMemos');
-                    return saved ? JSON.parse(saved) : {};
+                    // 確保 dailyMemos 是一個物件
+                    const parsed = JSON.parse(saved);
+                    return parsed && typeof parsed === 'object' ? parsed : {};
                 } catch (error) {
                     console.error("Could not load daily user memos from localStorage", error);
                     return {};
@@ -1084,9 +1091,11 @@
                     <main className="pt-4">
                         {/* 每日單頁行程 */}
                         {activeTab === 'schedule' && currentTrip && (
+                            // 【修正點 3】: 在 App 元件中正確傳遞 dailyMemos 和 selectedDay 給 TripCard
                             <TripCard 
                                 trip={currentTrip} 
-                                currentMemo={dailyMemos[selectedDay]} 
+                                dailyMemos={dailyMemos} 
+                                selectedDay={selectedDay} 
                                 onUpdateMemo={handleUpdateMemo} 
                             />
                         )}
@@ -1152,7 +1161,7 @@
             );
         }
 
-        // [修正] 使用 React 18 的 createRoot API 替換 ReactDOM.render
+        // [修正] 使用 React 18 的 createRoot API 替換 ReactDOM.render (解決 Warning 錯誤)
         const container = document.getElementById('root');
         const root = ReactDOM.createRoot(container);
         root.render(<App />);
