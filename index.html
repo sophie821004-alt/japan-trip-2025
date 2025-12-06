@@ -177,7 +177,6 @@
                 daily_pass: "無套票建議 (短途 Meitetsu 單程票 + 新幹線/高速巴士)",
                 events: [
                     { time: "08:30", title: "熱田神宮", type: "sight", suggested_departure: "08:20", 
-                        // **修正語法錯誤：確保字串完整**
                         transport_note: "名鐵 (名古屋站 -> 神宮前站) | 7分鐘", 
                         event_note: "【三神器之一：草薙劍】供奉日本神話中的草薙劍（複製品）。", tags: ["歷史"], link: "https://goo.gl/maps/atsutashrine" },
                     { time: "10:30", title: "午餐 (蓬萊軒鰻魚飯神宮店)", type: "food", suggested_departure: "10:25", transport_note: "步行 | 約 5-8 分鐘 (近神宮西門)", event_note: "【名古屋名物：鰻魚飯三吃 (Hitsumabushi)】建議提早排隊或預約。", tags: ["必吃"], link: "https://goo.gl/maps/atsutahoraiken" },
@@ -205,7 +204,7 @@
                 events: [
                     { time: "07:30", title: "新倉山淺間公園", type: "sight", suggested_departure: "07:00", transport_note: "建議自駕/計程車/富士急行線 (下吉田站)", event_note: "【富士山經典視角】爬上 398 階的「忠靈塔」。", tags: ["絕景"], link: "https://goo.gl/maps/arakurayama" },
                     { time: "11:00", title: "天上山公園 (Ropeway) & 午餐", type: "sight", suggested_departure: "10:30", transport_note: "河口湖周遊巴士 (紅線) | 天上山公園纜車", event_note: "【狸貓與兔子傳說】可俯瞰河口湖和富士山全景。", link: "https://goo.gl/maps/kachiropeway" },
-                    { time: "17:00", title: "移動至東京 (Check-in 鶯谷/上野)", type: "transport", suggested_departure: "17:00", transport_note: "高速巴士 or JR (新宿/東京) | 約 2 小時", event_note: "長途移動，預訂 17:00 左右車班前往東京。", link: "https://goo.gl/maps/shinjuku" },
+                    { time: "17:00", title: "移動至東京 (Check-in 鶯谷/上野)", type: "transport", suggested_departure: "17:00", transport_note: "高速巴士 or JR (新宿/東京) | 約 2 小時", event_note: "長途移動，建議預訂車票", link: "https://goo.gl/maps/shinjuku" },
                     { time: "19:30", title: "六本木之丘點燈", type: "sight", suggested_departure: "19:00", transport_note: "地鐵 | 約 20-30 分鐘 (從新宿/上野)", event_note: "【東京聖誕夜景】欣賞櫸木坂大道的香檳金點燈。", tags: ["聖誕限定"], link: "https://goo.gl/maps/roppongihills" },
                     { time: "21:00", title: "晴空塔聖誕市集", type: "sight", suggested_departure: "20:30", transport_note: "地鐵 (大江戶線/半藏門線) | 約 30-40 分鐘", event_note: "東京晴空塔夢幻聖誕 2025", link: "https://goo.gl/maps/skytree" }
                 ]
@@ -239,7 +238,7 @@
             },
             // Day 8
             {
-                day: 8, date: "12/27 (Fri)", location: "Tokyo Shopping", weather: "cloudy", theme: "shopping",
+                day: 8, date: "12/27 (Sat)", location: "Tokyo Shopping", weather: "cloudy", theme: "shopping",
                 temperature: [4, 6, 8, 10, 9, 7, 5, 4],
                 temp_hour_range: "10:00 - 18:00",
                 daily_pass: "東京地鐵一日券 (Tokyo Subway 24-hour Ticket, 800 JPY) 或 Suica/Pasmo",
@@ -367,7 +366,8 @@
         }
 
         const BookingTool = ({ data }) => (
-            <div className="space-y-8 p-4 pt-8 max-w-xl mx-auto">
+            // 修正: 增加寬度限制
+            <div className="space-y-8 p-4 pt-8 max-w-4xl mx-auto">
                 <div className="glass-light p-6 rounded-2xl shadow-lg space-y-6">
                     <h3 className="text-2xl font-bold text-indigo-700 border-b pb-2">機票資訊 ✈️</h3>
                     <div className="space-y-4">
@@ -488,7 +488,8 @@
 
 
             return (
-                <div className="p-4 pt-8 max-w-xl mx-auto space-y-6">
+                // 修正: 增加寬度限制
+                <div className="p-4 pt-8 max-w-4xl mx-auto space-y-6">
                     <h3 className="text-2xl font-bold text-indigo-700 flex items-center mb-4">
                         分帳工具 (JPY) 🧮
                     </h3>
@@ -606,7 +607,8 @@
             };
 
             return (
-                <div className="p-4 pt-8 max-w-xl mx-auto space-y-6">
+                // 修正: 增加寬度限制
+                <div className="p-4 pt-8 max-w-4xl mx-auto space-y-6">
                     <h3 className="text-2xl font-bold text-indigo-700 flex items-center">
                         即時翻譯工具 <IconTranslate className="w-6 h-6 ml-2" />
                     </h3>
@@ -657,7 +659,7 @@
             );
         }
 
-        const TripCard = ({ trip, dailyMemos, updateDailyMemo }) => { // 修正: 確保接收 dailyMemos 和 updateDailyMemo
+        const TripCard = ({ trip, dailyMemos, updateDailyMemo }) => { 
             const dateRegex = /(\d{2})\/(\d{2})\s\((\w{3})\)/; 
             const dateParts = trip.date.match(dateRegex);
             const dayOfWeek = dateParts ? dateParts[3].toUpperCase() : 'DAY';
@@ -670,7 +672,8 @@
 
 
             return (
-                <div className={`${cardClass} card-shadow rounded-2xl overflow-hidden mb-6 mx-4`}>
+                // 修正: 增加左右邊距 mx-6，並增加底部間距 mb-12
+                <div className={`${cardClass} card-shadow rounded-2xl overflow-hidden mb-12 mx-6`}> 
                     
                     <div className="p-4">
                         <div className="flex justify-between items-start">
@@ -841,11 +844,12 @@
                     </header>
                     
                     {/* Content Area */}
-                    <main className="max-w-xl mx-auto">
+                    {/* 修正: 增加主內容最大寬度 */}
+                    <main className="max-w-4xl mx-auto">
                         
                         {/* Daily Navigation (Only visible on 'daily' tab) */}
                         {tab === 'daily' && (
-                            <div className="flex items-center justify-between p-4 bg-white/70 backdrop-blur-sm mt-4 mx-4 rounded-xl shadow-md sticky top-24 z-10 border border-gray-100">
+                            <div className="flex items-center justify-between p-4 bg-white/70 backdrop-blur-sm mt-4 mx-6 rounded-xl shadow-md sticky top-24 z-10 border border-gray-100">
                                 <button onClick={goToPreviousDay} disabled={currentDay === 1} className="p-2 disabled:opacity-30 hover:bg-gray-200 rounded-full transition-colors">
                                     <IconArrowLeft className="w-6 h-6" />
                                 </button>
@@ -861,7 +865,6 @@
                         {/* Main Content Sections */}
                         <section className="mt-4">
                             {tab === 'daily' && (
-                                // 修正: 確保 props 傳遞給 TripCard
                                 <TripCard 
                                     trip={currentTrip} 
                                     key={currentTrip.day} 
