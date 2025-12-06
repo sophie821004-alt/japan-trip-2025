@@ -10,7 +10,7 @@
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Playfair+Display:wght=700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     
     <style>
         /* 基礎樣式和字體 */
@@ -151,7 +151,7 @@
                     { time: "16:00", title: "大須觀音 (參拜)", type: "sight", suggested_departure: "15:35", transport_note: "地鐵東山線/鶴舞線 (轉乘一次) | 約 25-30 分鐘", event_note: "【名古屋三大觀音之一】莊嚴寧靜的寺廟，抓30分鐘參拜時間。", nearby_suggestions: ["萬松寺", "大須招財貓"], link: "https://goo.gl/maps/osukannon" },
                     { time: "17:30", title: "大須商店街 & 晚餐", type: "food", suggested_departure: "17:20", transport_note: "步行 | 約 10 分鐘 (從大須觀音主殿前進入)", event_note: "【名古屋最繁華的商店街】晚餐必吃：矢場豬排 (Miso Katsu)。", tags: ["必吃", "逛街"], link: "https://goo.gl/maps/osukannon" },
                     { time: "19:00", title: "Harbs 榮本店 (下午茶/甜點)", type: "food", suggested_departure: "18:50", transport_note: "步行 | 從矢場豬排約 10 分鐘", event_note: "【名古屋必吃】以新鮮水果和鮮奶油製成的千層蛋糕聞名。", tags: ["必吃"], link: "https://goo.gl/maps/harbssakae" },
-                    { time: "20:00", title: "榮商圈 (Sakae) 購物", type: "shop", suggested_departure: "19:50", transport_note: "步行 | 約 5 分鐘", event_note: "SKYLE (UNIQLO/GU) (~20:00), Alpen Nagoya (~21:00)", nearby_suggestions: ["中部電力Mirai Tower"], link: "https://goo.gl/maps/sakae" },
+                    { time: "20:00", title: "榮商圈 (Sakae) 購物", type: "shop", suggested_departure: "19:50", transport_note: "步行 | 約 5 分鐘 (從榮站)", event_note: "SKYLE (UNIQLO/GU) (~20:00), Alpen Nagoya (~21:00)", nearby_suggestions: ["中部電力Mirai Tower"], link: "https://goo.gl/maps/sakae" },
                     { time: "21:00", title: "綠洲21 (Oasis 21) 夜景", type: "sight", suggested_departure: "20:55", transport_note: "步行 | 約 5 分鐘 (從榮站)", event_note: "【水之宇宙船】漂浮在空中的玻璃構造，絕佳的城市夜景。", tags: ["拍照"], link: "https://goo.gl/maps/oasis21" },
                     { time: "21:30", title: "千里馬藥局 & 返回飯店", type: "shop", suggested_departure: "21:15", transport_note: "地鐵東山線/櫻通線 | 約 15-20 分鐘 (返回名古屋站)", event_note: "營業至 22:00 (回飯店順路)", link: "https://goo.gl/maps/senrima" }
                 ]
@@ -176,9 +176,17 @@
                 temp_hour_range: "09:00 - 17:00",
                 daily_pass: "無套票建議 (短途 Meitetsu 單程票 + 新幹線/高速巴士)",
                 events: [
-                    { time: "08:30", title: "熱田神宮", type: "sight", suggested_departure: "08:20", 
+                    { 
+                        time: "08:30", 
+                        title: "熱田神宮", 
+                        type: "sight", 
+                        suggested_departure: "08:20", 
+                        // 修正: 補上字串結尾的引號 "
                         transport_note: "名鐵 (名古屋站 -> 神宮前站) | 7分鐘", 
-                        event_note: "【三神器之一：草薙劍】供奉日本神話中的草薙劍（複製品）。", tags: ["歷史"], link: "https://goo.gl/maps/atsutashrine" },
+                        event_note: "【三神器之一：草薙劍】供奉日本神話中的草薙劍（複製品）。", 
+                        tags: ["歷史"], 
+                        link: "https://goo.gl/maps/atsutashrine" 
+                    },
                     { time: "10:30", title: "午餐 (蓬萊軒鰻魚飯神宮店)", type: "food", suggested_departure: "10:25", transport_note: "步行 | 約 5-8 分鐘 (近神宮西門)", event_note: "【名古屋名物：鰻魚飯三吃 (Hitsumabushi)】建議提早排隊或預約。", tags: ["必吃"], link: "https://goo.gl/maps/atsutahoraiken" },
                     { time: "11:30", title: "返回飯店取行李", type: "transport", suggested_departure: "11:20", transport_note: "名鐵 (神宮前站 -> 名古屋站) | 約 10 分鐘", event_note: "退房、取回寄放行李", link: "" },
                     { time: "12:30", title: "移動至河口湖", type: "transport", suggested_departure: "12:30", transport_note: "新幹線 (名古屋-三島) + 富士急行巴士 | 約 3.5 - 4 小時", event_note: "長途移動，建議預訂車票", link: "https://goo.gl/maps/kawaguchikostation" },
@@ -365,7 +373,7 @@
         }
 
         const BookingTool = ({ data }) => (
-            // 修正: 移除 max-w-4xl mx-auto，讓內容撐滿父容器 (max-w-4xl)
+            // 移除 max-w-4xl mx-auto，讓內容撐滿父容器 (max-w-4xl)
             <div className="space-y-8 p-4 pt-8">
                 <div className="glass-light p-6 rounded-2xl shadow-lg space-y-6">
                     <h3 className="text-2xl font-bold text-indigo-700 border-b pb-2">機票資訊 ✈️</h3>
@@ -487,7 +495,7 @@
 
 
             return (
-                // 修正: 移除 max-w-4xl mx-auto，讓內容撐滿父容器 (max-w-4xl)
+                // 移除 max-w-4xl mx-auto，讓內容撐滿父容器 (max-w-4xl)
                 <div className="p-4 pt-8 space-y-6">
                     <h3 className="text-2xl font-bold text-indigo-700 flex items-center mb-4">
                         分帳工具 (JPY) 🧮
@@ -606,7 +614,7 @@
             };
 
             return (
-                // 修正: 移除 max-w-4xl mx-auto，讓內容撐滿父容器 (max-w-4xl)
+                // 移除 max-w-4xl mx-auto，讓內容撐滿父容器 (max-w-4xl)
                 <div className="p-4 pt-8 space-y-6">
                     <h3 className="text-2xl font-bold text-indigo-700 flex items-center">
                         即時翻譯工具 <IconTranslate className="w-6 h-6 ml-2" />
@@ -671,7 +679,7 @@
 
 
             return (
-                {/* 修正: 將左右邊距從 mx-6 改為 mx-4 (更適合手機)，並維持 mb-12 間距 */}
+                // 修正: 將左右邊距從 mx-6 改為 mx-4 (更適合手機)，並維持 mb-12 間距 
                 <div className={`${cardClass} card-shadow rounded-2xl overflow-hidden mb-12 mx-4`}> 
                     
                     <div className="p-4">
@@ -720,14 +728,16 @@
                     <DailyPassSuggestion suggestion={trip.daily_pass} />
 
                     <div className="p-4 pt-0">
-                        <ul className="space-y-4 border-l-2 border-gray-200 pl-4">
+                        {/* 修正：將 space-y-4 改為 space-y-6 增加行距，並將圓點邊框變大 */}
+                        <ul className="space-y-6 border-l-2 border-gray-200 pl-4"> 
                             {trip.events.map((event, index) => {
                                 const IconComponent = getIconForType(event.type);
                                 const iconColor = getIconColor(event.type);
                                 
                                 return (
                                     <li key={index} className="relative">
-                                        <div className={`absolute -left-5 top-1 h-4 w-4 rounded-full border-4 border-white ${iconColor} bg-white flex items-center justify-center`}>
+                                        {/* 修正：將 border-4 改為 border-[6px] 讓圓點更明顯 */}
+                                        <div className={`absolute -left-5 top-1 h-4 w-4 rounded-full border-[6px] border-white ${iconColor} bg-white flex items-center justify-center`}>
                                             <div className="h-2 w-2 rounded-full" style={{ backgroundColor: iconColor.replace('text-', 'bg-').replace('-500', '-600') }}></div>
                                         </div>
 
@@ -781,7 +791,7 @@
             const [currentDay, setCurrentDay] = useState(tripData[0].day);
             const [tab, setTab] = useState('daily'); // 'daily', 'booking', 'split', 'translate'
             
-            // 修正: 將 dailyMemos 和 updateDailyMemo 定義在 App 層級
+            // 確保 dailyMemos 和 updateDailyMemo 在 App 層級定義
             const [dailyMemos, setDailyMemos] = useState({}); 
 
             const updateDailyMemo = (day, memo) => {
@@ -847,7 +857,7 @@
                         
                         {/* Daily Navigation (Only visible on 'daily' tab) */}
                         {tab === 'daily' && (
-                            {/* 修正: 將左右邊距從 mx-6 改為 mx-4 */}
+                            // 修正: 將左右邊距從 mx-6 改為 mx-4
                             <div className="flex items-center justify-between p-4 bg-white/70 backdrop-blur-sm mt-4 mx-4 rounded-xl shadow-md sticky top-24 z-10 border border-gray-100">
                                 <button onClick={goToPreviousDay} disabled={currentDay === 1} className="p-2 disabled:opacity-30 hover:bg-gray-200 rounded-full transition-colors">
                                     <IconArrowLeft className="w-6 h-6" />
