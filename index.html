@@ -161,7 +161,7 @@
             return [state, setState];
         };
         
-        // --- DATA SOURCE & CONFIGS (行程資料 - 維持不變) ---
+        // --- DATA SOURCE & CONFIGS (行程資料 - 已修正 12/25 和 12/27) ---
 
         const toolsData = {
             flights: [
@@ -194,13 +194,14 @@
                 { name: "救護車", phone: "119" }
             ],
             tickets: [
-                { name: "Shibuya Sky 展望台門票", date: "12/25", type: "QR Code/PDF", link: "https://www.klook.com/zh-TW/activity/37777-shibuya-sky-tokyo/" },
+                { name: "Shibuya Sky 展望台門票", date: "12/25 (16:00~16:19)", type: "QR Code/PDF", link: "https://www.klook.com/zh-TW/activity/37777-shibuya-sky-tokyo/" }, // 修正時間
                 { name: "富士急樂園通票", date: "12/23", type: "Barcode/Link", link: "https://www.fujiq.jp/en/ticket/index.html" },
                 { name: "Harbs 蛋糕兌換券", date: "12/20", type: "Image", link: "https://via.placeholder.com/150/0000FF/FFFFFF?text=Harbs+QR" }
             ]
         };
 
-        const MAP_IMAGE_URL = '202305_number_tcn.pdf'; 
+        // ✅ 地圖路徑修正：已替換為您提供的 GitHub 原始連結 (Raw URL)
+        const MAP_IMAGE_URL = 'https://raw.githubusercontent.com/sophie821004-alt/japan-trip-2025/main/tokyo_map.png'; 
         const THEME_COLOR = 'bg-[#FBF9F2]'; 
         const themeConfig = {
             city: { isDark: false, url: null, fallbackColor: THEME_COLOR },
@@ -324,18 +325,19 @@
                     { time: "22:00", title: "晴空塔聖誕活動 / 六本木點燈 (二選一)", type: "sight", event_note: "選擇其中一個點燈活動，欣賞聖誕夜景", link: createMapLink('東京 六本木之丘 點燈') }
                 ]
             },
-            // Day 6 (12/25) - 澀谷與原宿 & 晚上六本木點燈 🎄
+            // Day 6 (12/25) - 澀谷與原宿 & 晚上六本木點燈 🎄 (已修正)
             { 
                 day: 6, date: "12/25 (Thu)", location: "Tokyo Shibuya", weather: "sunny", 
                 temperature: [7, 9, 12, 14, 13, 11, 9, 8], 
                 temp_hour_range: "11:00 - 19:00", 
                 daily_pass: "東京地鐵一日券", 
-                memo: "聖誕節當天人潮眾多。務必注意 Shibuya Sky 的預約時間。", 
+                memo: "聖誕節當天人潮眾多。務必注意 Shibuya Sky 的預約時間 (16:00~16:19)。", 
                 events: [
                     { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo 早餐') },
                     { time: "10:00", title: "明治神宮", type: "sight", transport_note: "地鐵至代代木站/原宿站", event_note: "日本最重要的神社之一", link: createMapLink('明治神宮') },
-                    { time: "午餐", title: "午餐：Sports shop Gallery 2 (澀谷)", type: "shopping", event_note: "在澀谷逛運動用品店，並在周邊用餐", link: createMapLink('Gallery 2 澀谷') },
-                    { time: "14:00", title: "澀谷 Sky 展望台", type: "sight", event_note: "兩周前訂票，先確認時間。觀賞夕陽或夜景", link: toolsData.tickets[0].link },
+                    { time: "午餐", title: "午餐：極味屋 澀谷 PARCO 店", type: "food", transport_note: "澀谷 PARCO B1", event_note: "著名的漢堡排，建議提早前往排隊。", link: createMapLink('極味屋 澀谷 PARCO 店') }, // <-- 修正午餐
+                    { time: "14:00", title: "澀谷逛街購物", type: "shopping", event_note: "澀谷 PARCO/運動用品店等，並步行至 Shibuya Sky", link: createMapLink('澀谷逛街購物') },
+                    { time: "16:00-17:30", title: "澀谷 Sky 展望台", type: "sight", event_note: "預約時間為 16:00~16:19，務必準時抵達，觀賞夕陽與夜景。", link: toolsData.tickets[0].link }, // <-- 修正時間
                     { time: "18:00", title: "青之洞窟", type: "sight", event_note: "冬季限定燈飾活動 (通常在澀谷舉行)", link: createMapLink('青之洞窟 澀谷') },
                     { time: "晚餐", title: "晚餐：Steak Rice & Curry Restaurant", type: "food", event_note: "您指定的餐廳", link: createMapLink('東京 Steak Rice & Curry Restaurant') },
                     { time: "晚上", title: "六本木之丘聖誕點燈 (Roppongi Illumination)", type: "sight", transport_note: "地鐵至六本木站", event_note: "欣賞華麗的櫸木坂大道點燈", link: createMapLink('六本木之丘') }
@@ -357,21 +359,21 @@
                     { time: "晚餐", title: "晚餐：溫泉周邊或返回上野", type: "food", event_note: "享用晚餐後返回飯店", link: createMapLink('押上 晚餐推薦') }
                 ]
             },
-            // Day 8 (12/27) - 新增神田神宮/小網神社/人形町
+            // Day 8 (12/27) - 新增神田神宮/小網神社/人形町 (已修正晚間購物地點)
             { 
                 day: 8, date: "12/27 (Sat)", location: "Tokyo Kanda & Shinonome", weather: "sunny", 
                 temperature: [7, 9, 11, 13, 12, 10, 8, 7], 
                 temp_hour_range: "10:00 - 18:00", 
                 daily_pass: "東京地鐵一日券", 
-                memo: "Day 8 備註：先參拜神社，下午前往東雲Ricoland。", 
+                memo: "Day 8 備註：先參拜神社，下午前往東雲Ricoland。晚上在上野周邊進行最後採買。", 
                 events: [
                     { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo 早餐') },
                     { time: "10:00", title: "神田明神 (Kanda Myojin Shrine)", type: "sight", transport_note: "JR/地鐵至秋葉原站或御茶水站", event_note: "參拜保佑事業、勝利、姻緣", link: createMapLink('神田明神') },
                     { time: "11:30", title: "小網神社 (Koami Shrine)", type: "sight", transport_note: "地鐵至人形町站/水天宮前站", event_note: "求財運與消災解厄，可洗錢", link: createMapLink('小網神社') },
                     { time: "13:00", title: "午餐：人形町周邊 (自由選擇)", type: "food", event_note: "人形町多日式傳統餐廳，建議提前尋找目標", link: createMapLink('人形町 午餐推薦') },
                     { time: "15:00", title: "Ricoland Tokyo Bay", type: "shopping", transport_note: "地鐵至東雲站 (Shinonome)", event_note: "摩托車用品店，採購時間較...", link: createMapLink('Ricoland Tokyo Bay') },
-                    { time: "18:00", title: "晚餐：台場或臨海線沿線", type: "food", event_note: "用餐後返回新宿，進行最後採買", link: createMapLink('台場晚餐推薦') },
-                    { time: "晚上", title: "新宿逛街購物", type: "shopping", event_note: "採買藥妝、服飾、紀念品等", link: createMapLink('新宿逛街購物推薦') },
+                    { time: "18:00", title: "晚餐：上野/御徒町附近", type: "food", event_note: "用餐後返回飯店周邊", link: createMapLink('上野/御徒町晚餐推薦') },
+                    { time: "晚上", title: "上野逛街購物 (藥妝/零食)", type: "shopping", event_note: "在上野阿美橫町或車站周邊進行最後的採買。", link: createMapLink('上野 阿美橫町') }, // <-- 修正購物地點
                     { time: "晚上", title: "返回飯店整理行李", type: "accommodation", event_note: "打包購買的商品，準備隔日Check-out", link: createMapLink('Land About Tokyo') }
                 ]
             },
@@ -394,7 +396,7 @@
 
 
         // ====================================================================
-        // START: Firebase 雲端記帳邏輯 (已修正)
+        // START: Firebase 雲端記帳邏輯
         // ====================================================================
         
         const SplitTool = ({ notes, setNotes, exchangeRate, setExchangeRate }) => {
@@ -652,7 +654,6 @@
             const [isMapOpen, setIsMapOpen] = useState(false);
             
             // --- 分帳系統狀態 ---
-            // 費用列表由 SplitTool 透過 Firebase onSnapshot 管理，這裡只需傳遞 notes/exchangeRate
             const [notes, setNotes] = useLocalStorageState('splitNotes', '可在此處記錄匯率變動、特殊分帳比例等資訊。');
             const [exchangeRate, setExchangeRate] = useLocalStorageState('exchangeRate', 0.22);
             
