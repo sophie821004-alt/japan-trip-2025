@@ -744,6 +744,14 @@
             const pageContainerRef = useRef(null); // 用於頁面滑動切換
             const dateSliderRef = useRef(null); // 用於日期滑動切換
             
+            // 💡 NEW: Ref to store the latest activeTab state
+            const activeTabRef = useRef(activeTab); 
+            
+            // 💡 NEW: Effect to keep the ref updated
+            useEffect(() => {
+                activeTabRef.current = activeTab;
+            }, [activeTab]);
+            
             // --- 分帳系統狀態 ---
             const [notes, setNotes] = useLocalStorageState('splitNotes', '可在此處記錄匯率變動、特殊分帳比例等資訊。');
             
@@ -769,7 +777,7 @@
                 }
             };
 
-            // --- 💡 處理內容區滑動結束後同步 activeTab ---
+            // --- 💡 修正：處理內容區滑動結束後同步 activeTab ---
             useEffect(() => {
                 const container = pageContainerRef.current;
                 if (!container) return;
@@ -781,7 +789,8 @@
                     // 找出最靠近中心的頁面索引
                     const newIndex = Math.round(scrollLeft / width);
                     
-                    if (newIndex !== TAB_NAMES.indexOf(activeTab)) {
+                    // 使用 Ref 來存取最新的 activeTab 值，避免 stale closure
+                    if (newIndex !== TAB_NAMES.indexOf(activeTabRef.current)) {
                         setActiveTab(TAB_NAMES[newIndex]);
                     }
                 };
@@ -793,10 +802,14 @@
                     timeout = setTimeout(handleScroll, 50); 
                 };
 
+                // 修正：將事件監聽器設置在一個只執行一次的 useEffect 中 (空依賴陣列)
                 container.addEventListener('scroll', handleScrollDebounced);
                 
-                return () => container.removeEventListener('scroll', handleScrollDebounced);
-            }, [activeTab, setActiveTab]);
+                return () => {
+                    clearTimeout(timeout); // 清除可能待執行的 timeout
+                    container.removeEventListener('scroll', handleScrollDebounced);
+                }
+            }, []); // <-- 修正：設置為空陣列，只在組件 mount 時執行一次
             
             // --- 💡 修正：頁面載入後，確保滾動位置正確 (避免地圖當機問題) ---
             useEffect(() => {
@@ -809,22 +822,32 @@
             }, [activeTab]);
 
 
-            // --- 💡 同步底部的日期滑塊到當前日期 ---
+            // --- 💡 修正：同步底部的日期滑塊到當前日期 (確保居中) ---
             useEffect(() => {
                 const slider = dateSliderRef.current;
                 if (slider) {
-                    // 等待 DOM 渲染完成，確保 itemWidth 正確
-                    setTimeout(() => {
-                        const item = slider.querySelector('.date-item');
+                    // 使用 requestAnimationFrame 確保在 DOM 佈局計算完成後執行
+                    requestAnimationFrame(() => { 
+                        // 確保 .date-item 元素存在且可見 (排除隱藏的佔位元素)
+                        const item = slider.querySelector('.date-item:not(.invisible)'); 
                         if (!item) return;
 
                         const itemWidth = item.offsetWidth;
-                        // 滾動到當前日期，使其位於中心 (center alignment)
+                        
+                        // [修正邏輯]：在 DOM 中，目標項目是第 (currentDayIndex + 1) 個（因為有第一個隱藏的佔位項目）
+                        // 目標項目的左邊緣位置
+                        const targetItemLeftPosition = (currentDayIndex + 1) * itemWidth;
+                        // 目標項目的中心位置 (Item Left + Item Width / 2)
+                        const targetItemCenterPosition = targetItemLeftPosition + itemWidth / 2;
+                        
+                        // 計算需要滾動的距離 (Scroll Left = Target Center - View Center)
+                        const scrollLeft = targetItemCenterPosition - slider.offsetWidth / 2;
+
                         slider.scrollTo({
-                            left: itemWidth * currentDayIndex - (slider.offsetWidth / 2) + (itemWidth / 2),
+                            left: scrollLeft,
                             behavior: 'smooth'
                         });
-                    }, 0); // 使用 setTimeout 確保 DOM 更新完成
+                    });
                 }
             }, [currentDayIndex]);
 
@@ -836,13 +859,17 @@
                 
                 slider.scrollTimer = setTimeout(() => {
                     const scrollLeft = slider.scrollLeft;
-                    const itemWidth = slider.querySelector('.date-item').offsetWidth;
+                    const item = slider.querySelector('.date-item:not(.invisible)');
+                    if (!item) return;
                     
-                    // 找出最靠近中心點的日期索引
+                    const itemWidth = item.offsetWidth;
+                    
                     // 中心點的滾動位置 = scrollLeft + (slider.offsetWidth / 2)
                     const centerScrollPosition = scrollLeft + (slider.offsetWidth / 2);
-                    // 索引 = (中心滾動位置 / item 寬度) - 0.5 (因為第一個空白 item 佔用 1/3 寬度)
-                    const newIndex = Math.round(centerScrollPosition / itemWidth) - 1; // -1 是因為我們加入了頭尾空白 item
+                    
+                    // 找出最靠近中心點的日期索引
+                    // 索引 = (中心滾動位置 / item 寬度) - 1 (因為我們加入了頭尾空白 item)
+                    const newIndex = Math.round(centerScrollPosition / itemWidth) - 1; 
                     
                     if (newIndex >= 0 && newIndex < maxDay && newIndex !== currentDayIndex) {
                         setCurrentDayIndex(newIndex);
