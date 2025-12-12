@@ -402,15 +402,15 @@
             const unsubscribeRef = useRef(null);
             const updateTimeoutRef = useRef({}); 
             
-            // --- 新增狀態：匯率自動更新 ---
-            const [exchangeRate, setExchangeRate] = useLocalStorageState('exchangeRate', 0.22); // 0.22 作為預設或上次儲存的匯率
+            // --- 匯率自動更新 ---
+            const [exchangeRate, setExchangeRate] = useLocalStorageState('exchangeRate', 0.22); 
             const [isFetchingRate, setIsFetchingRate] = useState(true); 
             const [fetchError, setFetchError] = useState(null);
             // -----------------------------
 
             // 初始化、監聽 Firebase 資料 & 自動抓取匯率
             useEffect(() => {
-                // 1. Firebase 監聽 (保持不變)
+                // 1. Firebase 監聽 
                 if (db) {
                     unsubscribeRef.current = db.collection("expenses")
                         .orderBy("timestamp", "asc") 
@@ -424,7 +424,8 @@
                             setIsFirebaseLoaded(true);
                         }, (error) => {
                             console.error("Error listening to expenses:", error);
-                            setIsFirebaseLoaded(false);
+                            // 即使失敗，也顯示資料載入完成，避免一直顯示讀取中
+                            setIsFirebaseLoaded(true); 
                         });
 
                     db.collection("config").doc("notes").get().then(doc => {
@@ -434,11 +435,6 @@
                 
                 // 2. 自動抓取匯率 (新增)
                 const fetchExchangeRate = async () => {
-                    // ⚠️ 重要提醒：此處使用一個免費的第三方 API 服務作為範例。
-                    // 該 API 直接提供 1 JPY 可兌換多少 TWD 的匯率。
-                    // 
-                    // 如果您需要台灣銀行 (BoT) 的「現金賣出價」，建議您手動輸入。
-                    // 範例 API URL (Keyless: 1 JPY = ? TWD)
                     const API_URL = 'https://api.exchangerate.host/latest?base=JPY&symbols=TWD'; 
 
                     setIsFetchingRate(true);
@@ -451,14 +447,11 @@
                         }
                         const data = await response.json();
 
-                        // 假設 API 回傳格式為 data.rates.TWD
                         const jpyToTwdRate = data.rates.TWD;
                         
                         if (jpyToTwdRate && jpyToTwdRate > 0) {
-                            // 將匯率四捨五入到小數點後四位
                             const newRate = parseFloat(jpyToTwdRate.toFixed(4));
                             
-                            // 簡易檢查匯率是否合理 (防止 API 出錯)
                             if (newRate >= 0.18 && newRate <= 0.28) { 
                                 setExchangeRate(newRate);
                                 setFetchError(null); 
@@ -485,7 +478,7 @@
                 };
             }, []); 
             
-            // 新增費用
+            // 新增費用 (已修正 timestamp 錯誤)
             const addExpense = async () => {
                 if (!db) return alert("Firebase 未連接");
                 try {
@@ -495,7 +488,8 @@
                         name: '新的費用項目',
                         amount: 0,
                         paidBy: TRAVELERS[0],
-                        timestamp: Date.now() // 👈 **修正後的寫法**：使用 JavaScript 的當前時間戳記 (毫秒)
+                        // 使用 Date.now() 替代 serverTimestamp() 解決兼容性問題
+                        timestamp: Date.now() 
                     };
 
                     await newDocRef.set(newExpense);
@@ -521,8 +515,10 @@
                     if (!db) return;
                     try {
                         if (value !== undefined) {
+                            // 修正：Firebase 寫入時，amount 必須是 Number 類型
+                            const updateValue = field === 'amount' ? parseInt(value) || 0 : value;
                             await db.collection("expenses").doc(id).update({
-                                [field]: value
+                                [field]: updateValue
                             });
                         }
                     } catch (error) {
@@ -701,6 +697,37 @@
             
             const currentDayData = tripDatas[currentDayIndex] || tripDatas[0];
             const maxDay = tripDatas.length;
+
+            // --- 新增滑動手勢狀態 ---
+            const [touchStartX, setTouchStartX] = useState(0);
+            const SWIPE_THRESHOLD = 50; // 定義滑動最小距離 (像素)
+            
+            const handleTouchStart = (e) => {
+                // 檢查是否在行程頁面
+                if (activeTab === 'itinerary' && e.touches.length === 1) {
+                    setTouchStartX(e.touches[0].clientX);
+                }
+            };
+
+            const handleTouchEnd = (e) => {
+                if (activeTab !== 'itinerary' || e.changedTouches.length !== 1) return;
+                
+                const touchEndX = e.changedTouches[0].clientX;
+                const deltaX = touchEndX - touchStartX;
+                
+                if (Math.abs(deltaX) < SWIPE_THRESHOLD) return; // 滑動距離太小，忽略
+
+                // 向左滑 (下一天)
+                if (deltaX < -SWIPE_THRESHOLD) { 
+                    setCurrentDayIndex(prev => Math.min(maxDay - 1, prev + 1));
+                } 
+                // 向右滑 (前一天)
+                else if (deltaX > SWIPE_THRESHOLD) { 
+                    setCurrentDayIndex(prev => Math.max(0, prev - 1));
+                }
+                setTouchStartX(0); // 重置
+            };
+            // -------------------------
 
             const updateDailyMemo = useCallback((newMemo) => {
                 const newTripDatas = [...tripDatas];
@@ -885,7 +912,7 @@
 
             return (
                 <div className="min-h-screen bg-[#FBF9F2]">
-                    <div className="sticky top-0 bg-white/95 z-20 shadow-sm flex justify-around p-2 border-b">
+                    <div className="sticky top-0 left-0 right-0 bg-white/95 z-20 shadow-sm flex justify-around p-2 border-b">
                         {['itinerary', 'tools', 'split', 'map'].map(tab => (
                             <button 
                                 key={tab} 
@@ -897,16 +924,22 @@
                         ))}
                     </div>
 
-                    <div className="max-w-4xl mx-auto">
+                    {/* 【主要修改區域】新增滑動手勢處理函數 */}
+                    <div 
+                        className="max-w-4xl mx-auto"
+                        onTouchStart={handleTouchStart}
+                        onTouchEnd={handleTouchEnd}
+                    >
                         {activeTab === 'itinerary' && <DailyItinerary dayData={currentDayData} />}
                         {activeTab === 'tools' && renderTools()}
                         {activeTab === 'split' && <SplitTool notes={notes} setNotes={setNotes} />}
                         {activeTab === 'map' && renderMap()}
                     </div>
+                    {/* 【主要修改區域】結束 */}
 
                     <MapViewer />
 
-                    {/* 日期導航 (Sticky Footer) */}
+                    {/* 日期導航 (Sticky Footer) - 保持不變 */}
                     {activeTab === 'itinerary' && (
                         <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-2xl z-30">
                             <div className="max-w-4xl mx-auto p-3 flex justify-between items-center">
@@ -936,4 +969,3 @@
     </script>
 </body>
 </html>
-
