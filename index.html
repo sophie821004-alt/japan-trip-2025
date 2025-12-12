@@ -495,7 +495,7 @@
                         name: '新的費用項目',
                         amount: 0,
                         paidBy: TRAVELERS[0],
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+                        timestamp: Date.now() // 👈 **修正後的寫法**：使用 JavaScript 的當前時間戳記 (毫秒)
                     };
 
                     await newDocRef.set(newExpense);
@@ -936,3 +936,4 @@
     </script>
 </body>
 </html>
+
