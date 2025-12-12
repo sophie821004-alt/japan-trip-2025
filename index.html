@@ -748,6 +748,8 @@
             
             // Ref to store the latest activeTab state
             const activeTabRef = useRef(activeTab); 
+            // Ref to ensure initial centering only runs once
+            const isMountedRef = useRef(false);
             
             // Effect to keep the ref updated
             useEffect(() => {
@@ -779,7 +781,7 @@
                 }
             };
 
-            // --- 處理內容區滑動結束後同步 activeTab (修正重點在此: 增加 debounce 延遲) ---
+            // --- 處理內容區滑動結束後同步 activeTab ---
             useEffect(() => {
                 const container = pageContainerRef.current;
                 if (!container) return;
@@ -801,7 +803,7 @@
                 let timeout;
                 const handleScrollDebounced = () => {
                     clearTimeout(timeout);
-                    // 💡 修正：增加延遲到 100ms，確保瀏覽器 scroll-snap 完成
+                    // 增加延遲到 100ms，確保瀏覽器 scroll-snap 完成
                     timeout = setTimeout(handleScroll, 100); 
                 };
 
@@ -812,7 +814,7 @@
                     clearTimeout(timeout); 
                     container.removeEventListener('scroll', handleScrollDebounced);
                 }
-            }, []); // 依賴為空，依靠 activeTabRef 存取最新狀態
+            }, []); 
             
             // --- 頁面載入後，確保滾動位置正確 (一次性) ---
             useEffect(() => {
@@ -825,8 +827,8 @@
             }, [activeTab]);
 
 
-            // --- 💡 修正：同步底部的日期滑塊到當前日期 (確保居中) ---
-            const centerDateSlider = useCallback(() => {
+            // --- 💡 修正：日期滑塊定位函式 (解耦: 移除對 currentDayIndex 的依賴) ---
+            const centerDateSlider = useCallback((indexToCenter, behavior = 'smooth') => {
                 const slider = dateSliderRef.current;
                 if (!slider) return;
 
@@ -836,24 +838,30 @@
                     
                     if (allItems.length === 0) return;
 
-                    const itemWidth = allItems[0].offsetWidth; // 獲取單個項目的寬度
+                    const itemWidth = allItems[0].offsetWidth; 
                     
                     // 每個日期項目的中心點 (考慮到開頭有一個 invisible item)
-                    const targetItemCenterPosition = (currentDayIndex + 1.5) * itemWidth; // +1 是因為有 invisible item
+                    // (indexToCenter + 1) 是因為 invisible item，(itemWidth / 2) 是為了中心對齊
+                    const targetItemCenterPosition = (indexToCenter + 1) * itemWidth + (itemWidth / 2);
                     
                     // 計算需要滾動的距離 (Scroll Left = Target Center - View Center)
                     const scrollLeft = targetItemCenterPosition - slider.offsetWidth / 2;
 
                     slider.scrollTo({
                         left: scrollLeft,
-                        behavior: 'smooth'
+                        behavior: behavior
                     });
                 });
-            }, [currentDayIndex]);
+            }, []); // 關鍵：不再依賴 currentDayIndex
 
+            // --- 💡 修正：初始載入時，將日期滑塊定位到正確位置 (使用 'auto' 瞬間定位) ---
             useEffect(() => {
-                centerDateSlider();
-            }, [currentDayIndex, centerDateSlider]);
+                if (!isMountedRef.current) {
+                    // 網頁載入時，自動定位到儲存的 currentDayIndex (瞬間移動)
+                    centerDateSlider(currentDayIndex, 'auto');
+                    isMountedRef.current = true;
+                }
+            }, [centerDateSlider, currentDayIndex]);
 
 
             // --- 💡 修正：處理日期滑動切換結束後同步 currentDayIndex ---
@@ -863,7 +871,8 @@
                 // 節流處理 (避免在滾動時頻繁觸發)
                 if(slider.scrollTimer) clearTimeout(slider.scrollTimer);
                 
-                slider.scrollTimer = setTimeout(() => {
+                // 增加 debounce 到 150ms，確保滑動停止後才更新索引
+                slider.scrollTimer = setTimeout(() => { 
                     const scrollLeft = slider.scrollLeft;
                     const allItems = slider.querySelectorAll('.date-item:not(.invisible)');
                     if (allItems.length === 0) return;
@@ -878,9 +887,10 @@
                     const newIndex = Math.round(centerScrollPosition / itemWidth) - 1; 
 
                     if (newIndex >= 0 && newIndex < maxDay && newIndex !== currentDayIndex) {
+                        // 僅更新索引，不觸發自動滾動
                         setCurrentDayIndex(newIndex);
                     }
-                }, 100); 
+                }, 150); // <-- Debounce time increased to 150ms
             };
             
             // 行程單日顯示元件
@@ -1127,8 +1137,11 @@
                                     <div 
                                         key={index} 
                                         className={`date-item date-style cursor-pointer ${currentDayIndex === index ? 'bg-indigo-50 text-indigo-700 font-extrabold' : 'text-gray-600 font-semibold hover:bg-gray-50'}`}
-                                        // 點擊事件：直接設定索引，並觸發 centerDateSlider
-                                        onClick={() => setCurrentDayIndex(index)}
+                                        // 💡 修正：點擊時，同時更新索引並平滑滾動到中央
+                                        onClick={() => { 
+                                            setCurrentDayIndex(index);
+                                            centerDateSlider(index, 'smooth');
+                                        }}
                                     >
                                         <div className="text-sm">DAY {index + 1}</div>
                                         {/* 增大字體以增加高度感 */}
