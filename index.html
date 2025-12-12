@@ -16,6 +16,15 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
 
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="SL Japan Trip">
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
+    
+    <link rel="icon" type="image/png" sizes="32x32" href="icon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon.png">
     <script>
         // 2. 您的 Firebase 配置參數
         const firebaseConfig = {
@@ -730,7 +739,12 @@
                     const touchEndX = e.changedTouches[0].clientX;
                     const deltaX = touchEndX - touchStartX;
                     
-                    if (Math.abs(deltaX) < SWIPE_THRESHOLD) return; // 滑動距離太小，忽略
+                    // 檢查垂直滾動距離是否過大，防止意外觸發
+                    const deltaY = e.changedTouches[0].clientY - e.changedTouches[0].clientY; 
+                    if (Math.abs(deltaY) > Math.abs(deltaX) || Math.abs(deltaX) < SWIPE_THRESHOLD) return; 
+                    
+                    // 阻止瀏覽器預設行為（例如部分瀏覽器的側滑返回），但我們這裡綁定在內容區，應該不會影響主滾動
+                    // e.preventDefault(); 
 
                     // 向左滑 (下一天)
                     if (deltaX < -SWIPE_THRESHOLD && currentDayIndex < maxDay - 1) { 
@@ -806,7 +820,7 @@
                 );
 
                 return (
-                    // 【修正點 2】: 在 DailyItinerary 的根元素上綁定事件
+                    // 在 DailyItinerary 的根元素上綁定事件
                     <div 
                         className={background.className} 
                         style={background.style}
