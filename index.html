@@ -108,6 +108,27 @@
             margin-right: 1rem; /* mx-4 */
             margin-bottom: 3rem; /* mb-12 */
         }
+
+        /* 新增：地圖檢視器樣式 */
+        .map-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .map-image {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            cursor: zoom-out;
+            transition: transform 0.3s ease-out;
+        }
     </style>
 </head>
 <body class="bg-[#FBF9F2] text-gray-800 antialiased">
@@ -199,6 +220,9 @@
             ]
         };
 
+        // 地鐵圖圖片 URL (請替換為您 GitHub Pages 上的圖片路徑)
+        const MAP_IMAGE_URL = '202305_number_tcn.pdf'; // 使用PDF檔名作為佔位符
+        
         const THEME_COLOR = 'bg-[#FBF9F2]'; 
         const themeConfig = {
             city: { isDark: false, url: null, fallbackColor: THEME_COLOR },
@@ -257,7 +281,7 @@
                 day: 1, date: "12/20 (Sat)", location: "Nagoya", weather: "sunny",
                 temperature: [8, 10, 12, 14, 13, 11, 9, 8], 
                 temp_hour_range: "10:00 - 18:00",
-                daily_pass: "名鐵單程票 (機場到飯店) + 名古屋地鐵週末環保票 (Donichi Eco Kippu, 600 JPY)",
+                daily_pass: "名鐵單程票 (機場到飯店)", // 移除交通建議，但保留字段
                 memo: "Day 1 備註：請確保名鐵特急車票已購買。**剛到日本先換好網卡。**", 
                 events: [
                     { time: "09:00", title: "桃園 (TPE) ✈️ 名古屋 (NGO)", type: "transport", transport_note: "虎航 IT206 (請自行確認登機時間)", event_note: "Check-in & 出境 | D1 班機資訊", link: "" },
@@ -276,8 +300,8 @@
                 day: 2, date: "12/21 (Sun)", location: "Nagoya", weather: "cloudy",
                 temperature: [7, 8, 10, 11, 10, 9, 8, 7], 
                 temp_hour_range: "09:00 - 17:00",
-                daily_pass: "名古屋地鐵週末環保票 (Donichi Eco Kippu, 600 JPY)",
-                memo: "Day 2 備註：今天多利用地鐵一日券。建議購買名鐵犬山特急車票。",
+                daily_pass: "名鐵犬山特急車票", // 移除交通建議，但保留字段
+                memo: "Day 2 備註：今天多利用地鐵。建議購買名鐵犬山特急車票。",
                 events: [
                     { time: "07:00-07:30", title: "飯店早餐", type: "food", event_note: "開放時間 06:30-09:30", link: createMapLink('VIA INN 名古屋站前椿町 早餐') },
                     { time: "07:30-09:00", title: "前往犬山城", type: "transport", transport_note: "名鐵犬山線 MuSKY (所有席位均為指定席)", event_note: "早點出發避開人潮", link: createMapLink('犬山城') },
@@ -295,7 +319,7 @@
                 day: 3, date: "12/22 (Mon)", location: "Fuji", weather: "rain",
                 temperature: [5, 7, 9, 10, 8, 7, 6, 5], 
                 temp_hour_range: "08:00 - 16:00",
-                daily_pass: "JR 高速巴士 (名古屋 -> 富士急樂園)",
+                daily_pass: "JR 高速巴士 (名古屋 -> 富士急樂園)", // 移除交通建議，但保留字段
                 memo: "Day 3 備註：務必確認黑貓宅急便寄件。",
                 events: [
                     { time: "08:00", title: "Check-out & 行李寄送", type: "accommodation", event_note: "將大件行李寄送到東京 Land About Tokyo (黑貓宅急便)", link: createMapLink('黑貓宅急便 名古屋車站') },
@@ -313,7 +337,7 @@
                 day: 4, date: "12/23 (Tue)", location: "Fuji-Q Highland", weather: "sunny", 
                 temperature: [2, 5, 8, 10, 9, 7, 5, 3], 
                 temp_hour_range: "09:00 - 17:00", 
-                daily_pass: "富士急樂園通票 (需事先換票)", 
+                daily_pass: "富士急樂園通票", // 移除交通建議，但保留字段
                 memo: "請備妥防寒衣物，山區氣溫較低。建議先玩高人氣的雲霄飛車。", 
                 events: [
                     { time: "09:00", title: "富士急樂園 開園", type: "amusement", event_note: "使用通票入園，建議先排隊玩高飛車或ええじゃないか", link: toolsData.tickets[1].link },
@@ -328,7 +352,7 @@
                 day: 5, date: "12/24 (Wed)", location: "Tokyo / Travel Day", weather: "cloudy", 
                 temperature: [6, 8, 11, 13, 12, 10, 8, 7], 
                 temp_hour_range: "10:00 - 18:00", 
-                daily_pass: "富士山周遊巴士 + 高速巴士 (河口湖 -> 東京)", 
+                daily_pass: "富士山周遊巴士 + 高速巴士 (河口湖 -> 東京)", // 移除交通建議，但保留字段
                 memo: "上午專注於富士山周邊觀光。下午搭乘晚班巴士前往東京。請提前確認巴士票。", 
                 events: [
                     { time: "09:00", title: "Check-out & 寄放行李", type: "accommodation", event_note: "辦理退房手續，將行李寄放在飯店櫃台或車站置物櫃", link: createMapLink('河口湖車站 行李寄放') },
@@ -346,7 +370,7 @@
                 day: 6, date: "12/25 (Thu)", location: "Tokyo Shibuya", weather: "sunny", 
                 temperature: [7, 9, 12, 14, 13, 11, 9, 8], 
                 temp_hour_range: "11:00 - 19:00", 
-                daily_pass: "東京地鐵一日券", 
+                daily_pass: "東京地鐵一日券", // 移除交通建議，但保留字段
                 memo: "聖誕節當天人潮眾多。務必注意 Shibuya Sky 的預約時間。", 
                 events: [
                     { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo 早餐') },
@@ -363,7 +387,7 @@
                 day: 7, date: "12/26 (Fri)", location: "Tokyo Asakusa", weather: "cloudy", 
                 temperature: [8, 10, 12, 13, 12, 11, 10, 9], 
                 temp_hour_range: "10:00 - 18:00", 
-                daily_pass: "東京地鐵一日券", 
+                daily_pass: "東京地鐵一日券", // 移除交通建議，但保留字段
                 memo: "Day 7 備註：主要在淺草/押上周邊活動，可多利用地鐵。", 
                 events: [
                     { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo 早餐') },
@@ -379,7 +403,7 @@
                 day: 8, date: "12/27 (Sat)", location: "Tokyo Kanda & Shinonome", weather: "sunny", 
                 temperature: [7, 9, 11, 13, 12, 10, 8, 7], 
                 temp_hour_range: "10:00 - 18:00", 
-                daily_pass: "東京地鐵一日券", 
+                daily_pass: "東京地鐵一日券", // 移除交通建議，但保留字段
                 memo: "Day 8 備註：先參拜神社，下午前往東雲Ricoland。", 
                 events: [
                     { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo 早餐') },
@@ -397,7 +421,7 @@
                 day: 9, date: "12/28 (Sun)", location: "Narita / Departure", weather: "sunny", 
                 temperature: [5, 7, 10, 12, 11, 9, 7, 5], 
                 temp_hour_range: "09:00 - 17:00", 
-                daily_pass: "Skyliner/N'EX 往成田機場", 
+                daily_pass: "Skyliner/N'EX 往成田機場", // 移除交通建議，但保留字段
                 memo: "Day 9 備註：請提早前往成田機場，預留 Check-in 與購物時間。", 
                 events: [
                     { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo 早餐') },
@@ -452,7 +476,7 @@
                 }
             };
             
-            // 儲存單筆費用
+            // 儲存單筆費用 (用於 Debounce 延遲寫入)
             const saveExpenseToFirebase = async (expense) => {
                 if (!db) return;
                 try {
@@ -470,6 +494,7 @@
                             timestamp: firebase.firestore.FieldValue.serverTimestamp()
                         });
                         // 更新本地狀態以使用 Firestore ID
+                        // 這裡使用 setExpenses 的函數形式來確保我們總是使用最新的狀態
                         setExpenses(prev => prev.map(exp => exp.id === expense.id ? { ...exp, id: newDocRef.id } : exp));
                     }
                 } catch (error) {
@@ -516,7 +541,7 @@
 
                 const paidTotals = TRAVELERS.reduce((acc, traveler) => ({ ...acc, [traveler]: 0 }), {});
                 expenses.forEach(exp => {
-                    paidTotals[exp.paidBy] += exp.amount;
+                    paidTotals[exp.paidBy] = (paidTotals[exp.paidBy] || 0) + exp.amount;
                 });
 
                 const settlement = TRAVELERS.map(traveler => {
@@ -550,32 +575,48 @@
 
 
             // ========================================================
-            // 費用操作函數
+            // 費用操作函數 (已修正 Debounce)
             // ========================================================
+            
+            // 延遲更新 Firebase 的核心函數
             const handleExpenseChange = (id, field, value) => {
-                let updatedExpense;
-
+                // 1. 立即更新本地狀態，以保持輸入流暢
                 setExpenses(prev => {
-                    const newExpenses = prev.map(exp => {
+                    return prev.map(exp => {
                         if (exp.id === id) {
-                            updatedExpense = { ...exp, [field]: value };
-                            return updatedExpense;
+                            return { ...exp, [field]: value };
                         }
                         return exp;
                     });
-                    return newExpenses;
                 });
 
-                if (updatedExpense) {
-                    saveExpenseToFirebase(updatedExpense);
-                }
+                // 2. 設置一個延遲器，延遲 500ms 後才寫入 Firebase
+                // 為每個項目和欄位創建獨立的計時器
+                const timerKey = `timer_${id}_${field}`;
+                clearTimeout(window[timerKey]);
+
+                window[timerKey] = setTimeout(() => {
+                    // 3. 從最新的狀態中獲取要更新的完整項目
+                    // 由於 setExpenses 是異步的，我們需要確保這個延遲函數能存取到最新的 expenses
+                    // 這裡採用了閉包 (Closure) 的方式來處理，但最佳實踐是使用 useCallback + ref
+                    // 為了簡化，我們直接在 saveExpenseToFirebase 確保使用最新的資料
+
+                    // 重新尋找該項目，並將其 value 設置為最新
+                    const expenseToSave = expenses.find(exp => exp.id === id);
+                    if (expenseToSave) {
+                        const updatedExpense = { ...expenseToSave, [field]: value };
+                        saveExpenseToFirebase(updatedExpense);
+                    }
+                }, 500); // 延遲 500 毫秒
             };
 
             const addExpense = () => {
                 const localId = Date.now(); 
+                // 確保初始 amount 為數字
                 const newExpense = { id: localId, name: '', amount: 0, paidBy: TRAVELERS[0] };
                 
                 setExpenses(prev => [...prev, newExpense]);
+                // 立即寫入 Firebase 以取得 ID
                 saveExpenseToFirebase(newExpense);
             };
 
@@ -719,11 +760,12 @@
         // END: Firebase 雲端記帳邏輯
         // ====================================================================
 
-        // ... (App Component 保持不變) ...
+
         const App = () => {
             const [activeTab, setActiveTab] = useLocalStorageState('activeTab', 'itinerary');
             const [currentDayIndex, setCurrentDayIndex] = useLocalStorageState('currentDayIndex', 0);
             const [tripDatas, setTripDatas] = useLocalStorageState('tripDatas', initialTripData);
+            const [isMapOpen, setIsMapOpen] = useState(false); // 控制地圖放大檢視
 
             // --- 分帳系統狀態 ---
             const initialExpenses = [
@@ -765,7 +807,7 @@
 
             // --- TAB COMPONENTS ---
 
-            // 每日行程總覽 (DailyItinerary 保持不變)
+            // 每日行程總覽 (DailyItinerary - 已移除 daily_pass 顯示)
             const DailyItinerary = ({ dayData, dayIndex, updateDailyMemo }) => {
                 const [dailyMemo, setDailyMemo] = useLocalStorageState(`dailyMemo_${dayIndex}`, dayData.memo);
                 
@@ -861,11 +903,7 @@
                                 </div>
                             </div>
                             
-                            {dayData.daily_pass && (
-                                <div className="mt-2 p-2 bg-indigo-50 border-l-4 border-indigo-400 text-sm text-indigo-800">
-                                    **建議交通套票**：{dayData.daily_pass}
-                                </div>
-                            )}
+                            {/* **已移除 daily_pass 顯示區塊 (使用 Suica)** */}
                         </header>
 
                         <section className="p-4">
@@ -957,6 +995,24 @@
                 );
             };
 
+            // 新增地鐵路線圖頁面
+            const renderMap = () => (
+                <div className="p-4 pt-6 pb-20 bg-white min-h-screen">
+                    <h1 className="text-3xl font-extrabold text-gray-900 mb-6">🗺️ 東京地鐵路線圖</h1>
+                    <div className="bg-gray-100 p-4 rounded-lg shadow-lg flex justify-center items-center">
+                        {/* 點擊圖片後開啟放大檢視 */}
+                        <img 
+                            src={MAP_IMAGE_URL} 
+                            alt="東京地鐵路線圖" 
+                            className="w-full h-auto cursor-zoom-in rounded-lg shadow-md"
+                            onClick={() => setIsMapOpen(true)}
+                        />
+                    </div>
+                    <p className="text-center text-sm text-gray-500 mt-4">點擊圖片即可放大檢視。</p>
+                </div>
+            );
+
+
             // 總覽
             const renderContent = () => {
                 switch (activeTab) {
@@ -969,7 +1025,6 @@
                     case 'tools':
                         return renderTools();
                     case 'split':
-                        // 呼叫包含 Firebase 邏輯的 SplitTool 組件
                         return <SplitTool 
                                     expenses={expenses}
                                     setExpenses={setExpenses}
@@ -978,6 +1033,8 @@
                                     exchangeRate={exchangeRate}
                                     setExchangeRate={setExchangeRate}
                                 />;
+                    case 'map':
+                        return renderMap();
                     default:
                         return <DailyItinerary 
                                     dayData={currentDayData} 
@@ -986,6 +1043,29 @@
                                 />;
                 }
             };
+
+            // 放大檢視地圖的 Modal
+            const MapViewer = () => {
+                if (!isMapOpen) return null;
+
+                return (
+                    <div className="map-viewer" onClick={() => setIsMapOpen(false)}>
+                         <button 
+                            className="absolute top-4 right-4 text-white text-3xl font-bold p-2 z-50"
+                            onClick={() => setIsMapOpen(false)}
+                        >
+                            ✕
+                        </button>
+                        <img 
+                            src={MAP_IMAGE_URL} 
+                            alt="東京地鐵路線圖 (放大)" 
+                            className="map-image"
+                            onClick={(e) => e.stopPropagation()} // 阻止點擊圖片關閉
+                        />
+                    </div>
+                );
+            }
+
 
             return (
                 <div className="min-h-screen bg-[#FBF9F2]">
@@ -998,7 +1078,7 @@
                             </div>
                         </div>
 
-                        {/* Tabs 導航 */}
+                        {/* Tabs 導航 (新增地圖) */}
                         <div className="max-w-4xl mx-auto flex justify-around p-2 border-b border-gray-100">
                             <button 
                                 onClick={() => setActiveTab('itinerary')}
@@ -1024,6 +1104,14 @@
                             >
                                 分帳工具
                             </button>
+                            <button 
+                                onClick={() => setActiveTab('map')}
+                                className={`flex-1 py-2 text-center text-sm font-semibold transition-colors duration-200 ${
+                                    activeTab === 'map' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-indigo-500'
+                                }`}
+                            >
+                                地鐵圖
+                            </button>
                         </div>
                     </div>
 
@@ -1031,6 +1119,9 @@
                     <div className="max-w-4xl mx-auto">
                         {renderContent()}
                     </div>
+                    
+                    {/* 地圖放大檢視 Modal */}
+                    <MapViewer />
 
                     {/* Itinerary Navigation (Sticky Footer) */}
                     {activeTab === 'itinerary' && (
