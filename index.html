@@ -20,9 +20,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="SL Japan Trip">
-    
     <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
-    
     <link rel="icon" type="image/png" sizes="32x32" href="icon.png">
     <link rel="icon" type="image/png" sizes="16x16" href="icon.png">
     <script>
@@ -128,6 +126,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: opacity 0.3s ease-in-out;
         }
         .map-image {
             max-width: 90%;
@@ -135,6 +134,47 @@
             object-fit: contain;
             cursor: zoom-out;
             transition: transform 0.3s ease-out;
+        }
+        
+        /* 💡 新增：實現頁面滑動切換的樣式 */
+        .page-container {
+            display: flex;
+            /* 允許橫向滾動，並強制吸附到子元件 */
+            overflow-x: scroll;
+            scroll-snap-type: x mandatory;
+            /* 隱藏滾動條 */
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+        .page-container::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+        .page-content {
+            flex: 0 0 100%; /* 每個內容區塊佔滿父容器寬度 */
+            scroll-snap-align: start; /* 滾動時吸附到左邊界 */
+            min-height: calc(100vh - 56px); /* 螢幕高度 - 導航列高度 */
+        }
+
+        /* 💡 新增：日期滑動切換的樣式 */
+        .date-slider {
+            /* 允許橫向滾動，並強制吸附到子元件 */
+            overflow-x: scroll;
+            scroll-snap-type: x mandatory;
+            /* 隱藏滾動條 */
+            -ms-overflow-style: none; 
+            scrollbar-width: none; 
+            white-space: nowrap; /* 確保子元素不換行 */
+            display: flex;
+        }
+        .date-slider::-webkit-scrollbar {
+            display: none;
+        }
+        .date-item {
+            flex: 0 0 33.33%; /* 每個日期佔 1/3 寬度 */
+            scroll-snap-align: center; /* 滾動時吸附到中心 */
+            text-align: center;
+            padding: 8px 0;
+            transition: background-color 0.3s, color 0.3s;
         }
     </style>
 </head>
@@ -402,7 +442,7 @@
 
 
         // ====================================================================
-        // START: Firebase 雲端記帳邏輯 (已修改)
+        // START: Firebase 雲端記帳邏輯
         // ====================================================================
         
         const SplitTool = ({ notes, setNotes }) => {
@@ -487,7 +527,7 @@
                 };
             }, []); 
             
-            // 新增費用 (已修正 timestamp 錯誤)
+            // 新增費用
             const addExpense = async () => {
                 if (!db) return alert("Firebase 未連接");
                 try {
@@ -497,7 +537,6 @@
                         name: '新的費用項目',
                         amount: 0,
                         paidBy: TRAVELERS[0],
-                        // 使用 Date.now() 替代 serverTimestamp() 解決兼容性問題
                         timestamp: Date.now() 
                     };
 
@@ -524,7 +563,6 @@
                     if (!db) return;
                     try {
                         if (value !== undefined) {
-                            // 修正：Firebase 寫入時，amount 必須是 Number 類型
                             const updateValue = field === 'amount' ? parseInt(value) || 0 : value;
                             await db.collection("expenses").doc(id).update({
                                 [field]: updateValue
@@ -601,7 +639,7 @@
                         {isFirebaseLoaded ? '✅ 已連線 Firebase，資料自動同步。' : '⚠️ 連線中或失敗，請檢查權限。'}
                     </div>
 
-                    {/* 匯率設定 (已加入自動更新狀態顯示) */}
+                    {/* 匯率設定 */}
                     <div className="bg-indigo-50 p-4 rounded-lg shadow-md mb-6">
                         <div className="flex items-center justify-between">
                             <span className="font-bold text-indigo-800">匯率 (JPY→TWD)</span>
@@ -613,7 +651,6 @@
                                     className="expense-input w-24 pr-8" 
                                     step="0.0001" 
                                     min="0"
-                                    // 抓取中時禁用手動輸入，除非有錯誤發生
                                     disabled={isFetchingRate && fetchError === null} 
                                 />
                                 <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-500">TWD</span>
@@ -695,11 +732,16 @@
         // END: Firebase 雲端記帳邏輯
         // ====================================================================
         
+        // Tab Names for Nav and Index Mapping
+        const TAB_NAMES = ['itinerary', 'tools', 'split', 'map'];
+        
         const App = () => {
             const [activeTab, setActiveTab] = useLocalStorageState('activeTab', 'itinerary');
             const [currentDayIndex, setCurrentDayIndex] = useLocalStorageState('currentDayIndex', 0);
             const [tripDatas, setTripDatas] = useLocalStorageState('tripDatas', initialTripData);
             const [isMapOpen, setIsMapOpen] = useState(false);
+            const pageContainerRef = useRef(null); // 用於頁面滑動切換
+            const dateSliderRef = useRef(null); // 用於日期滑動切換
             
             // --- 分帳系統狀態 ---
             const [notes, setNotes] = useLocalStorageState('splitNotes', '可在此處記錄匯率變動、特殊分帳比例等資訊。');
@@ -713,50 +755,81 @@
                 setTripDatas(newTripDatas);
             }, [tripDatas, currentDayIndex, setTripDatas]);
 
-            const NavArrow = ({ direction, onClick, disabled }) => (
-                <button onClick={onClick} disabled={disabled} className={`p-2 font-bold ${disabled ? 'text-gray-300' : 'text-indigo-600'}`}>
-                    {direction === 'left' ? '←' : '→'}
-                </button>
-            );
+            // --- 💡 頁面切換邏輯 (根據點擊導航列) ---
+            const handleTabClick = (tab) => {
+                setActiveTab(tab);
+                const index = TAB_NAMES.indexOf(tab);
+                if (pageContainerRef.current && index !== -1) {
+                    // 平滑滾動到目標頁面
+                    pageContainerRef.current.scrollTo({
+                        left: pageContainerRef.current.offsetWidth * index,
+                        behavior: 'smooth'
+                    });
+                }
+            };
 
+            // --- 💡 處理內容區滑動結束後同步 activeTab ---
+            useEffect(() => {
+                const container = pageContainerRef.current;
+                if (!container) return;
+
+                const handleScroll = () => {
+                    // 偵測滾動位置
+                    const scrollLeft = container.scrollLeft;
+                    const width = container.offsetWidth;
+                    // 找出最靠近中心的頁面索引
+                    const newIndex = Math.round(scrollLeft / width);
+                    
+                    if (newIndex !== TAB_NAMES.indexOf(activeTab)) {
+                        setActiveTab(TAB_NAMES[newIndex]);
+                    }
+                };
+                
+                // 節流處理 (避免在滾動時頻繁觸發)
+                let timeout;
+                const handleScrollDebounced = () => {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(handleScroll, 50); 
+                };
+
+                container.addEventListener('scroll', handleScrollDebounced);
+                return () => container.removeEventListener('scroll', handleScrollDebounced);
+            }, [activeTab, setActiveTab]);
+            
+            // --- 💡 同步底部的日期滑塊到當前日期 ---
+            useEffect(() => {
+                const slider = dateSliderRef.current;
+                if (slider) {
+                    const itemWidth = slider.querySelector('.date-item').offsetWidth;
+                    // 滾動到當前日期，使其位於中心 (center alignment)
+                    slider.scrollTo({
+                        left: itemWidth * currentDayIndex - (slider.offsetWidth / 2) + (itemWidth / 2),
+                        behavior: 'smooth'
+                    });
+                }
+            }, [currentDayIndex]);
+
+            // --- 💡 處理日期滑動切換結束後同步 currentDayIndex ---
+            const handleDateScroll = (e) => {
+                const slider = e.currentTarget;
+                const scrollLeft = slider.scrollLeft;
+                const itemWidth = slider.querySelector('.date-item').offsetWidth;
+                
+                // 找出最靠近中心點的日期索引
+                // 中心點的滾動位置 = scrollLeft + (slider.offsetWidth / 2)
+                const centerScrollPosition = scrollLeft + (slider.offsetWidth / 2);
+                const newIndex = Math.round(centerScrollPosition / itemWidth) - 1; // -1 因為我們從 0 開始
+                
+                if (newIndex >= 0 && newIndex < maxDay && newIndex !== currentDayIndex) {
+                    setCurrentDayIndex(newIndex);
+                }
+            };
+            
             // 行程單日顯示元件
-            const DailyItinerary = ({ dayData, currentDayIndex, maxDay, setCurrentDayIndex }) => {
+            const DailyItinerary = ({ dayData, updateDailyMemo }) => {
                 const [dailyMemo, setDailyMemo] = useState(dayData.memo);
                 
-                // --- 滑動手勢邏輯 (新增/修正) ---
-                const [touchStartX, setTouchStartX] = useState(0);
-                const SWIPE_THRESHOLD = 50; // 定義滑動最小距離 (像素)
-                
-                const handleTouchStart = (e) => {
-                    if (e.touches.length === 1) {
-                        setTouchStartX(e.touches[0].clientX);
-                    }
-                };
-
-                const handleTouchEnd = (e) => {
-                    if (e.changedTouches.length !== 1 || touchStartX === 0) return;
-                    
-                    const touchEndX = e.changedTouches[0].clientX;
-                    const deltaX = touchEndX - touchStartX;
-                    
-                    // 檢查垂直滾動距離是否過大，防止意外觸發
-                    const deltaY = e.changedTouches[0].clientY - e.changedTouches[0].clientY; 
-                    if (Math.abs(deltaY) > Math.abs(deltaX) || Math.abs(deltaX) < SWIPE_THRESHOLD) return; 
-                    
-                    // 阻止瀏覽器預設行為（例如部分瀏覽器的側滑返回），但我們這裡綁定在內容區，應該不會影響主滾動
-                    // e.preventDefault(); 
-
-                    // 向左滑 (下一天)
-                    if (deltaX < -SWIPE_THRESHOLD && currentDayIndex < maxDay - 1) { 
-                        setCurrentDayIndex(prev => prev + 1);
-                    } 
-                    // 向右滑 (前一天)
-                    else if (deltaX > SWIPE_THRESHOLD && currentDayIndex > 0) { 
-                        setCurrentDayIndex(prev => prev - 1);
-                    }
-                    setTouchStartX(0); // 重置
-                };
-                // ---------------------------------
+                // 移除原本的滑動手勢邏輯，由外部 TabView 處理頁面切換
                 
                 useEffect(() => {
                     setDailyMemo(dayData.memo);
@@ -764,6 +837,7 @@
 
                 const handleMemoChange = (e) => {
                     setDailyMemo(e.target.value);
+                    // 使用 debounce 儲存，但由於這是行程頁面，我們直接在 App 層級處理儲存邏輯
                     updateDailyMemo(e.target.value);
                 };
                 
@@ -820,14 +894,11 @@
                 );
 
                 return (
-                    // 在 DailyItinerary 的根元素上綁定事件
                     <div 
-                        className={background.className} 
+                        className={`page-content ${background.className}`} 
                         style={background.style}
-                        onTouchStart={handleTouchStart}
-                        onTouchEnd={handleTouchEnd}
                     >
-                        <header className="px-4 py-4 sticky top-0 bg-white/90 backdrop-blur-sm z-10 border-b border-gray-100">
+                        <header className="px-4 py-4 sticky top-14 bg-white/90 backdrop-blur-sm z-10 border-b border-gray-100">
                             <h2 className="text-2xl font-bold text-indigo-700 date-style">{dayData.date}</h2>
                             <p className="text-sm text-gray-600 mt-1">地點：{dayData.location}</p>
                             <p className="text-sm font-semibold text-gray-800 mt-1">
@@ -870,7 +941,7 @@
             );
 
             const renderTools = () => (
-                <div className="p-4 pt-6 pb-20">
+                <div className="page-content p-4 pt-6 pb-20">
                     <ToolSection title="✈️ 航班資訊" data={toolsData.flights} renderItem={(flight, index) => (
                         <div key={index} className="glass-light p-4 rounded-lg shadow-md border border-gray-100">
                             <p className="text-lg font-semibold text-indigo-700">{flight.code} - {flight.leg}</p>
@@ -909,6 +980,7 @@
                 </div>
             );
 
+            // 💡 地圖放大檢視元件
             const MapViewer = () => !isMapOpen ? null : (
                 <div className="map-viewer" onClick={() => setIsMapOpen(false)}>
                     <img src={MAP_IMAGE_URL} alt="地鐵路線圖" className="map-image" onClick={e => e.stopPropagation()} />
@@ -916,7 +988,7 @@
             );
             
             const renderMap = () => (
-                <div className="p-4 pt-6 pb-20 bg-white min-h-screen"> 
+                <div className="page-content p-4 pt-6 pb-20 bg-white min-h-screen"> 
                     <h1 className="text-3xl font-extrabold text-gray-900 mb-6">🗺️ 地鐵路線圖</h1> 
                     <div className="bg-gray-100 p-4 rounded-lg shadow-lg flex justify-center items-center">
                         <img 
@@ -928,57 +1000,80 @@
                     </div>
                 </div>
             );
+            
+            // 💡 TabView：包裹所有頁面內容，實現橫向滑動
+            const TabView = () => (
+                <div 
+                    ref={pageContainerRef}
+                    className="page-container"
+                    style={{ 
+                        // 確保初始滾動位置與當前 activeTab 同步
+                        scrollLeft: pageContainerRef.current ? pageContainerRef.current.offsetWidth * TAB_NAMES.indexOf(activeTab) : 0 
+                    }}
+                >
+                    {/* 1. 行程頁面 (itinerary) */}
+                    <DailyItinerary 
+                        dayData={currentDayData} 
+                        updateDailyMemo={updateDailyMemo}
+                    />
+
+                    {/* 2. 資訊頁面 (tools) */}
+                    {renderTools()}
+                    
+                    {/* 3. 記帳頁面 (split) */}
+                    <div className="page-content">
+                        <SplitTool notes={notes} setNotes={setNotes} />
+                    </div>
+
+                    {/* 4. 地圖頁面 (map) */}
+                    {renderMap()}
+                </div>
+            );
 
             return (
-                <div className="min-h-screen bg-[#FBF9F2]">
+                <div className="min-h-screen bg-[#FBF9F2] relative">
+                    {/* 頂部導航列 (Tab Bar) */}
                     <div className="sticky top-0 left-0 right-0 bg-white/95 z-20 shadow-sm flex justify-around p-2 border-b">
-                        {['itinerary', 'tools', 'split', 'map'].map(tab => (
+                        {TAB_NAMES.map(tab => (
                             <button 
                                 key={tab} 
-                                onClick={() => setActiveTab(tab)} 
-                                className={`flex-1 py-2 text-center text-sm font-semibold ${activeTab === tab ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-400'}`}
+                                onClick={() => handleTabClick(tab)} 
+                                className={`flex-1 py-2 text-center text-sm font-semibold transition-colors ${activeTab === tab ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-400 hover:text-indigo-500'}`}
                             >
                                 {tab === 'itinerary' ? '行程' : tab === 'tools' ? '資訊' : tab === 'split' ? '記帳' : '地圖'}
                             </button>
                         ))}
                     </div>
 
-                    <div 
-                        className="max-w-4xl mx-auto"
-                        // 移除這裡的 onTouchStart/onTouchEnd 綁定
-                    >
-                        {activeTab === 'itinerary' && 
-                            <DailyItinerary 
-                                dayData={currentDayData} 
-                                currentDayIndex={currentDayIndex}
-                                maxDay={maxDay}
-                                setCurrentDayIndex={setCurrentDayIndex}
-                            />
-                        }
-                        {activeTab === 'tools' && renderTools()}
-                        {activeTab === 'split' && <SplitTool notes={notes} setNotes={setNotes} />}
-                        {activeTab === 'map' && renderMap()}
+                    <div className="max-w-4xl mx-auto">
+                        <TabView />
                     </div>
                     
                     <MapViewer />
 
-                    {/* 日期導航 (Sticky Footer) - 保持不變 */}
+                    {/* 💡 底部日期滑動切換導航 (只在行程頁面顯示) */}
                     {activeTab === 'itinerary' && (
                         <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-2xl z-30">
-                            <div className="max-w-4xl mx-auto p-3 flex justify-between items-center">
-                                <NavArrow 
-                                    direction="left"
-                                    onClick={() => setCurrentDayIndex(prev => Math.max(0, prev - 1))}
-                                    disabled={currentDayIndex === 0}
-                                />
-                                <div className="text-xl font-extrabold text-indigo-700 date-style">
-                                    DAY {currentDayIndex + 1} / {maxDay}
-                                </div>
-                                <NavArrow 
-                                    direction="right"
-                                    onClick={() => setCurrentDayIndex(prev => Math.min(maxDay - 1, prev + 1))}
-                                    disabled={currentDayIndex === maxDay - 1}
-                                />
+                            <div 
+                                ref={dateSliderRef} 
+                                className="date-slider max-w-4xl mx-auto hide-scrollbar"
+                                // 綁定滾動結束後事件 (模擬 onScrollEnd)
+                                onScroll={handleDateScroll}
+                            >
+                                {/* 💡 Date Item: 佔據 1/3 寬度，並吸附至中心 */}
+                                {tripDatas.map((dayData, index) => (
+                                    <div 
+                                        key={index} 
+                                        className={`date-item date-style cursor-pointer ${currentDayIndex === index ? 'bg-indigo-50 text-indigo-700 font-extrabold' : 'text-gray-600 font-semibold hover:bg-gray-50'}`}
+                                        onClick={() => setCurrentDayIndex(index)}
+                                    >
+                                        <div className="text-xs">DAY {index + 1}</div>
+                                        <div className="text-sm leading-tight">{dayData.date.split('(')[0].trim()}</div>
+                                    </div>
+                                ))}
+                                {/* 為了確保兩端日期也能完美居中，在頭尾各加入兩個空白元素 (共 2*33.33% 寬度) */}
+                                <div className="date-item invisible"></div>
+                                <div className="date-item invisible"></div>
                             </div>
                         </div>
                     )}
