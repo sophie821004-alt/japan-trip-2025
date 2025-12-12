@@ -136,12 +136,12 @@
             transition: transform 0.3s ease-out;
         }
         
-        /* 💡 修正：實現頁面滑動切換的樣式 */
+        /* 💡 修正：實現頁面滑動切換的樣式 - 保持 scroll-snap */
         .page-container {
             display: flex;
             /* 允許橫向滾動，並強制吸附到子元件 */
             overflow-x: scroll;
-            scroll-snap-type: x mandatory;
+            scroll-snap-type: x mandatory; 
             /* 隱藏滾動條 */
             -ms-overflow-style: none; /* IE and Edge */
             scrollbar-width: none; /* Firefox */
@@ -155,11 +155,12 @@
             min-height: calc(100vh - 56px); /* 螢幕高度 - 導航列高度 */
         }
 
-        /* 💡 修正：日期滑動切換的樣式 - 增加高度 */
+        /* 💡 修正：日期滑動切換的樣式 - 移除 scroll-snap */
         .date-slider {
-            /* 允許橫向滾動，並強制吸附到子元件 */
+            /* 允許橫向滾動 */
             overflow-x: scroll;
-            scroll-snap-type: x mandatory;
+            /* 移除 scroll-snap-type: x mandatory; */
+            
             /* 隱藏滾動條 */
             -ms-overflow-style: none; 
             scrollbar-width: none; 
@@ -171,7 +172,7 @@
         }
         .date-item {
             flex: 0 0 33.33%; /* 每個日期佔 1/3 寬度 */
-            scroll-snap-align: center; /* 滾動時吸附到中心 */
+            /* 移除 scroll-snap-align: center; */
             text-align: center;
             /* 增加 padding 以增加高度和點擊區域 */
             padding: 12px 0; 
@@ -485,6 +486,7 @@
                 
                 // 2. 自動抓取匯率 (新增)
                 const fetchExchangeRate = async () => {
+                    // 使用穩定的 ExchangeRate API
                     const API_URL = 'https://api.exchangerate.host/latest?base=JPY&symbols=TWD'; 
 
                     setIsFetchingRate(true);
@@ -741,13 +743,13 @@
             const [currentDayIndex, setCurrentDayIndex] = useLocalStorageState('currentDayIndex', 0);
             const [tripDatas, setTripDatas] = useLocalStorageState('tripDatas', initialTripData);
             const [isMapOpen, setIsMapOpen] = useState(false);
-            const pageContainerRef = useRef(null); // 用於頁面滑動切換
-            const dateSliderRef = useRef(null); // 用於日期滑動切換
+            const pageContainerRef = useRef(null); 
+            const dateSliderRef = useRef(null); 
             
-            // 💡 NEW: Ref to store the latest activeTab state
+            // Ref to store the latest activeTab state
             const activeTabRef = useRef(activeTab); 
             
-            // 💡 NEW: Effect to keep the ref updated
+            // Effect to keep the ref updated
             useEffect(() => {
                 activeTabRef.current = activeTab;
             }, [activeTab]);
@@ -764,7 +766,7 @@
                 setTripDatas(newTripDatas);
             }, [tripDatas, currentDayIndex, setTripDatas]);
 
-            // --- 💡 頁面切換邏輯 (根據點擊導航列) ---
+            // --- 頁面切換邏輯 (根據點擊導航列) ---
             const handleTabClick = (tab) => {
                 setActiveTab(tab);
                 const index = TAB_NAMES.indexOf(tab);
@@ -777,7 +779,7 @@
                 }
             };
 
-            // --- 💡 修正：處理內容區滑動結束後同步 activeTab ---
+            // --- 處理內容區滑動結束後同步 activeTab (修正重點在此: 增加 debounce 延遲) ---
             useEffect(() => {
                 const container = pageContainerRef.current;
                 if (!container) return;
@@ -799,78 +801,82 @@
                 let timeout;
                 const handleScrollDebounced = () => {
                     clearTimeout(timeout);
-                    timeout = setTimeout(handleScroll, 50); 
+                    // 💡 修正：增加延遲到 100ms，確保瀏覽器 scroll-snap 完成
+                    timeout = setTimeout(handleScroll, 100); 
                 };
 
-                // 修正：將事件監聽器設置在一個只執行一次的 useEffect 中 (空依賴陣列)
+                // 設置事件監聽器
                 container.addEventListener('scroll', handleScrollDebounced);
                 
                 return () => {
-                    clearTimeout(timeout); // 清除可能待執行的 timeout
+                    clearTimeout(timeout); 
                     container.removeEventListener('scroll', handleScrollDebounced);
                 }
-            }, []); // <-- 修正：設置為空陣列，只在組件 mount 時執行一次
+            }, []); // 依賴為空，依靠 activeTabRef 存取最新狀態
             
-            // --- 💡 修正：頁面載入後，確保滾動位置正確 (避免地圖當機問題) ---
+            // --- 頁面載入後，確保滾動位置正確 (一次性) ---
             useEffect(() => {
                 const container = pageContainerRef.current;
                 const index = TAB_NAMES.indexOf(activeTab);
                 if (container && index !== -1) {
-                    // 立即設定滾動位置，確保 UI 與狀態同步
+                    // 立即設定滾動位置
                     container.scrollLeft = container.offsetWidth * index;
                 }
             }, [activeTab]);
 
 
             // --- 💡 修正：同步底部的日期滑塊到當前日期 (確保居中) ---
-            useEffect(() => {
+            const centerDateSlider = useCallback(() => {
                 const slider = dateSliderRef.current;
-                if (slider) {
-                    // 使用 requestAnimationFrame 確保在 DOM 佈局計算完成後執行
-                    requestAnimationFrame(() => { 
-                        // 確保 .date-item 元素存在且可見 (排除隱藏的佔位元素)
-                        const item = slider.querySelector('.date-item:not(.invisible)'); 
-                        if (!item) return;
+                if (!slider) return;
 
-                        const itemWidth = item.offsetWidth;
-                        
-                        // [修正邏輯]：在 DOM 中，目標項目是第 (currentDayIndex + 1) 個（因為有第一個隱藏的佔位項目）
-                        // 目標項目的左邊緣位置
-                        const targetItemLeftPosition = (currentDayIndex + 1) * itemWidth;
-                        // 目標項目的中心位置 (Item Left + Item Width / 2)
-                        const targetItemCenterPosition = targetItemLeftPosition + itemWidth / 2;
-                        
-                        // 計算需要滾動的距離 (Scroll Left = Target Center - View Center)
-                        const scrollLeft = targetItemCenterPosition - slider.offsetWidth / 2;
+                // 使用 requestAnimationFrame 確保在 DOM 佈局計算完成後執行
+                requestAnimationFrame(() => { 
+                    const allItems = slider.querySelectorAll('.date-item:not(.invisible)');
+                    
+                    if (allItems.length === 0) return;
 
-                        slider.scrollTo({
-                            left: scrollLeft,
-                            behavior: 'smooth'
-                        });
+                    const itemWidth = allItems[0].offsetWidth; // 獲取單個項目的寬度
+                    
+                    // 每個日期項目的中心點 (考慮到開頭有一個 invisible item)
+                    const targetItemCenterPosition = (currentDayIndex + 1.5) * itemWidth; // +1 是因為有 invisible item
+                    
+                    // 計算需要滾動的距離 (Scroll Left = Target Center - View Center)
+                    const scrollLeft = targetItemCenterPosition - slider.offsetWidth / 2;
+
+                    slider.scrollTo({
+                        left: scrollLeft,
+                        behavior: 'smooth'
                     });
-                }
+                });
             }, [currentDayIndex]);
 
-            // --- 💡 處理日期滑動切換結束後同步 currentDayIndex ---
+            useEffect(() => {
+                centerDateSlider();
+            }, [currentDayIndex, centerDateSlider]);
+
+
+            // --- 💡 修正：處理日期滑動切換結束後同步 currentDayIndex ---
             const handleDateScroll = (e) => {
                 const slider = e.currentTarget;
+                
                 // 節流處理 (避免在滾動時頻繁觸發)
                 if(slider.scrollTimer) clearTimeout(slider.scrollTimer);
                 
                 slider.scrollTimer = setTimeout(() => {
                     const scrollLeft = slider.scrollLeft;
-                    const item = slider.querySelector('.date-item:not(.invisible)');
-                    if (!item) return;
+                    const allItems = slider.querySelectorAll('.date-item:not(.invisible)');
+                    if (allItems.length === 0) return;
                     
-                    const itemWidth = item.offsetWidth;
+                    const itemWidth = allItems[0].offsetWidth;
+                    const viewCenter = slider.offsetWidth / 2;
                     
-                    // 中心點的滾動位置 = scrollLeft + (slider.offsetWidth / 2)
-                    const centerScrollPosition = scrollLeft + (slider.offsetWidth / 2);
+                    // 找出目前畫面中心點的位置（距離開頭 0 點的距離）
+                    const centerScrollPosition = scrollLeft + viewCenter;
                     
-                    // 找出最靠近中心點的日期索引
-                    // 索引 = (中心滾動位置 / item 寬度) - 1 (因為我們加入了頭尾空白 item)
+                    // 真正的索引 = 捨入 (中心位置 / item 寬度) - 1 (因為有第一個隱藏的 item)
                     const newIndex = Math.round(centerScrollPosition / itemWidth) - 1; 
-                    
+
                     if (newIndex >= 0 && newIndex < maxDay && newIndex !== currentDayIndex) {
                         setCurrentDayIndex(newIndex);
                     }
@@ -887,7 +893,6 @@
 
                 const handleMemoChange = (e) => {
                     setDailyMemo(e.target.value);
-                    // 使用 debounce 儲存，但由於這是行程頁面，我們直接在 App 層級處理儲存邏輯
                     updateDailyMemo(e.target.value);
                 };
                 
@@ -1030,7 +1035,7 @@
                 </div>
             );
 
-            // 💡 地圖放大檢視元件
+            // 地圖放大檢視元件
             const MapViewer = () => !isMapOpen ? null : (
                 <div className="map-viewer" onClick={() => setIsMapOpen(false)}>
                     <img 
@@ -1057,7 +1062,7 @@
                 </div>
             );
             
-            // 💡 TabView：包裹所有頁面內容，實現橫向滑動
+            // TabView：包裹所有頁面內容，實現橫向滑動
             const TabView = () => (
                 <div 
                     ref={pageContainerRef}
@@ -1106,7 +1111,7 @@
                     {/* 地圖檢視器渲染在根層級上方 (z-index 1000) */}
                     <MapViewer /> 
 
-                    {/* 💡 底部日期滑動切換導航 (只在行程頁面顯示) */}
+                    {/* 底部日期滑動切換導航 (只在行程頁面顯示) */}
                     {activeTab === 'itinerary' && (
                         <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-2xl z-30">
                             <div 
@@ -1122,6 +1127,7 @@
                                     <div 
                                         key={index} 
                                         className={`date-item date-style cursor-pointer ${currentDayIndex === index ? 'bg-indigo-50 text-indigo-700 font-extrabold' : 'text-gray-600 font-semibold hover:bg-gray-50'}`}
+                                        // 點擊事件：直接設定索引，並觸發 centerDateSlider
                                         onClick={() => setCurrentDayIndex(index)}
                                     >
                                         <div className="text-sm">DAY {index + 1}</div>
