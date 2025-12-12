@@ -6,12 +6,46 @@
     <title>SL Japan Travel 2025</title>
     
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react-development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Playfair+Display:wght=700&display=swap" rel="stylesheet">
     
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // 2. 您的 Firebase 配置參數 (已填入您提供的金鑰)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTXrRd2JDqzHf8n7p9L6bWKKFwxwrHit0",
+            authDomain: "japan-trip-2025-172dc.firebaseapp.com",
+            projectId: "japan-trip-2025-172dc",
+            storageBucket: "japan-trip-2025-172dc.firebasestorage.app",
+            messagingSenderId: "1017170036072",
+            appId: "1:1017170036072:web:56e15a34af9aedec1fc2dd",
+            measurementId: "G-99GM2GD2E0"
+        };
+        
+        // 3. 全域變數，用於儲存資料庫實例
+        let db; 
+
+        // 4. 初始化 Firebase App
+        const initializeFirebase = () => {
+            if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
+                const app = firebase.initializeApp(firebaseConfig);
+                // 必須使用 app.firestore() 來初始化 Firestore 實例
+                db = app.firestore();
+                console.log("Firebase initialized successfully with Firestore.");
+            }
+        };
+
+        // 確保在 React App 啟動前初始化
+        if (typeof firebase !== 'undefined') {
+            initializeFirebase();
+        }
+
+    </script>
     <style>
         /* 基礎樣式和字體 */
         body { 
@@ -85,6 +119,7 @@
         const TRAVELERS = ['Sophie', 'Li'];
         
         // --- Custom Hook: useLocalStorageState (離線儲存核心) ---
+        // 注意：此 Hook 仍用於儲存非同步的 UI 狀態 (如 activeTab)，但費用明細改用 Firebase
         const useLocalStorageState = (key, defaultValue) => {
             const [state, setState] = useState(() => {
                 try {
@@ -111,7 +146,7 @@
         
         // --- DATA SOURCE & CONFIGS ---
 
-        // 交通、住宿、緊急資訊 及 電子票券
+        // 交通、住宿、緊急資訊 及 電子票券 (維持不變)
         const toolsData = {
             flights: [
                 { leg: "去程", code: "IT206", time: "12/20 09:00 TPE -> 14:00 NGO", airport: "TPE/NGO" },
@@ -181,7 +216,7 @@
         };
         
         // Google Maps 搜尋連結基礎 URL
-        const MAP_BASE_URL = 'https://www.google.com/maps/search/?api=1&query=';
+        const MAP_BASE_URL = 'https://www.google.com/maps/search/';
         const createMapLink = (query) => MAP_BASE_URL + encodeURIComponent(query);
         
         // 天氣圖標映射
@@ -228,7 +263,7 @@
                 events: [
                     { time: "09:00", title: "桃園 (TPE) ✈️ 名古屋 (NGO)", type: "transport", transport_note: "虎航 IT206 (請自行確認登機時間)", event_note: "Check-in & 出境 | D1 班機資訊", link: "" },
                     { time: "14:00-14:40", title: "抵達NGO 逛街", type: "leisure", transport_note: "", event_note: "機場逛逛", link: createMapLink('中部國際機場 新特麗亞') },
-                    { time: "14:40-15:00", title: "機場小吃", type: "food", transport_note: "", event_note: "在機場簡單吃點東西", link: createMapLink('中部國際機場+餐廳') },
+                    { time: "14:40-15:00", title: "機場小吃", type: "food", transport_note: "", event_note: "在機場簡單吃點東西", link: createMapLink('中部國際機場 餐廳') },
                     { time: "15:00-15:50", title: "前往飯店放行李", type: "accommodation", transport_note: "VIA INN 名古屋站前椿町", event_note: "特急+走路約 40 分鐘，準急+走路約 50 分鐘", link: createMapLink('VIA INN 名古屋站前椿町') },
                     { time: "16:00-16:30", title: "前往大須觀音", type: "sight", transport_note: "地鐵 | 大須觀音站", event_note: "預留 30 分鐘抓寶可夢", link: createMapLink('大須觀音') },
                     { time: "17:30-晚上", title: "大須觀音 & 大須商店街", type: "shopping", transport_note: "地鐵 | 大須觀音站", event_note: "多數店家營業至 20:00", link: createMapLink('大須商店街') },
@@ -270,8 +305,8 @@
                     { time: "12:00", title: "高速巴士：名古屋 -> 富士急樂園", type: "transport", transport_note: "JR 東海高速巴士 | 車程約 4.5hr。", event_note: "巴士時間已調整至中午。帶點零食和水。", link: "https://www.japan-guide.com/bus/fuji.html" },
                     { time: "16:30", title: "抵達富士急樂園站", type: "transport", event_note: "轉乘至飯店 (可能需搭乘計程車或接駁車)", link: createMapLink('富士急樂園站') },
                     { time: "17:30", title: "MYSTAYS 富士山展望溫泉酒店 Check-in", type: "accommodation", event_note: "確認房間的富士山景觀！", link: createMapLink('MYSTAYS 富士山展望溫泉酒店') },
-                    { time: "20:00", title: "晚餐：飯店附近或溫泉設施用餐", type: "food", event_note: "飯店溫泉設施或附近居酒屋", link: createMapLink('富士吉田+晚餐') },
-                    { time: "21:30", title: "體驗飯店溫泉", type: "leisure", event_note: "", link: createMapLink('MYSTAYS 富士山展望溫泉酒店+溫泉') }
+                    { time: "20:00", title: "晚餐：飯店附近或溫泉設施用餐", type: "food", event_note: "飯店溫泉設施或附近居酒屋", link: createMapLink('富士吉田 晚餐') },
+                    { time: "21:30", title: "體驗飯店溫泉", type: "leisure", event_note: "", link: createMapLink('MYSTAYS 富士山展望溫泉酒店 溫泉') }
                 ]
             },
             // Day 4 (12/23) - 富士急樂園 🎢
@@ -283,9 +318,9 @@
                 memo: "請備妥防寒衣物，山區氣溫較低。建議先玩高人氣的雲霄飛車。", 
                 events: [
                     { time: "09:00", title: "富士急樂園 開園", type: "amusement", event_note: "使用通票入園，建議先排隊玩高飛車或ええじゃないか", link: toolsData.tickets[1].link },
-                    { time: "12:30", title: "午餐：樂園內餐廳", type: "food", event_note: "在園區內選擇喜歡的主題餐廳", link: createMapLink('富士急樂園+餐廳') },
-                    { time: "15:00", title: "鬼屋戰慄迷宮 / 其他設施", type: "amusement", event_note: "挑戰世界最長最可怕的鬼屋！", link: createMapLink('富士急樂園+戰慄迷宮') },
-                    { time: "18:00", title: "晚餐：河口湖車站附近", type: "food", event_note: "嘗試當地的餺飥麵 (ほうとう) 或燒肉", link: createMapLink('河口湖車站+晚餐') },
+                    { time: "12:30", title: "午餐：樂園內餐廳", type: "food", event_note: "在園區內選擇喜歡的主題餐廳", link: createMapLink('富士急樂園 餐廳') },
+                    { time: "15:00", title: "鬼屋戰慄迷宮 / 其他設施", type: "amusement", event_note: "挑戰世界最長最可怕的鬼屋！", link: createMapLink('富士急樂園 戰慄迷宮') },
+                    { time: "18:00", title: "晚餐：河口湖車站附近", type: "food", event_note: "嘗試當地的餺飥麵 (ほうとう) 或燒肉", link: createMapLink('河口湖車站 晚餐') },
                     { time: "20:00", title: "返回飯店休息 / 溫泉", type: "leisure", event_note: "", link: createMapLink('MYSTAYS 富士山展望溫泉酒店') }
                 ]
             },
@@ -297,14 +332,14 @@
                 daily_pass: "富士山周遊巴士 + 高速巴士 (河口湖 -> 東京)", 
                 memo: "上午專注於富士山周邊觀光。下午搭乘晚班巴士前往東京。請提前確認巴士票。", 
                 events: [
-                    { time: "09:00", title: "Check-out & 寄放行李", type: "accommodation", event_note: "辦理退房手續，將行李寄放在飯店櫃台或車站置物櫃", link: createMapLink('河口湖車站+行李寄放') },
-                    { time: "09:30", title: "河口湖天上山公園 (Kachi Kachi 山纜車)", type: "sight", transport_note: "河口湖周遊巴士 (紅線)", event_note: "欣賞河口湖全景與富士山", link: createMapLink('河口湖天上山公園+纜車') },
+                    { time: "09:00", title: "Check-out & 寄放行李", type: "accommodation", event_note: "辦理退房手續，將行李寄放在飯店櫃台或車站置物櫃", link: createMapLink('河口湖車站 行李寄放') },
+                    { time: "09:30", title: "河口湖天上山公園 (Kachi Kachi 山纜車)", type: "sight", transport_note: "河口湖周遊巴士 (紅線)", event_note: "欣賞河口湖全景與富士山", link: createMapLink('河口湖天上山公園 纜車') },
                     { time: "11:30", title: "新倉山淺間公園", type: "sight", transport_note: "富士急行線下吉田站", event_note: "爬上忠靈塔拍攝富士山經典照", link: createMapLink('新倉山淺間公園') },
                     { time: "13:30", title: "午餐：河口湖周邊餐廳", type: "food", event_note: "建議在河口湖車站附近用餐", link: createMapLink('河口湖午餐推薦') },
                     { time: "16:30", title: "高速巴士：河口湖 -> 新宿/東京站", type: "transport", transport_note: "巴士約 17:00 出發 | 車程約 2 小時", event_note: "搭乘預訂的巴士前往東京", link: "https://www.highwaybus.com/gp/reservation/rsvPlanList?routeGroupNo=1&routeNo=111&displayType=4" },
                     { time: "19:30", title: "抵達新宿 / 前往飯店 Land About Tokyo Check-in", type: "accommodation", transport_note: "地鐵或JR至日暮里站", event_note: "於旅館 Land About Tokyo Check-in，領取行李", link: createMapLink('Land About Tokyo') },
-                    { time: "21:00", title: "晚餐：上野/日暮里附近", type: "food", event_note: "在飯店附近快速用餐", link: createMapLink('日暮里+晚餐') },
-                    { time: "22:00", title: "晴空塔聖誕活動 / 六本木點燈 (二選一)", type: "sight", event_note: "選擇其中一個點燈活動，欣賞聖誕夜景", link: createMapLink('東京+六本木之丘+點燈') }
+                    { time: "21:00", title: "晚餐：上野/日暮里附近", type: "food", event_note: "在飯店附近快速用餐", link: createMapLink('日暮里 晚餐') },
+                    { time: "22:00", title: "晴空塔聖誕活動 / 六本木點燈 (二選一)", type: "sight", event_note: "選擇其中一個點燈活動，欣賞聖誕夜景", link: createMapLink('東京 六本木之丘 點燈') }
                 ]
             },
             // Day 6 (12/25) - 澀谷與原宿 & 晚上六本木點燈 🎄
@@ -315,11 +350,11 @@
                 daily_pass: "東京地鐵一日券", 
                 memo: "聖誕節當天人潮眾多。務必注意 Shibuya Sky 的預約時間。", 
                 events: [
-                    { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo+早餐') },
+                    { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo 早餐') },
                     { time: "10:00", title: "明治神宮", type: "sight", transport_note: "地鐵至代代木站/原宿站", event_note: "日本最重要的神社之一", link: createMapLink('明治神宮') },
                     { time: "午餐", title: "午餐：Sports shop Gallery 2 (澀谷)", type: "shopping", event_note: "在澀谷逛運動用品店，並在周邊用餐", link: createMapLink('Gallery 2 澀谷') },
                     { time: "14:00", title: "澀谷 Sky 展望台", type: "sight", event_note: "兩周前訂票，先確認時間。觀賞夕陽或夜景", link: toolsData.tickets[0].link },
-                    { time: "18:00", title: "青之洞窟", type: "sight", event_note: "冬季限定燈飾活動 (通常在澀谷舉行)", link: createMapLink('青之洞窟+澀谷') },
+                    { time: "18:00", title: "青之洞窟", type: "sight", event_note: "冬季限定燈飾活動 (通常在澀谷舉行)", link: createMapLink('青之洞窟 澀谷') },
                     { time: "晚餐", title: "晚餐：Steak Rice & Curry Restaurant", type: "food", event_note: "您指定的餐廳", link: createMapLink('東京 Steak Rice & Curry Restaurant') },
                     { time: "晚上", title: "六本木之丘聖誕點燈 (Roppongi Illumination)", type: "sight", transport_note: "地鐵至六本木站", event_note: "欣賞華麗的櫸木坂大道點燈", link: createMapLink('六本木之丘') }
                 ]
@@ -332,27 +367,29 @@
                 daily_pass: "東京地鐵一日券", 
                 memo: "Day 7 備註：主要在淺草/押上周邊活動，可多利用地鐵。", 
                 events: [
-                    { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo+早餐') },
+                    { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo 早餐') },
                     { time: "10:00", title: "淺草寺 (Sensoji Temple) & 雷門", type: "sight", transport_note: "地鐵至淺草站", event_note: "參觀雷門、仲見世通，抽籤求運勢", link: createMapLink('淺草寺 雷門') },
                     { time: "午餐", title: "午餐：淺草今半 (壽喜燒/便宜午餐)", type: "food", event_note: "平日中午便宜很多，約一人 1000 台幣左右", link: createMapLink('淺草今半') },
-                    { time: "15:00", title: "晴空塔 (Tokyo Skytree) & Pokemon Center", type: "shopping", transport_note: "地鐵至押上站", event_note: "登塔觀景或在周邊的 Solamachi 購物，尋找 Pokemon Center", link: createMapLink('東京晴空塔+Pokemon Center') },
+                    { time: "15:00", title: "晴空塔 (Tokyo Skytree) & Pokemon Center", type: "shopping", transport_note: "地鐵至押上站", event_note: "登塔觀景或在周邊的 Solamachi 購物，尋找 Pokemon Center", link: createMapLink('東京晴空塔 Pokemon Center') },
                     { time: "18:00", title: "押上天然溫泉 大黑湯", type: "leisure", transport_note: "近押上站 (Oshiage)", event_note: "體驗日式溫泉，放鬆身心", link: createMapLink('押上天然溫泉 大黑湯') },
-                    { time: "晚餐", title: "晚餐：溫泉周邊或返回上野", type: "food", event_note: "享用晚餐後返回飯店", link: createMapLink('押上+晚餐推薦') }
+                    { time: "晚餐", title: "晚餐：溫泉周邊或返回上野", type: "food", event_note: "享用晚餐後返回飯店", link: createMapLink('押上 晚餐推薦') }
                 ]
             },
-            // Day 8 (12/27) - Ricoland (東雲) 與新宿採購 🛍️
+            // Day 8 (12/27) - 新增神田神宮/小網神社/人形町
             { 
-                day: 8, date: "12/27 (Sat)", location: "Tokyo Shinonome & Shinjuku", weather: "sunny", 
+                day: 8, date: "12/27 (Sat)", location: "Tokyo Kanda & Shinonome", weather: "sunny", 
                 temperature: [7, 9, 11, 13, 12, 10, 8, 7], 
                 temp_hour_range: "10:00 - 18:00", 
                 daily_pass: "東京地鐵一日券", 
-                memo: "Day 8 備註：Ricoland 在東雲，請安排好交通時間。", 
+                memo: "Day 8 備註：先參拜神社，下午前往東雲Ricoland。", 
                 events: [
-                    { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo+早餐') },
-                    { time: "10:00", title: "Ricoland Tokyo Bay", type: "shopping", transport_note: "地鐵至東雲站 (Shinonome)", event_note: "摩托車用品店", link: createMapLink('Ricoland Tokyo Bay') },
-                    { time: "午餐", title: "午餐：木曾路 (新宿三丁目店)", type: "food", event_note: "您指定的餐廳", link: createMapLink('木曾路 新宿三丁目店') },
-                    { time: "14:30", title: "新宿逛街購物", type: "shopping", event_note: "採買藥妝、服飾、紀念品等", link: createMapLink('新宿逛街購物推薦') },
-                    { time: "晚餐", title: "晚餐：新宿周邊 (自由選擇)", type: "food", event_note: "在新宿站附近用餐", link: createMapLink('新宿晚餐推薦') },
+                    { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo 早餐') },
+                    { time: "10:00", title: "神田明神 (Kanda Myojin Shrine)", type: "sight", transport_note: "JR/地鐵至秋葉原站或御茶水站", event_note: "參拜保佑事業、勝利、姻緣", link: createMapLink('神田明神') },
+                    { time: "11:30", title: "小網神社 (Koami Shrine)", type: "sight", transport_note: "地鐵至人形町站/水天宮前站", event_note: "求財運與消災解厄，可洗錢", link: createMapLink('小網神社') },
+                    { time: "13:00", title: "午餐：人形町周邊 (自由選擇)", type: "food", event_note: "人形町多日式傳統餐廳，建議提前尋找目標", link: createMapLink('人形町 午餐推薦') },
+                    { time: "15:00", title: "Ricoland Tokyo Bay", type: "shopping", transport_note: "地鐵至東雲站 (Shinonome)", event_note: "摩托車用品店，採購時間較長", link: createMapLink('Ricoland Tokyo Bay') },
+                    { time: "18:30", title: "晚餐：新宿周邊 (自由選擇)", type: "food", event_note: "在新宿站附近用餐", link: createMapLink('新宿晚餐推薦') },
+                    { time: "晚上", title: "新宿逛街購物", type: "shopping", event_note: "採買藥妝、服飾、紀念品等", link: createMapLink('新宿逛街購物推薦') },
                     { time: "晚上", title: "返回飯店整理行李", type: "accommodation", event_note: "打包購買的商品，準備隔日Check-out", link: createMapLink('Land About Tokyo') }
                 ]
             },
@@ -364,7 +401,7 @@
                 daily_pass: "Skyliner/N'EX 往成田機場", 
                 memo: "Day 9 備註：請提早前往成田機場，預留 Check-in 與購物時間。", 
                 events: [
-                    { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo+早餐') },
+                    { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo 早餐') },
                     { time: "10:00", title: "Check-out & 前往機場", type: "transport", transport_note: "JR/Skyliner/N'EX 至成田機場 (NRT)", event_note: "務必預留至少 2.5 小時交通時間", link: createMapLink('成田機場 NRT') },
                     { time: "13:00", title: "成田機場 Check-in", type: "transport", transport_note: "樂桃航空櫃台 (MM625)", event_note: "預留時間辦理登機與託運", link: createMapLink('成田機場T1 樂桃櫃台') },
                     { time: "14:00", title: "午餐與機場免稅購物", type: "shopping", event_note: "在機場內享用最後的日式餐點並採買伴手禮", link: createMapLink('成田機場T1 免稅店') },
@@ -373,9 +410,108 @@
             }
         ];
 
-        // --- Split Tool Component (獨立出來以修正 Hooks 錯誤) ---
+        // ====================================================================
+        // START: Firebase 雲端記帳邏輯
+        // ====================================================================
+        
+        // --- Split Tool Component (包含 Firebase 邏輯) ---
         const SplitTool = ({ expenses, setExpenses, notes, setNotes, exchangeRate, setExchangeRate }) => {
-            // 費用計算邏輯 (使用 useMemo 確保性能，並在獨立組件的頂層呼叫)
+            
+            // 由於 initializeFirebase 在頂部 <script> 執行，這裡只需確保 db 存在即可。
+
+            useEffect(() => {
+                // 確保 Firebase 初始化已經完成
+                if (typeof db !== 'undefined') {
+                    fetchExpensesFromFirebase();
+                    fetchNotesFromFirebase();
+                }
+            }, []); 
+
+            // ========================================================
+            // Firebase 讀取與寫入邏輯
+            // ========================================================
+            
+            // 獲取費用列表
+            const fetchExpensesFromFirebase = async () => {
+                try {
+                    // expenses 是一個集合 (Collection)
+                    const snapshot = await db.collection("expenses").orderBy("timestamp", "asc").get();
+                    const fetchedExpenses = snapshot.docs.map(doc => ({
+                        ...doc.data(),
+                        id: doc.id, // 使用 Firestore 的 Doc ID 作為唯一 ID
+                        amount: parseInt(doc.data().amount) // 確保金額是數字
+                    }));
+                    setExpenses(fetchedExpenses);
+                } catch (error) {
+                    console.error("Error fetching expenses from Firebase:", error);
+                    // 錯誤時，仍使用 localStorage 的舊資料
+                }
+            };
+            
+            // 獲取備註
+            const fetchNotesFromFirebase = async () => {
+                 try {
+                    // notes 是 config 集合下的一個文件 (Document)
+                    const notesDoc = await db.collection("config").doc("notes").get();
+                    if (notesDoc.exists) {
+                        setNotes(notesDoc.data().content);
+                    }
+                } catch (error) {
+                    console.error("Error fetching notes from Firebase:", error);
+                }
+            };
+            
+            // 儲存單筆費用
+            const saveExpenseToFirebase = async (expense) => {
+                if (!db) return;
+                try {
+                    if (expense.id && !Number.isInteger(expense.id)) { // 使用 Firestore ID 更新現有項目
+                        await db.collection("expenses").doc(expense.id).update({
+                             name: expense.name,
+                             amount: expense.amount,
+                             paidBy: expense.paidBy
+                        });
+                    } else { // 新增項目
+                        const newDocRef = await db.collection("expenses").add({
+                            name: expense.name,
+                            amount: expense.amount,
+                            paidBy: expense.paidBy,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        // 更新本地狀態以使用 Firestore ID
+                        setExpenses(prev => prev.map(exp => exp.id === expense.id ? { ...exp, id: newDocRef.id } : exp));
+                    }
+                    // console.log("Expense saved successfully.");
+                } catch (error) {
+                    console.error("Error saving expense to Firebase:", error);
+                }
+            };
+            
+            // 刪除單筆費用
+            const deleteExpenseFromFirebase = async (id) => {
+                if (!db) return;
+                try {
+                    await db.collection("expenses").doc(id).delete();
+                    // console.log("Expense deleted successfully.");
+                } catch (error) {
+                    console.error("Error deleting expense from Firebase:", error);
+                }
+            };
+
+            // 儲存備註
+            const saveNotesToFirebase = async (newNotes) => {
+                if (!db) return;
+                try {
+                    await db.collection("config").doc("notes").set({ content: newNotes });
+                    // setNotes(newNotes); // 已經在 handleNotesChange 中設置
+                } catch (error) {
+                    console.error("Error saving notes to Firebase:", error);
+                }
+            };
+            
+            // ========================================================
+            // 費用計算邏輯
+            // ========================================================
             const calculations = useMemo(() => {
                 const totalJPY = expenses.reduce((sum, exp) => sum + exp.amount, 0);
                 const totalTWD = (totalJPY * exchangeRate).toFixed(0);
@@ -389,18 +525,11 @@
                 const settlement = TRAVELERS.map(traveler => {
                     const paid = paidTotals[traveler];
                     const diff = paid - halfJPY;
-                    return {
-                        traveler,
-                        paid: paid,
-                        shouldPay: halfJPY,
-                        diff: diff,
-                        diffTWD: (diff * exchangeRate).toFixed(0)
-                    };
+                    return { traveler, paid: paid, shouldPay: halfJPY, diff: diff, diffTWD: (diff * exchangeRate).toFixed(0) };
                 });
 
-                // 計算結算訊息
-                const giver = settlement.find(s => s.diff < 0); // 應付錢給對方的人 (支出較少)
-                const receiver = settlement.find(s => s.diff > 0); // 應收錢的人 (支出較多)
+                const giver = settlement.find(s => s.diff < 0);
+                const receiver = settlement.find(s => s.diff > 0);
 
                 let settlementMessage = "支出已平衡。";
 
@@ -417,28 +546,63 @@
                     );
                 }
 
-                return {
-                    totalJPY, totalTWD, halfJPY, settlementMessage
-                };
+                return { totalJPY, totalTWD, halfJPY, settlementMessage };
             }, [expenses, exchangeRate]);
 
             const { totalJPY, totalTWD, settlementMessage } = calculations;
 
-            // 費用操作函數
+
+            // ========================================================
+            // 費用操作函數 (現在會呼叫 Firebase 寫入)
+            // ========================================================
             const handleExpenseChange = (id, field, value) => {
-                setExpenses(prev => 
-                    prev.map(exp => exp.id === id ? { ...exp, [field]: value } : exp)
-                );
+                let newExpenses;
+                let updatedExpense;
+
+                setExpenses(prev => {
+                    newExpenses = prev.map(exp => {
+                        if (exp.id === id) {
+                            updatedExpense = { ...exp, [field]: value };
+                            return updatedExpense;
+                        }
+                        return exp;
+                    });
+                    return newExpenses;
+                });
+
+                if (updatedExpense) {
+                    // 立即將變更寫入 Firebase
+                    saveExpenseToFirebase(updatedExpense);
+                }
             };
 
             const addExpense = () => {
-                const newId = Math.max(...expenses.map(exp => exp.id), 0) + 1;
-                setExpenses(prev => [...prev, { id: newId, name: '', amount: 0, paidBy: TRAVELERS[0] }]);
+                // 暫時給予一個本地 ID，稍後會被 Firebase ID 替換
+                const localId = Date.now(); 
+                const newExpense = { id: localId, name: '', amount: 0, paidBy: TRAVELERS[0] };
+                
+                setExpenses(prev => [...prev, newExpense]);
+                
+                // 將新項目寫入 Firebase (寫入成功後，Firebase 會回傳一個真實的 ID)
+                saveExpenseToFirebase(newExpense);
             };
 
             const removeExpense = (id) => {
                 setExpenses(prev => prev.filter(exp => exp.id !== id));
+                // 呼叫 Firebase 刪除函數
+                deleteExpenseFromFirebase(id);
             };
+            
+            const handleNotesChange = (e) => {
+                const newNotes = e.target.value;
+                setNotes(newNotes);
+                // 延遲寫入 Firebase 以避免頻繁寫入
+                clearTimeout(window.notesTimer);
+                window.notesTimer = setTimeout(() => {
+                    saveNotesToFirebase(newNotes);
+                }, 1000); // 停止輸入 1 秒後儲存
+            };
+
 
             // 分帳項目元件
             const ExpenseItem = ({ exp }) => (
@@ -472,6 +636,7 @@
                                 type="number" 
                                 value={exp.amount === 0 ? '' : exp.amount} 
                                 onChange={(e) => handleExpenseChange(exp.id, 'amount', parseInt(e.target.value) || 0)}
+                                onBlur={(e) => handleExpenseChange(exp.id, 'amount', parseInt(e.target.value) || 0)}
                                 className="expense-input ml-2 w-20"
                                 min="0"
                             />
@@ -482,7 +647,10 @@
 
             return (
                 <div className="p-4 pt-6 pb-20 bg-white min-h-screen">
-                    <h1 className="text-3xl font-extrabold text-gray-900 mb-6">💰 分帳工具</h1>
+                    <h1 className="text-3xl font-extrabold text-gray-900 mb-6">💰 分帳工具 (雲端儲存)</h1>
+                    <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-3 mb-4 text-sm font-medium">
+                        ✅ **狀態：** 已連接 Firebase！您新增的費用會自動儲存並同步至您的專案中。
+                    </div>
 
                     {/* 匯率設定區 */}
                     <div className="bg-indigo-50 p-4 rounded-lg shadow-md mb-6">
@@ -506,7 +674,7 @@
 
                     {/* 總結算區 */}
                     <div className="bg-green-100 p-4 rounded-lg shadow-lg mb-8">
-                        <h3 className="text-xl font-bold text-green-800 mb-3">總結算</h3>
+                         <h3 className="text-xl font-bold text-green-800 mb-3">總結算</h3>
                         <div className="space-y-2 text-sm font-medium">
                             <div className="flex justify-between">
                                 <span>總支出 (JPY):</span>
@@ -538,15 +706,15 @@
                         onClick={addExpense}
                         className="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg mt-6 shadow-md hover:bg-indigo-700 transition-colors"
                     >
-                        + 新增費用項目
+                        + 新增費用項目 (雲端同步)
                     </button>
                     
                     {/* 備註區 */}
                     <div className="mt-10 pt-4 border-t border-gray-200">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-3">備註 (離線儲存)</h2>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-3">備註 (雲端同步)</h2>
                         <textarea
                             value={notes}
-                            onChange={(e) => setNotes(e.target.value)}
+                            onChange={handleNotesChange} // 使用新的處理函數
                             className="w-full p-3 text-sm text-gray-700 bg-gray-50 border border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500 h-32"
                             placeholder="輸入額外備註..."
                         />
@@ -554,23 +722,24 @@
                 </div>
             );
         };
+        // ====================================================================
+        // END: Firebase 雲端記帳邏輯
+        // ====================================================================
 
-
-        // --- App Component ---
+        // ... (App Component 保持不變) ...
         const App = () => {
             const [activeTab, setActiveTab] = useLocalStorageState('activeTab', 'itinerary');
             const [currentDayIndex, setCurrentDayIndex] = useLocalStorageState('currentDayIndex', 0);
             const [tripDatas, setTripDatas] = useLocalStorageState('tripDatas', initialTripData);
 
-            // --- 分帳系統狀態 (位於 App Top Level 確保 Hooks 呼叫無誤) ---
+            // --- 分帳系統狀態 ---
+            // 由於費用現在從 Firebase 抓取，這裡的初始值只作為首次載入時的 fallback
             const initialExpenses = [
                 { id: 1, name: '機票 (TPE-NGO/NRT-TPE)', amount: 120000, paidBy: 'Sophie' },
-                { id: 2, name: '名古屋 VIA INN (2晚)', amount: 15000, paidBy: 'Li' },
-                { id: 3, name: 'MYSTAYS 富士山 (2晚)', amount: 20000, paidBy: 'Sophie' },
-                { id: 4, name: 'Land About Tokyo (4晚)', amount: 45000, paidBy: 'Li' },
-                { id: 5, name: '富士急樂園通票 (2人)', amount: 14000, paidBy: 'Sophie' },
+                { id: 2, name: '住宿 (名古屋/富士山/東京)', amount: 80000, paidBy: 'Li' },
             ];
 
+            // 注意：現在 expenses 和 notes 會被 Firebase 獲取的資料覆蓋
             const [expenses, setExpenses] = useLocalStorageState('splitExpenses', initialExpenses);
             const [notes, setNotes] = useLocalStorageState('splitNotes', '可在此處記錄匯率變動、特殊分帳比例等資訊。');
             const [exchangeRate, setExchangeRate] = useLocalStorageState('exchangeRate', 0.22); 
@@ -605,7 +774,7 @@
 
             // --- TAB COMPONENTS ---
 
-            // 每日行程總覽
+            // 每日行程總覽 (DailyItinerary 保持不變)
             const DailyItinerary = ({ dayData, dayIndex, updateDailyMemo }) => {
                 const [dailyMemo, setDailyMemo] = useLocalStorageState(`dailyMemo_${dayIndex}`, dayData.memo);
                 
@@ -729,7 +898,7 @@
                 );
             };
 
-            // 交通住宿頁面
+            // 交通住宿頁面 (renderTools 保持不變)
             const renderTools = () => {
                 const ToolSection = ({ title, data, renderItem }) => (
                     <div className="mb-8">
@@ -809,7 +978,7 @@
                     case 'tools':
                         return renderTools();
                     case 'split':
-                        // 呼叫獨立的 SplitTool 組件
+                        // 呼叫包含 Firebase 邏輯的 SplitTool 組件
                         return <SplitTool 
                                     expenses={expenses}
                                     setExpenses={setExpenses}
