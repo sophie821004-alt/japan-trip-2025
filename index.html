@@ -136,7 +136,7 @@
             transition: transform 0.3s ease-out;
         }
         
-        /* 💡 新增：實現頁面滑動切換的樣式 */
+        /* 💡 修正：實現頁面滑動切換的樣式 */
         .page-container {
             display: flex;
             /* 允許橫向滾動，並強制吸附到子元件 */
@@ -155,7 +155,7 @@
             min-height: calc(100vh - 56px); /* 螢幕高度 - 導航列高度 */
         }
 
-        /* 💡 新增：日期滑動切換的樣式 */
+        /* 💡 修正：日期滑動切換的樣式 - 增加高度 */
         .date-slider {
             /* 允許橫向滾動，並強制吸附到子元件 */
             overflow-x: scroll;
@@ -173,7 +173,8 @@
             flex: 0 0 33.33%; /* 每個日期佔 1/3 寬度 */
             scroll-snap-align: center; /* 滾動時吸附到中心 */
             text-align: center;
-            padding: 8px 0;
+            /* 增加 padding 以增加高度和點擊區域 */
+            padding: 12px 0; 
             transition: background-color 0.3s, color 0.3s;
         }
     </style>
@@ -402,7 +403,7 @@
                     { time: "午餐", title: "午餐：淺草今半 (壽喜燒/便宜午餐)", type: "food", event_note: "平日中午便宜很多，約一人 1000 台幣左右", link: createMapLink('淺草今半') },
                     { time: "15:00", title: "晴空塔 (Tokyo Skytree) & Pokemon Center", type: "shopping", transport_note: "地鐵至押上站", event_note: "登塔觀景或在周邊的 Solamachi 購物，尋找 Pokemon Center", link: createMapLink('東京晴空塔 Pokemon Center') },
                     { time: "18:00", title: "押上天然溫泉 大黑湯", type: "leisure", transport_note: "近押上站 (Oshiage)", event_note: "體驗日式溫泉，放鬆身心", link: createMapLink('押上天然溫泉 大黑湯') },
-                    { time: "晚餐", title: "晚餐：溫泉周邊或返回上野", type: "food", event_note: "享用晚餐後返回飯店", link: createMapLink('押上 晚餐推薦') }
+                    { time: "晚餐", title: "晚餐：溫泉周邊或返回上野", type: "food", event_note: "用餐後返回飯店", link: createMapLink('押上 晚餐推薦') }
                 ]
             },
             // Day 8 (12/27) - 新增神田神宮/小網神社/人形町 
@@ -793,43 +794,65 @@
                 };
 
                 container.addEventListener('scroll', handleScrollDebounced);
+                
                 return () => container.removeEventListener('scroll', handleScrollDebounced);
             }, [activeTab, setActiveTab]);
             
+            // --- 💡 修正：頁面載入後，確保滾動位置正確 (避免地圖當機問題) ---
+            useEffect(() => {
+                const container = pageContainerRef.current;
+                const index = TAB_NAMES.indexOf(activeTab);
+                if (container && index !== -1) {
+                    // 立即設定滾動位置，確保 UI 與狀態同步
+                    container.scrollLeft = container.offsetWidth * index;
+                }
+            }, [activeTab]);
+
+
             // --- 💡 同步底部的日期滑塊到當前日期 ---
             useEffect(() => {
                 const slider = dateSliderRef.current;
                 if (slider) {
-                    const itemWidth = slider.querySelector('.date-item').offsetWidth;
-                    // 滾動到當前日期，使其位於中心 (center alignment)
-                    slider.scrollTo({
-                        left: itemWidth * currentDayIndex - (slider.offsetWidth / 2) + (itemWidth / 2),
-                        behavior: 'smooth'
-                    });
+                    // 等待 DOM 渲染完成，確保 itemWidth 正確
+                    setTimeout(() => {
+                        const item = slider.querySelector('.date-item');
+                        if (!item) return;
+
+                        const itemWidth = item.offsetWidth;
+                        // 滾動到當前日期，使其位於中心 (center alignment)
+                        slider.scrollTo({
+                            left: itemWidth * currentDayIndex - (slider.offsetWidth / 2) + (itemWidth / 2),
+                            behavior: 'smooth'
+                        });
+                    }, 0); // 使用 setTimeout 確保 DOM 更新完成
                 }
             }, [currentDayIndex]);
 
             // --- 💡 處理日期滑動切換結束後同步 currentDayIndex ---
             const handleDateScroll = (e) => {
                 const slider = e.currentTarget;
-                const scrollLeft = slider.scrollLeft;
-                const itemWidth = slider.querySelector('.date-item').offsetWidth;
+                // 節流處理 (避免在滾動時頻繁觸發)
+                if(slider.scrollTimer) clearTimeout(slider.scrollTimer);
                 
-                // 找出最靠近中心點的日期索引
-                // 中心點的滾動位置 = scrollLeft + (slider.offsetWidth / 2)
-                const centerScrollPosition = scrollLeft + (slider.offsetWidth / 2);
-                const newIndex = Math.round(centerScrollPosition / itemWidth) - 1; // -1 因為我們從 0 開始
-                
-                if (newIndex >= 0 && newIndex < maxDay && newIndex !== currentDayIndex) {
-                    setCurrentDayIndex(newIndex);
-                }
+                slider.scrollTimer = setTimeout(() => {
+                    const scrollLeft = slider.scrollLeft;
+                    const itemWidth = slider.querySelector('.date-item').offsetWidth;
+                    
+                    // 找出最靠近中心點的日期索引
+                    // 中心點的滾動位置 = scrollLeft + (slider.offsetWidth / 2)
+                    const centerScrollPosition = scrollLeft + (slider.offsetWidth / 2);
+                    // 索引 = (中心滾動位置 / item 寬度) - 0.5 (因為第一個空白 item 佔用 1/3 寬度)
+                    const newIndex = Math.round(centerScrollPosition / itemWidth) - 1; // -1 是因為我們加入了頭尾空白 item
+                    
+                    if (newIndex >= 0 && newIndex < maxDay && newIndex !== currentDayIndex) {
+                        setCurrentDayIndex(newIndex);
+                    }
+                }, 100); 
             };
             
             // 行程單日顯示元件
             const DailyItinerary = ({ dayData, updateDailyMemo }) => {
                 const [dailyMemo, setDailyMemo] = useState(dayData.memo);
-                
-                // 移除原本的滑動手勢邏輯，由外部 TabView 處理頁面切換
                 
                 useEffect(() => {
                     setDailyMemo(dayData.memo);
@@ -983,7 +1006,13 @@
             // 💡 地圖放大檢視元件
             const MapViewer = () => !isMapOpen ? null : (
                 <div className="map-viewer" onClick={() => setIsMapOpen(false)}>
-                    <img src={MAP_IMAGE_URL} alt="地鐵路線圖" className="map-image" onClick={e => e.stopPropagation()} />
+                    <img 
+                        src={MAP_IMAGE_URL} 
+                        alt="地鐵路線圖" 
+                        className="map-image" 
+                        // 確保點擊圖片不會關閉 Viewer
+                        onClick={e => e.stopPropagation()} 
+                    />
                 </div>
             );
             
@@ -1006,10 +1035,6 @@
                 <div 
                     ref={pageContainerRef}
                     className="page-container"
-                    style={{ 
-                        // 確保初始滾動位置與當前 activeTab 同步
-                        scrollLeft: pageContainerRef.current ? pageContainerRef.current.offsetWidth * TAB_NAMES.indexOf(activeTab) : 0 
-                    }}
                 >
                     {/* 1. 行程頁面 (itinerary) */}
                     <DailyItinerary 
@@ -1026,7 +1051,9 @@
                     </div>
 
                     {/* 4. 地圖頁面 (map) */}
-                    {renderMap()}
+                    <div className="page-content">
+                        {renderMap()}
+                    </div>
                 </div>
             );
 
@@ -1049,7 +1076,8 @@
                         <TabView />
                     </div>
                     
-                    <MapViewer />
+                    {/* 地圖檢視器渲染在根層級上方 (z-index 1000) */}
+                    <MapViewer /> 
 
                     {/* 💡 底部日期滑動切換導航 (只在行程頁面顯示) */}
                     {activeTab === 'itinerary' && (
@@ -1057,23 +1085,25 @@
                             <div 
                                 ref={dateSliderRef} 
                                 className="date-slider max-w-4xl mx-auto hide-scrollbar"
-                                // 綁定滾動結束後事件 (模擬 onScrollEnd)
+                                // 綁定滾動事件
                                 onScroll={handleDateScroll}
                             >
-                                {/* 💡 Date Item: 佔據 1/3 寬度，並吸附至中心 */}
+                                {/* 為了確保兩端日期也能完美居中，在頭尾各加入一個空白元素 */}
+                                <div className="date-item invisible flex-shrink-0" style={{ flexBasis: '33.33%' }}></div>
+                                
                                 {tripDatas.map((dayData, index) => (
                                     <div 
                                         key={index} 
                                         className={`date-item date-style cursor-pointer ${currentDayIndex === index ? 'bg-indigo-50 text-indigo-700 font-extrabold' : 'text-gray-600 font-semibold hover:bg-gray-50'}`}
                                         onClick={() => setCurrentDayIndex(index)}
                                     >
-                                        <div className="text-xs">DAY {index + 1}</div>
-                                        <div className="text-sm leading-tight">{dayData.date.split('(')[0].trim()}</div>
+                                        <div className="text-sm">DAY {index + 1}</div>
+                                        {/* 增大字體以增加高度感 */}
+                                        <div className="text-base leading-tight">{dayData.date.split('(')[0].trim()}</div> 
                                     </div>
                                 ))}
-                                {/* 為了確保兩端日期也能完美居中，在頭尾各加入兩個空白元素 (共 2*33.33% 寬度) */}
-                                <div className="date-item invisible"></div>
-                                <div className="date-item invisible"></div>
+                                
+                                <div className="date-item invisible flex-shrink-0" style={{ flexBasis: '33.33%' }}></div>
                             </div>
                         </div>
                     )}
