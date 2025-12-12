@@ -698,37 +698,6 @@
             const currentDayData = tripDatas[currentDayIndex] || tripDatas[0];
             const maxDay = tripDatas.length;
 
-            // --- 新增滑動手勢狀態 ---
-            const [touchStartX, setTouchStartX] = useState(0);
-            const SWIPE_THRESHOLD = 50; // 定義滑動最小距離 (像素)
-            
-            const handleTouchStart = (e) => {
-                // 檢查是否在行程頁面
-                if (activeTab === 'itinerary' && e.touches.length === 1) {
-                    setTouchStartX(e.touches[0].clientX);
-                }
-            };
-
-            const handleTouchEnd = (e) => {
-                if (activeTab !== 'itinerary' || e.changedTouches.length !== 1) return;
-                
-                const touchEndX = e.changedTouches[0].clientX;
-                const deltaX = touchEndX - touchStartX;
-                
-                if (Math.abs(deltaX) < SWIPE_THRESHOLD) return; // 滑動距離太小，忽略
-
-                // 向左滑 (下一天)
-                if (deltaX < -SWIPE_THRESHOLD) { 
-                    setCurrentDayIndex(prev => Math.min(maxDay - 1, prev + 1));
-                } 
-                // 向右滑 (前一天)
-                else if (deltaX > SWIPE_THRESHOLD) { 
-                    setCurrentDayIndex(prev => Math.max(0, prev - 1));
-                }
-                setTouchStartX(0); // 重置
-            };
-            // -------------------------
-
             const updateDailyMemo = useCallback((newMemo) => {
                 const newTripDatas = [...tripDatas];
                 newTripDatas[currentDayIndex] = { ...newTripDatas[currentDayIndex], memo: newMemo };
@@ -742,8 +711,38 @@
             );
 
             // 行程單日顯示元件
-            const DailyItinerary = ({ dayData }) => {
+            const DailyItinerary = ({ dayData, currentDayIndex, maxDay, setCurrentDayIndex }) => {
                 const [dailyMemo, setDailyMemo] = useState(dayData.memo);
+                
+                // --- 滑動手勢邏輯 (新增/修正) ---
+                const [touchStartX, setTouchStartX] = useState(0);
+                const SWIPE_THRESHOLD = 50; // 定義滑動最小距離 (像素)
+                
+                const handleTouchStart = (e) => {
+                    if (e.touches.length === 1) {
+                        setTouchStartX(e.touches[0].clientX);
+                    }
+                };
+
+                const handleTouchEnd = (e) => {
+                    if (e.changedTouches.length !== 1 || touchStartX === 0) return;
+                    
+                    const touchEndX = e.changedTouches[0].clientX;
+                    const deltaX = touchEndX - touchStartX;
+                    
+                    if (Math.abs(deltaX) < SWIPE_THRESHOLD) return; // 滑動距離太小，忽略
+
+                    // 向左滑 (下一天)
+                    if (deltaX < -SWIPE_THRESHOLD && currentDayIndex < maxDay - 1) { 
+                        setCurrentDayIndex(prev => prev + 1);
+                    } 
+                    // 向右滑 (前一天)
+                    else if (deltaX > SWIPE_THRESHOLD && currentDayIndex > 0) { 
+                        setCurrentDayIndex(prev => prev - 1);
+                    }
+                    setTouchStartX(0); // 重置
+                };
+                // ---------------------------------
                 
                 useEffect(() => {
                     setDailyMemo(dayData.memo);
@@ -807,7 +806,13 @@
                 );
 
                 return (
-                    <div className={background.className} style={background.style}>
+                    // 【修正點 2】: 在 DailyItinerary 的根元素上綁定事件
+                    <div 
+                        className={background.className} 
+                        style={background.style}
+                        onTouchStart={handleTouchStart}
+                        onTouchEnd={handleTouchEnd}
+                    >
                         <header className="px-4 py-4 sticky top-0 bg-white/90 backdrop-blur-sm z-10 border-b border-gray-100">
                             <h2 className="text-2xl font-bold text-indigo-700 date-style">{dayData.date}</h2>
                             <p className="text-sm text-gray-600 mt-1">地點：{dayData.location}</p>
@@ -924,19 +929,23 @@
                         ))}
                     </div>
 
-                    {/* 【主要修改區域】新增滑動手勢處理函數 */}
                     <div 
                         className="max-w-4xl mx-auto"
-                        onTouchStart={handleTouchStart}
-                        onTouchEnd={handleTouchEnd}
+                        // 移除這裡的 onTouchStart/onTouchEnd 綁定
                     >
-                        {activeTab === 'itinerary' && <DailyItinerary dayData={currentDayData} />}
+                        {activeTab === 'itinerary' && 
+                            <DailyItinerary 
+                                dayData={currentDayData} 
+                                currentDayIndex={currentDayIndex}
+                                maxDay={maxDay}
+                                setCurrentDayIndex={setCurrentDayIndex}
+                            />
+                        }
                         {activeTab === 'tools' && renderTools()}
                         {activeTab === 'split' && <SplitTool notes={notes} setNotes={setNotes} />}
                         {activeTab === 'map' && renderMap()}
                     </div>
-                    {/* 【主要修改區域】結束 */}
-
+                    
                     <MapViewer />
 
                     {/* 日期導航 (Sticky Footer) - 保持不變 */}
