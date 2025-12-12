@@ -17,7 +17,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // 2. 您的 Firebase 配置參數 (已從您的檔案中擷取)
+        // 2. 您的 Firebase 配置參數
         const firebaseConfig = {
             apiKey: "AIzaSyDTXrRd2JDqzHf8n7p9L6bWKKFwxwrHit0",
             authDomain: "japan-trip-2025-172dc.firebaseapp.com",
@@ -35,12 +35,10 @@
         const initializeFirebase = () => {
             if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
                 const app = firebase.initializeApp(firebaseConfig);
-                // 必須使用 app.firestore() 來初始化 Firestore 實例
                 db = app.firestore();
                 console.log("Firebase initialized successfully with Firestore.");
             }
         };
-        // 在 <script> 區塊初始化，確保在 React 腳本執行前完成
         if (typeof firebase !== 'undefined') {
             initializeFirebase();
         }
@@ -161,7 +159,7 @@
             return [state, setState];
         };
         
-        // --- DATA SOURCE & CONFIGS (行程資料 - 已修正 12/25 和 12/27) ---
+        // --- DATA SOURCE & CONFIGS (行程資料 - 保持不變) ---
 
         const toolsData = {
             flights: [
@@ -194,13 +192,12 @@
                 { name: "救護車", phone: "119" }
             ],
             tickets: [
-                { name: "Shibuya Sky 展望台門票", date: "12/25 (16:00~16:19)", type: "QR Code/PDF", link: "https://www.klook.com/zh-TW/activity/37777-shibuya-sky-tokyo/" }, // 修正時間
+                { name: "Shibuya Sky 展望台門票", date: "12/25 (16:00~16:19)", type: "QR Code/PDF", link: "https://www.klook.com/zh-TW/activity/37777-shibuya-sky-tokyo/" }, 
                 { name: "富士急樂園通票", date: "12/23", type: "Barcode/Link", link: "https://www.fujiq.jp/en/ticket/index.html" },
                 { name: "Harbs 蛋糕兌換券", date: "12/20", type: "Image", link: "https://via.placeholder.com/150/0000FF/FFFFFF?text=Harbs+QR" }
             ]
         };
 
-        // ✅ 地圖路徑修正：已替換為您提供的 GitHub 原始連結 (Raw URL)
         const MAP_IMAGE_URL = 'https://raw.githubusercontent.com/sophie821004-alt/japan-trip-2025/main/tokyo_map.png'; 
         const THEME_COLOR = 'bg-[#FBF9F2]'; 
         const themeConfig = {
@@ -325,7 +322,7 @@
                     { time: "22:00", title: "晴空塔聖誕活動 / 六本木點燈 (二選一)", type: "sight", event_note: "選擇其中一個點燈活動，欣賞聖誕夜景", link: createMapLink('東京 六本木之丘 點燈') }
                 ]
             },
-            // Day 6 (12/25) - 澀谷與原宿 & 晚上六本木點燈 🎄 (已修正)
+            // Day 6 (12/25) - 澀谷與原宿 & 晚上六本木點燈 🎄 
             { 
                 day: 6, date: "12/25 (Thu)", location: "Tokyo Shibuya", weather: "sunny", 
                 temperature: [7, 9, 12, 14, 13, 11, 9, 8], 
@@ -335,9 +332,9 @@
                 events: [
                     { time: "07:30-08:00", title: "飯店早餐 (Land About Tokyo)", type: "food", event_note: "開放時間 07:00-10:00 之間", link: createMapLink('Land About Tokyo 早餐') },
                     { time: "10:00", title: "明治神宮", type: "sight", transport_note: "地鐵至代代木站/原宿站", event_note: "日本最重要的神社之一", link: createMapLink('明治神宮') },
-                    { time: "午餐", title: "午餐：極味屋 澀谷 PARCO 店", type: "food", transport_note: "澀谷 PARCO B1", event_note: "著名的漢堡排，建議提早前往排隊。", link: createMapLink('極味屋 澀谷 PARCO 店') }, // <-- 修正午餐
+                    { time: "午餐", title: "午餐：極味屋 澀谷 PARCO 店", type: "food", transport_note: "澀谷 PARCO B1", event_note: "著名的漢堡排，建議提早前往排隊。", link: createMapLink('極味屋 澀谷 PARCO 店') }, 
                     { time: "14:00", title: "澀谷逛街購物", type: "shopping", event_note: "澀谷 PARCO/運動用品店等，並步行至 Shibuya Sky", link: createMapLink('澀谷逛街購物') },
-                    { time: "16:00-17:30", title: "澀谷 Sky 展望台", type: "sight", event_note: "預約時間為 16:00~16:19，務必準時抵達，觀賞夕陽與夜景。", link: toolsData.tickets[0].link }, // <-- 修正時間
+                    { time: "16:00-17:30", title: "澀谷 Sky 展望台", type: "sight", event_note: "預約時間為 16:00~16:19，務必準時抵達，觀賞夕陽與夜景。", link: toolsData.tickets[0].link }, 
                     { time: "18:00", title: "青之洞窟", type: "sight", event_note: "冬季限定燈飾活動 (通常在澀谷舉行)", link: createMapLink('青之洞窟 澀谷') },
                     { time: "晚餐", title: "晚餐：Steak Rice & Curry Restaurant", type: "food", event_note: "您指定的餐廳", link: createMapLink('東京 Steak Rice & Curry Restaurant') },
                     { time: "晚上", title: "六本木之丘聖誕點燈 (Roppongi Illumination)", type: "sight", transport_note: "地鐵至六本木站", event_note: "欣賞華麗的櫸木坂大道點燈", link: createMapLink('六本木之丘') }
@@ -359,7 +356,7 @@
                     { time: "晚餐", title: "晚餐：溫泉周邊或返回上野", type: "food", event_note: "享用晚餐後返回飯店", link: createMapLink('押上 晚餐推薦') }
                 ]
             },
-            // Day 8 (12/27) - 新增神田神宮/小網神社/人形町 (已修正晚間購物地點)
+            // Day 8 (12/27) - 新增神田神宮/小網神社/人形町 
             { 
                 day: 8, date: "12/27 (Sat)", location: "Tokyo Kanda & Shinonome", weather: "sunny", 
                 temperature: [7, 9, 11, 13, 12, 10, 8, 7], 
@@ -373,7 +370,7 @@
                     { time: "13:00", title: "午餐：人形町周邊 (自由選擇)", type: "food", event_note: "人形町多日式傳統餐廳，建議提前尋找目標", link: createMapLink('人形町 午餐推薦') },
                     { time: "15:00", title: "Ricoland Tokyo Bay", type: "shopping", transport_note: "地鐵至東雲站 (Shinonome)", event_note: "摩托車用品店，採購時間較...", link: createMapLink('Ricoland Tokyo Bay') },
                     { time: "18:00", title: "晚餐：上野/御徒町附近", type: "food", event_note: "用餐後返回飯店周邊", link: createMapLink('上野/御徒町晚餐推薦') },
-                    { time: "晚上", title: "上野逛街購物 (藥妝/零食)", type: "shopping", event_note: "在上野阿美橫町或車站周邊進行最後的採買。", link: createMapLink('上野 阿美橫町') }, // <-- 修正購物地點
+                    { time: "晚上", title: "上野逛街購物 (藥妝/零食)", type: "shopping", event_note: "在上野阿美橫町或車站周邊進行最後的採買。", link: createMapLink('上野 阿美橫町') }, 
                     { time: "晚上", title: "返回飯店整理行李", type: "accommodation", event_note: "打包購買的商品，準備隔日Check-out", link: createMapLink('Land About Tokyo') }
                 ]
             },
@@ -396,68 +393,111 @@
 
 
         // ====================================================================
-        // START: Firebase 雲端記帳邏輯
+        // START: Firebase 雲端記帳邏輯 (已修改)
         // ====================================================================
         
-        const SplitTool = ({ notes, setNotes, exchangeRate, setExchangeRate }) => {
+        const SplitTool = ({ notes, setNotes }) => {
             const [expenses, setExpenses] = useState([]);
             const [isFirebaseLoaded, setIsFirebaseLoaded] = useState(false);
             const unsubscribeRef = useRef(null);
-            const updateTimeoutRef = useRef({}); // 用於 Debounce
+            const updateTimeoutRef = useRef({}); 
+            
+            // --- 新增狀態：匯率自動更新 ---
+            const [exchangeRate, setExchangeRate] = useLocalStorageState('exchangeRate', 0.22); // 0.22 作為預設或上次儲存的匯率
+            const [isFetchingRate, setIsFetchingRate] = useState(true); 
+            const [fetchError, setFetchError] = useState(null);
+            // -----------------------------
 
-            // 初始化與監聽 Firebase 資料
+            // 初始化、監聽 Firebase 資料 & 自動抓取匯率
             useEffect(() => {
-                if (!db) {
-                    console.warn("Firebase DB not initialized yet.");
-                    return;
+                // 1. Firebase 監聽 (保持不變)
+                if (db) {
+                    unsubscribeRef.current = db.collection("expenses")
+                        .orderBy("timestamp", "asc") 
+                        .onSnapshot((snapshot) => {
+                            const fetchedExpenses = snapshot.docs.map(doc => ({
+                                id: doc.id,
+                                ...doc.data(),
+                                amount: parseInt(doc.data().amount) || 0 
+                            }));
+                            setExpenses(fetchedExpenses);
+                            setIsFirebaseLoaded(true);
+                        }, (error) => {
+                            console.error("Error listening to expenses:", error);
+                            setIsFirebaseLoaded(false);
+                        });
+
+                    db.collection("config").doc("notes").get().then(doc => {
+                        if (doc.exists) setNotes(doc.data().content);
+                    }).catch(error => console.error("Error fetching notes:", error));
                 }
+                
+                // 2. 自動抓取匯率 (新增)
+                const fetchExchangeRate = async () => {
+                    // ⚠️ 重要提醒：此處使用一個免費的第三方 API 服務作為範例。
+                    // 該 API 直接提供 1 JPY 可兌換多少 TWD 的匯率。
+                    // 
+                    // 如果您需要台灣銀行 (BoT) 的「現金賣出價」，建議您手動輸入。
+                    // 範例 API URL (Keyless: 1 JPY = ? TWD)
+                    const API_URL = 'https://api.exchangerate.host/latest?base=JPY&symbols=TWD'; 
 
-                // 1. 使用 onSnapshot 進行即時監聽費用列表
-                unsubscribeRef.current = db.collection("expenses")
-                    .orderBy("timestamp", "asc") // 按照新增時間排序
-                    .onSnapshot((snapshot) => {
-                        const fetchedExpenses = snapshot.docs.map(doc => ({
-                            id: doc.id, // 使用 Firebase 產生的文件 ID
-                            ...doc.data(),
-                            // 確保 amount 是數字
-                            amount: parseInt(doc.data().amount) || 0 
-                        }));
-                        setExpenses(fetchedExpenses);
-                        setIsFirebaseLoaded(true);
-                        console.log("Expenses updated from Firebase:", fetchedExpenses.length);
-                    }, (error) => {
-                        console.error("Error listening to expenses:", error);
-                        setIsFirebaseLoaded(false);
-                    });
+                    setIsFetchingRate(true);
+                    setFetchError(null);
 
-                // 2. 讀取備註 (只需讀取一次)
-                db.collection("config").doc("notes").get().then(doc => {
-                    if (doc.exists) setNotes(doc.data().content);
-                }).catch(error => console.error("Error fetching notes:", error));
+                    try {
+                        const response = await fetch(API_URL);
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        const data = await response.json();
+
+                        // 假設 API 回傳格式為 data.rates.TWD
+                        const jpyToTwdRate = data.rates.TWD;
+                        
+                        if (jpyToTwdRate && jpyToTwdRate > 0) {
+                            // 將匯率四捨五入到小數點後四位
+                            const newRate = parseFloat(jpyToTwdRate.toFixed(4));
+                            
+                            // 簡易檢查匯率是否合理 (防止 API 出錯)
+                            if (newRate >= 0.18 && newRate <= 0.28) { 
+                                setExchangeRate(newRate);
+                                setFetchError(null); 
+                            } else {
+                                throw new Error(`Fetched rate (${newRate}) seems incorrect or out of bounds.`);
+                            }
+                        } else {
+                            throw new Error("API response is missing TWD rate.");
+                        }
+
+                    } catch (error) {
+                        console.error("Failed to fetch exchange rate:", error);
+                        setFetchError(`自動更新失敗，使用本地儲存匯率 (${exchangeRate})。`);
+                    } finally {
+                        setIsFetchingRate(false);
+                    }
+                };
+                
+                fetchExchangeRate();
 
                 // 組件卸載時取消監聽
                 return () => {
                     if (unsubscribeRef.current) unsubscribeRef.current();
                 };
-            }, [setNotes]);
-
-            // 新增費用 (修正 ID 問題，使用預先產生 ID)
+            }, []); 
+            
+            // 新增費用
             const addExpense = async () => {
                 if (!db) return alert("Firebase 未連接");
                 try {
-                    // 1. 先從 Firebase SDK 取得一個新的文件參考，並立即獲得 ID
                     const newDocRef = db.collection("expenses").doc();
                     
-                    // 2. 準備初始資料
                     const newExpense = {
                         name: '新的費用項目',
                         amount: 0,
                         paidBy: TRAVELERS[0],
-                        // 使用伺服器時間戳記，確保排序正確
                         timestamp: firebase.firestore.FieldValue.serverTimestamp() 
                     };
 
-                    // 3. 寫入 Firebase (onSnapshot 會自動更新畫面)
                     await newDocRef.set(newExpense);
                     
                 } catch (error) {
@@ -468,22 +508,18 @@
 
             // 更新費用 (Debounce 防抖動寫入)
             const handleExpenseChange = (id, field, value) => {
-                // 1. 樂觀更新：先更新畫面
                 setExpenses(prev => prev.map(exp => 
                     exp.id === id ? { ...exp, [field]: value } : exp
                 ));
 
-                // 2. 清除之前的計時器
                 const timerKey = `${id}-${field}`;
                 if (updateTimeoutRef.current[timerKey]) {
                     clearTimeout(updateTimeoutRef.current[timerKey]);
                 }
 
-                // 3. 延遲 500ms 後寫入 Firebase
                 updateTimeoutRef.current[timerKey] = setTimeout(async () => {
                     if (!db) return;
                     try {
-                        // 確保值存在，避免寫入 undefined
                         if (value !== undefined) {
                             await db.collection("expenses").doc(id).update({
                                 [field]: value
@@ -501,7 +537,6 @@
                 if (!db) return;
                 try {
                     await db.collection("expenses").doc(id).delete();
-                    // onSnapshot 會自動從 expenses state 中移除
                 } catch (error) {
                     console.error("Error deleting expense:", error);
                 }
@@ -510,11 +545,10 @@
             // 備註儲存 (Debounce)
             const handleNotesChange = (e) => {
                 const val = e.target.value;
-                setNotes(val); // 立即更新本地畫面
+                setNotes(val);
                 
                 if(window.noteTimer) clearTimeout(window.noteTimer);
                 
-                // 延遲 1 秒後儲存到 Firebase
                 window.noteTimer = setTimeout(() => {
                     if(db) {
                         db.collection("config").doc("notes").set({ content: val });
@@ -528,7 +562,6 @@
                 const totalTWD = (totalJPY * exchangeRate).toFixed(0);
                 const halfJPY = totalJPY / TRAVELERS.length;
                 
-                // 紀錄每人付出的總金額
                 const paidTotals = TRAVELERS.reduce((acc, traveler) => ({ ...acc, [traveler]: 0 }), {});
                 expenses.forEach(exp => {
                     if(paidTotals[exp.paidBy] !== undefined) {
@@ -536,14 +569,12 @@
                     }
                 });
                 
-                // 計算結算差額
                 const settlement = TRAVELERS.map(traveler => {
                     const paid = paidTotals[traveler];
-                    const diff = paid - halfJPY; // 正值：多付；負值：少付
+                    const diff = paid - halfJPY; 
                     return { traveler, paid, diff, diffTWD: (diff * exchangeRate).toFixed(0) };
                 });
                 
-                // 找出誰要給錢，誰要收錢 (僅支援兩個人)
                 const giver = settlement.find(s => s.diff < 0);
                 const receiver = settlement.find(s => s.diff > 0);
                 
@@ -565,17 +596,29 @@
                         {isFirebaseLoaded ? '✅ 已連線 Firebase，資料自動同步。' : '⚠️ 連線中或失敗，請檢查權限。'}
                     </div>
 
-                    {/* 匯率設定 */}
-                    <div className="bg-indigo-50 p-4 rounded-lg shadow-md mb-6 flex items-center justify-between">
-                        <span className="font-bold text-indigo-800">匯率 (JPY→TWD)</span>
-                        <input 
-                            type="number" 
-                            value={exchangeRate} 
-                            onChange={e => setExchangeRate(parseFloat(e.target.value)||0)} 
-                            className="expense-input w-24" 
-                            step="0.001" 
-                            min="0"
-                        />
+                    {/* 匯率設定 (已加入自動更新狀態顯示) */}
+                    <div className="bg-indigo-50 p-4 rounded-lg shadow-md mb-6">
+                        <div className="flex items-center justify-between">
+                            <span className="font-bold text-indigo-800">匯率 (JPY→TWD)</span>
+                            <div className="relative">
+                                <input 
+                                    type="number" 
+                                    value={exchangeRate} 
+                                    onChange={e => setExchangeRate(parseFloat(e.target.value)||0)} 
+                                    className="expense-input w-24 pr-8" 
+                                    step="0.0001" 
+                                    min="0"
+                                    // 抓取中時禁用手動輸入，除非有錯誤發生
+                                    disabled={isFetchingRate && fetchError === null} 
+                                />
+                                <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-500">TWD</span>
+                            </div>
+                        </div>
+                        <div className="mt-2 text-xs text-center">
+                            {isFetchingRate && <span className="text-indigo-600">🌐 正在自動更新匯率...</span>}
+                            {fetchError && <span className="text-red-500">{fetchError} <span className="text-gray-600">您可以手動調整。</span></span>}
+                            {(!isFetchingRate && fetchError === null) && <span className="text-green-600 font-semibold">✅ 匯率已自動更新！ (1 JPY ≈ {exchangeRate} TWD)</span>}
+                        </div>
                     </div>
 
                     {/* 結算卡片 */}
@@ -655,7 +698,6 @@
             
             // --- 分帳系統狀態 ---
             const [notes, setNotes] = useLocalStorageState('splitNotes', '可在此處記錄匯率變動、特殊分帳比例等資訊。');
-            const [exchangeRate, setExchangeRate] = useLocalStorageState('exchangeRate', 0.22);
             
             const currentDayData = tripDatas[currentDayIndex] || tripDatas[0];
             const maxDay = tripDatas.length;
@@ -858,7 +900,7 @@
                     <div className="max-w-4xl mx-auto">
                         {activeTab === 'itinerary' && <DailyItinerary dayData={currentDayData} />}
                         {activeTab === 'tools' && renderTools()}
-                        {activeTab === 'split' && <SplitTool notes={notes} setNotes={setNotes} exchangeRate={exchangeRate} setExchangeRate={setExchangeRate} />}
+                        {activeTab === 'split' && <SplitTool notes={notes} setNotes={setNotes} />}
                         {activeTab === 'map' && renderMap()}
                     </div>
 
